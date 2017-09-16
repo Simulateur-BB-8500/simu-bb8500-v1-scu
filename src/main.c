@@ -8,6 +8,7 @@
 #include "gpio.h"
 #include "gpio_reg.h"
 #include "mapping.h"
+#include "nvic.h"
 #include "rcc.h"
 #include "tim.h"
 #include "type.h"
@@ -22,30 +23,15 @@ int main(void) {
 
 	RCC_Init();
 	GPIO_Init();
+	NVIC_Init();
+	TIM6_Init();
+	TIM6_Start();
 
 	/*** Global variables initialisation ***/
-
-	boolean currentButton = LOW;
-	boolean previousButton = LOW;
 
 	/*** Main loop ***/
 
 	while(1) {
-		// Read button state.
-		if (GPIO_Read(BUTTON)) {
-			currentButton = LOW;
-		}
-		else {
-			currentButton = HIGH;
-		}
-
-		// Toggle LED.
-		if ((currentButton == HIGH) && (previousButton == LOW)) {
-			GPIO_Toggle(LED);
-		}
-
-		// Update button state.
-		previousButton = currentButton;
 	}
 
 	return 0;
