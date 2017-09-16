@@ -7,7 +7,9 @@
 
 #include "gpio.h"
 #include "gpio_reg.h"
+#include "mapping.h"
 #include "rcc.h"
+#include "type.h"
 
 /* MAIN FUNCTION.
  * @param: None.
@@ -15,21 +17,34 @@
  */
 int main(void) {
 
-	// Peripherals initialisation.
+	/*** Peripherals initialisation ***/
+
 	RCC_Init();
 	GPIO_Init();
 
-	// Global variables initialisation.
-	int i = 0;
+	/*** Global variables initialisation ***/
 
-	// Main loop.
+	boolean currentButton = LOW;
+	boolean previousButton = LOW;
+
+	/*** Main loop ***/
+
 	while(1) {
-		// Switch on the LED.
-		GPIOA -> ODR |= 0x00000008;
-		for(i=0 ; i<500000 ; i++);
-		// Switch off the LED.
-		GPIOA -> ODR &= 0xFFFFFFF7;
-		for(i=0 ; i<500000 ; i++);
+		// Read button state.
+		if (GPIO_Read(BUTTON)) {
+			currentButton = LOW;
+		}
+		else {
+			currentButton = HIGH;
+		}
+
+		// Toggle LED.
+		if ((currentButton == HIGH) && (previousButton == LOW)) {
+			GPIO_Toggle(LED);
+		}
+
+		// Update button state.
+		previousButton = currentButton;
 	}
 
 	return 0;

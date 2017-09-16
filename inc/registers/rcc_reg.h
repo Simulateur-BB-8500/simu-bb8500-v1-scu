@@ -8,7 +8,7 @@
 #ifndef REGISTERS_RCC_REG_H_
 #define REGISTERS_RCC_REG_H_
 
-/* RCC registers */
+/*** RCC registers ***/
 
 typedef struct {
   volatile unsigned int CR;			// RCC clock control register.
@@ -48,10 +48,10 @@ typedef struct {
   volatile unsigned int PLLSAICFGR;	// RCC PLLSAI configuration register.
   volatile unsigned int DCKCFGR1;	// RCC Dedicated Clocks configuration register 1.
   volatile unsigned int DCKCFGR2;	// RCC Dedicated Clocks configuration register 2.
-} RCC_Struct;
+} RCC_BaseAddress;
 
-/* RCC address */
+/*** RCC base address ***/
 
-#define RCC		((RCC_Struct*) ((unsigned int) 0x40023800))
+#define RCC		((RCC_BaseAddress*) ((unsigned int) 0x40023800))
 
 #endif /* REGISTERS_RCC_REG_H_ */
