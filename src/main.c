@@ -9,6 +9,7 @@
 #include "gpio_reg.h"
 #include "mapping.h"
 #include "rcc.h"
+#include "tim.h"
 #include "type.h"
 
 /* MAIN FUNCTION.

@@ -8,7 +8,7 @@
 #ifndef REGISTERS_GPIO_REG_H_
 #define REGISTERS_GPIO_REG_H_
 
-/*** GPIO registers ***/
+/*** GPIOx registers ***/
 
 typedef struct {
   volatile unsigned int MODER;    	// GPIO port mode register.
@@ -23,7 +23,7 @@ typedef struct {
   volatile unsigned int AFRH;   	// GPIO alternate function high register.
 } GPIO_BaseAddress;
 
-/*** GPIO base addresses ***/
+/*** GPIOx base addresses ***/
 
 #define GPIOA	((GPIO_BaseAddress*) ((unsigned int) 0x40020000))
 #define GPIOB	((GPIO_BaseAddress*) ((unsigned int) 0x40020400))
@@ -37,10 +37,10 @@ typedef struct {
 #define GPIOJ	((GPIO_BaseAddress*) ((unsigned int) 0x40022400))
 #define GPIOK	((GPIO_BaseAddress*) ((unsigned int) 0x40022800))
 
-/*** GPIO #define ***/
+/*** GPIOx #define ***/
 
 #define GPIO_PER_PORT 16 // Each port (A to K) has 16 GPIO.
-#define AF_PER_GPIO 16 // Each GPIO has 15 alternate functions.
-#define AFRH_OFFSET 8 // Limit between AFRL and AFRH.
+#define AF_PER_GPIO 16 // Each GPIO has 16 alternate functions.
+#define AFRH_OFFSET 8 // Limit between AFRL and AFRH registers.
 
 #endif /* REGISTERS_GPIO_REG_H_ */
