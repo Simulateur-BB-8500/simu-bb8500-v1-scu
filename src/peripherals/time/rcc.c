@@ -36,5 +36,4 @@ void RCC_Init(void) {
 	RCC -> AHB1ENR |= 0x000007FF; // Enable GPIOx clock (GPIOxEN = '1').
 	RCC -> APB1ENR |= 0x000001FF; // Enable TIM2-TIM7 and TIM12-14 clock (TIMxEN = '1').
 	RCC -> APB2ENR |= 0x00070003; // Enable TIM1 and TIM8-11 clock (TIMxEN = '1').
-
 }

@@ -5,7 +5,7 @@
  *      Author: Ludovic
  */
 
-#include "mask.h"
+#include "masks.h"
 #include "nvic.h"
 #include "nvic_reg.h"
 
@@ -37,4 +37,5 @@ void NVIC_DisableInterrupt(Interrupt ITNum) {
  */
 void NVIC_Init(void) {
 	NVIC_EnableInterrupt(TIM6_DAC);
+	NVIC_EnableInterrupt(TIM7);
 }

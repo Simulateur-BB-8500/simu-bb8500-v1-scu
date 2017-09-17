@@ -9,7 +9,7 @@
 #define PERIPHERALS_GPIO_GPIO_H_
 
 #include "gpio_reg.h"
-#include "type.h"
+#include "types.h"
 
 /*** GPIO structures ***/
 

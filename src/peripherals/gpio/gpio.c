@@ -8,8 +8,8 @@
 #include "gpio.h"
 #include "gpio_reg.h"
 #include "mapping.h"
-#include "mask.h"
-#include "type.h"
+#include "masks.h"
+#include "types.h"
 
 /*** GPIO parameters enumerations ***/
 
@@ -242,10 +242,16 @@ void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
 void GPIO_Init(void) {
 
 	// LED pin configured as output.
-	GPIO_SetMode(LED, Output);
-	GPIO_SetOutputType(LED, PushPull);
-	GPIO_SetOutputSpeed(LED, LowSpeed);
-	GPIO_SetPullUpPullDown(LED, NoPullUpNoPullDown);
+	GPIO_SetMode(LED1, Output);
+	GPIO_SetOutputType(LED1, PushPull);
+	GPIO_SetOutputSpeed(LED1, LowSpeed);
+	GPIO_SetPullUpPullDown(LED1, NoPullUpNoPullDown);
+
+	// SCOPE pin configured as output.
+	GPIO_SetMode(LED2, Output);
+	GPIO_SetOutputType(LED2, PushPull);
+	GPIO_SetOutputSpeed(LED2, VeryHighSpeed);
+	GPIO_SetPullUpPullDown(LED2, NoPullUpNoPullDown);
 
 	// Button pin configured as input.
 	GPIO_SetMode(BUTTON, Input);

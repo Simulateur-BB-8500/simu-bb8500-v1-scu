@@ -13,7 +13,8 @@
 
 /*** Nucleo-F746ZG mapping configuration ***/
 
-#define LED 		&((GPIO_Struct) {GPIOC, 0})
+#define LED1 		&((GPIO_Struct) {GPIOC, 0})
+#define LED2		&((GPIO_Struct) {GPIOC, 3})
 #define BUTTON		&((GPIO_Struct) {GPIOA, 3})
 
 #ifdef OUTPUT_CLOCK

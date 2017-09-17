@@ -1,12 +1,12 @@
 /*
- * mask.h
+ * masks.h
  *
  *  Created on: 15 sept. 2017
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_MASK_H_
-#define REGISTERS_MASK_H_
+#ifndef REGISTERS_MASKS_H_
+#define REGISTERS_MASKS_H_
 
 /*** Masks declaration ***/
 
@@ -22,4 +22,4 @@ static const unsigned int BIT_MASK[REGISTER_LENGTH] = {0x00000001, 0x00000002, 0
 													   0x01000000, 0x02000000, 0x04000000, 0x08000000,
 													   0x10000000, 0x20000000, 0x40000000, 0x80000000};
 
-#endif /* REGISTERS_MASK_H_ */
+#endif /* REGISTERS_MASKS_H_ */
