@@ -5,6 +5,7 @@
  *      Author: Ludovic
  */
 
+#include "dac.h"
 #include "gpio.h"
 #include "gpio_reg.h"
 #include "mapping.h"
@@ -12,6 +13,7 @@
 #include "rcc.h"
 #include "tim.h"
 #include "tim_reg.h"
+#include "types.h"
 
 /* MAIN FUNCTION.
  * @param: None.
@@ -24,15 +26,16 @@ int main(void) {
 	RCC_Init();
 	GPIO_Init();
 	NVIC_Init();
+	DAC_Init();
 
 	// LED1.
 	TIM_Set(TIM6, 1, seconds);
-	TIM_Start(TIM6);
+	TIM_Start(TIM6, true);
 	TIM_EnableInterrupt(TIM6);
 
 	// LED2.
-	TIM_Set(TIM7, 500, microseconds);
-	TIM_Start(TIM7);
+	TIM_Set(TIM7, 10, microseconds);
+	TIM_Start(TIM7, true);
 	TIM_EnableInterrupt(TIM7);
 
 	/*** Global variables initialisation ***/

@@ -247,7 +247,7 @@ void GPIO_Init(void) {
 	GPIO_SetOutputSpeed(LED1, LowSpeed);
 	GPIO_SetPullUpPullDown(LED1, NoPullUpNoPullDown);
 
-	// SCOPE pin configured as output.
+	// LED2 pin configured as output.
 	GPIO_SetMode(LED2, Output);
 	GPIO_SetOutputType(LED2, PushPull);
 	GPIO_SetOutputSpeed(LED2, VeryHighSpeed);
@@ -258,6 +258,12 @@ void GPIO_Init(void) {
 	GPIO_SetOutputType(BUTTON, PushPull);
 	GPIO_SetOutputSpeed(BUTTON, LowSpeed);
 	GPIO_SetPullUpPullDown(BUTTON, PullUp);
+
+	// AMP pin configured as analog.
+	GPIO_SetMode(AMP, Analog);
+	GPIO_SetOutputType(AMP, OpenDrain);
+	GPIO_SetOutputSpeed(AMP, LowSpeed);
+	GPIO_SetPullUpPullDown(AMP, NoPullUpNoPullDown);
 
 #ifdef OUTPUT_CLOCK
 	// MCO1 configured as AF0 to output HSI clock.
@@ -275,7 +281,7 @@ void GPIO_Init(void) {
  * @param state: Desired state of the pin ('LOW' or 'HIGH').
  * @return: None.
  */
-void GPIO_Write(GPIO_Struct* gpioStruct, boolean state) {
+void GPIO_Write(GPIO_Struct* gpioStruct, GPIOState state) {
 	// Extract port and number.
 	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
 	unsigned int gpioNum = gpioStruct -> GPIO_Num;
@@ -294,11 +300,11 @@ void GPIO_Write(GPIO_Struct* gpioStruct, boolean state) {
  * @param gpioStruct: Pointer to GPIO identifier (port + number).
  * @return: GPIO state ('LOW' or 'HIGH').
  */
-boolean GPIO_Read(GPIO_Struct* gpioStruct) {
+GPIOState GPIO_Read(GPIO_Struct* gpioStruct) {
 	// Extract port and number.
 	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
 	unsigned int gpioNum = gpioStruct -> GPIO_Num;
-	boolean result = LOW;
+	GPIOState result = LOW;
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch (GPIO_GetMode(gpioStruct)) {
 		case Input:

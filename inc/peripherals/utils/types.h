@@ -13,6 +13,11 @@
 typedef enum {
 	LOW = 0,
 	HIGH = 1
+} GPIOState;
+
+typedef enum {
+	false = 0,
+	true = 1
 } boolean;
 
 typedef enum {
@@ -20,5 +25,10 @@ typedef enum {
 	milliseconds,
 	seconds
 } TimeUnit;
+
+typedef enum {
+	Channel1 = 1,
+	Channel2 = 2
+} DACChannel;
 
 #endif /* REGISTERS_TYPES_H_ */

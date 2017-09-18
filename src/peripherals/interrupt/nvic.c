@@ -39,3 +39,14 @@ void NVIC_Init(void) {
 	NVIC_EnableInterrupt(TIM6_DAC);
 	NVIC_EnableInterrupt(TIM7);
 }
+
+/* @NOTE:
+ * To add an interrupt from a given peripheral:
+ * 		1) nvic.c, NVIC_Init(): add 'NVIC_EnableInterrupt(<IT>);'
+ * 			where <IT> is the interrupt number in NVIC (specified in 'Interrupt' enumeration, see nvic_reg.h).
+ * 		2) Configure and enable interrupts in the proper(s) peripheral register(s).
+ * 		3) startup_stm32.s, g_pfnVectors: add '.word <handlerFunction>' at the line corresponding to <IT>.
+ * 		4) startup_stm32.s, g_pfnVectors: add '.weak <handlerFunction>
+											   .thumb_set <handlerFunction>,Default_Handler'.
+		5) Implement 'void <handlerFunction>(void)' in the peripheral source file.
+ */

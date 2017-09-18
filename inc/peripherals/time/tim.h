@@ -22,7 +22,7 @@
 
 /* TIM functions */
 
-/* CLEAR UPDATE EVENT FLAG.
+/* CLEAR A TIMER UPDATE EVENT FLAG.
  * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
  * This function is thus defined in the header file to be visible.
  * @param TIM: Timer address.
@@ -71,7 +71,7 @@
 	} \
 })
 
-/* ENABLE TIMER INTERRUPT.
+/* ENABLE A TIMER INTERRUPT.
  * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
  * This function is thus defined in the header file to be visible.
  * @param TIM: Timer address.
@@ -85,10 +85,30 @@
  * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
  * This function is thus defined in the header file to be visible.
  * @param TIM: Timer address.
+ * @param reset: 	'true' = reset counter to 0.
+ * 					'false' = keep counter current value.
  * @return: None.
  */
-#define TIM_Start(TIM) ({ \
+#define TIM_Start(TIM, reset) ({ \
 	TIM -> CR1 |= BIT_MASK[0]; /* Enable counter (CEN = '1'). */ \
+	if (reset) { \
+		TIM -> CNT = 0; \
+	} \
+})
+
+/* STOP A TIMER.
+ * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
+ * This function is thus defined in the header file to be visible.
+ * @param TIM: Timer address.
+ * @param reset: 	'true' = reset counter to 0.
+ * 					'false' = keep counter current value.
+ * @return: None.
+ */
+#define TIM_Stop(TIM, reset) ({ \
+	TIM -> CR1 &= ~BIT_MASK[0]; /* Disable counter (CEN = '0'). */ \
+	if (reset) { \
+		TIM -> CNT = 0; \
+	} \
 })
 
 #endif /* PERIPHERALS_TIME_TIM_H_ */

@@ -5,6 +5,7 @@
  *      Author: Ludovic
  */
 
+#include "dac.h"
 #include "gpio.h"
 #include "mapping.h"
 #include "masks.h"
@@ -29,4 +30,12 @@ void TIM6_Handler(void) {
 void TIM7_Handler(void) {
 	TIM_ClearFlag(TIM7);
 	GPIO_Toggle(LED2);
+	// Get DAC current voltage.
+	unsigned int currentVoltage = DAC_GetVoltage(Channel1);
+	if (currentVoltage == DAC_FULL_SCALE) {
+		currentVoltage = 0;
+	}
+	// Increase DAC output voltage.
+	currentVoltage++;
+	DAC_SetVoltage(Channel1, currentVoltage);
 }
