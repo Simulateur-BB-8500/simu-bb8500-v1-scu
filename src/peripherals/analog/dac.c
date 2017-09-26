@@ -31,10 +31,10 @@ void DAC_Init(void) {
 void DAC_SetVoltage(DACChannel channel, unsigned int voltage) {
 	if ((voltage >= 0) && (voltage <= DAC_FULL_SCALE)) {
 		switch(channel) {
-		case Channel1:
+		case DACChannel1:
 			DAC -> DHR12R1 = voltage;
 			break;
-		case Channel2:
+		case DACChannel2:
 			DAC -> DHR12R1 = voltage;
 			break;
 		default:
@@ -52,10 +52,10 @@ void DAC_SetVoltage(DACChannel channel, unsigned int voltage) {
 unsigned int DAC_GetVoltage(DACChannel channel) {
 	unsigned int voltage;
 	switch(channel) {
-	case Channel1:
+	case DACChannel1:
 		voltage = DAC -> DOR1;
 		break;
-	case Channel2:
+	case DACChannel2:
 		voltage = DAC -> DOR2;
 		break;
 	default:

@@ -5,6 +5,8 @@
  *      Author: Ludovic
  */
 
+#include "adc.h"
+#include "adc_reg.h"
 #include "dac.h"
 #include "gpio.h"
 #include "gpio_reg.h"
@@ -28,15 +30,20 @@ int main(void) {
 	NVIC_Init();
 	DAC_Init();
 
+	// ADC.
+	ADCCR_Init();
+	ADC_Init(ADC1, bit12);
+	ADC_StartConversion(ADC1);
+
 	// LED1.
-	TIM_Set(TIM6, 1, seconds);
+	/*TIM_Set(TIM6, 1, seconds);
 	TIM_Start(TIM6, true);
-	TIM_EnableInterrupt(TIM6);
+	TIM_EnableInterrupt(TIM6);*/
 
 	// LED2.
-	TIM_Set(TIM7, 10, microseconds);
+	/*TIM_Set(TIM7, 10, microseconds);
 	TIM_Start(TIM7, true);
-	TIM_EnableInterrupt(TIM7);
+	TIM_EnableInterrupt(TIM7);*/
 
 	/*** Global variables initialisation ***/
 

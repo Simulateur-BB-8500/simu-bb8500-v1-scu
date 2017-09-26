@@ -261,9 +261,11 @@ void GPIO_Init(void) {
 
 	// AMP pin configured as analog.
 	GPIO_SetMode(AMP, Analog);
-	GPIO_SetOutputType(AMP, OpenDrain);
-	GPIO_SetOutputSpeed(AMP, LowSpeed);
 	GPIO_SetPullUpPullDown(AMP, NoPullUpNoPullDown);
+
+	// ZPT pin configured as analog.
+	GPIO_SetMode(ZPT, Analog);
+	GPIO_SetPullUpPullDown(ZPT, NoPullUpNoPullDown);
 
 #ifdef OUTPUT_CLOCK
 	// MCO1 configured as AF0 to output HSI clock.

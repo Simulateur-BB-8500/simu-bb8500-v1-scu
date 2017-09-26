@@ -41,5 +41,8 @@ void RCC_Init(void) {
 	RCC -> APB2ENR |= 0x00070003; // Enable TIM1 and TIM8-11 clock (TIMxEN = '1').
 
 	// Enable DAC clock.
-	RCC -> APB1ENR |= BIT_MASK[29];
+	RCC -> APB1ENR |= BIT_MASK[29]; // (DACEN = '1').
+
+	// Enable all ADC clocks
+	RCC -> APB2ENR |= 0x00000700; // (ADCxEN = '1').
 }

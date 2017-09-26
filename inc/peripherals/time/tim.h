@@ -23,7 +23,7 @@
 /* TIM functions */
 
 /* CLEAR A TIMER UPDATE EVENT FLAG.
- * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
+ * #define is required to make the function generic, because timers have different register maps and hence distinct types.
  * This function is thus defined in the header file to be visible.
  * @param TIM: Timer address.
  * @return: None.
@@ -33,7 +33,7 @@
 })
 
 /* CONFIGURE A TIMER.
- * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
+ * #define is required to make the function generic, because timers have different register maps and hence distinct types.
  * This function is thus defined in the header file to be visible.
  * @param TIM: Timer address.
  * @param duration: Timer overflow period :	(1 -> 999) µs, (1 -> 999) ms and (1 -> 262) s.
@@ -72,7 +72,7 @@
 })
 
 /* ENABLE A TIMER INTERRUPT.
- * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
+ * #define is required to make the function generic, because timers have different register maps and hence distinct types.
  * This function is thus defined in the header file to be visible.
  * @param TIM: Timer address.
  * @return: None.
@@ -82,7 +82,7 @@
 })
 
 /* START A TIMER.
- * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
+ * #define is required to make the function generic, because timers have different register maps and hence distinct types.
  * This function is thus defined in the header file to be visible.
  * @param TIM: Timer address.
  * @param reset: 	'true' = reset counter to 0.
@@ -97,7 +97,7 @@
 })
 
 /* STOP A TIMER.
- * #define is necessary to make the function generic, because timers have different register maps and hence distinct types.
+ * #define is required to make the function generic, because timers have different register maps and hence distinct types.
  * This function is thus defined in the header file to be visible.
  * @param TIM: Timer address.
  * @param reset: 	'true' = reset counter to 0.

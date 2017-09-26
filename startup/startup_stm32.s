@@ -141,7 +141,7 @@ g_pfnVectors:
 	.word	0 // 15 = DMA_Stream4.
 	.word	0 // 16 = DMA_Stream5.
 	.word	0 // 17 = DMA_Stream6.
-	.word	0 // 18 = ADC.
+	.word	ADC_Handler // 18 = ADC.
 	.word	0 // 19 = CAN1_TX.
 	.word	0 // 20 = CAN1_RX0.
 	.word	0 // 21 = CAN1_RX1.
@@ -264,5 +264,8 @@ g_pfnVectors:
 	
 	.weak	TIM7_Handler
 	.thumb_set TIM7_Handler,Default_Handler
+	
+	.weak	ADC_Handler
+	.thumb_set ADC_Handler,Default_Handler
 
 /************************ (C) COPYRIGHT Ac6 *****END OF FILE****/
