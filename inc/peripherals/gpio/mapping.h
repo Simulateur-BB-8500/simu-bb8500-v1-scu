@@ -53,6 +53,6 @@
 #define LED2		&((GPIO_Struct) {GPIOC, 3})
 #define BUTTON		&((GPIO_Struct) {GPIOA, 3})
 #define AMP			DAC1
-#define ZPT			ADC123_IN0
+#define ZPT			ADC12_IN6
 
 #endif /* PERIPHERALS_GPIO_MAPPING_H_ */

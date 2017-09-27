@@ -15,6 +15,7 @@
 
 void ADCCR_Init(void);
 void ADC_Init(ADC_BaseAddress* ADC, ADCResolution resolution);
+void ADC_SetChannel(ADC_BaseAddress* ADC, ADCChannel channel);
 void ADC_StartConversion(ADC_BaseAddress* ADC);
 unsigned int ADC_GetVoltage(ADC_BaseAddress* ADC);
 

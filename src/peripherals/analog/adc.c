@@ -10,6 +10,12 @@
 #include "masks.h"
 #include "types.h"
 
+/* ADC #define */
+
+#define ADC_SQx_LENGTH 5
+
+/* ADC functions */
+
 /* CONFIGURE ADC COMMON REGISTERS.
  * @param: None.
  * @return: None.
@@ -56,8 +62,9 @@ void ADC_Init(ADC_BaseAddress* ADC, ADCResolution resolution) {
 	default:
 		break;
 	}
-	// Channel selection.
+	// Regular sequence will always contain 1 channel.
 	ADC -> SQR1 &= 0xFF000000;
+	// Channel 0 selected by default.
 	ADC -> SQR2 &= 0xC0000000;
 	ADC -> SQR3 &= 0xC0000000;
 	// Result in right alignement.
@@ -66,6 +73,25 @@ void ADC_Init(ADC_BaseAddress* ADC, ADCResolution resolution) {
 	ADC -> CR2 |= BIT_MASK[0]; // (ADON = '1').
 }
 
+/* SET THE CURRENT CHANNEL OF AN ADC.
+ * @param ADC: ADC address (should be 'ADC1', 'ADC2' or 'ADC3').
+ * @param channel: ADC channel (should be 'ADCChannel0' to 'ADCChannel15', 'NC', 'VREF' or 'VBAT').
+ * @return: None.
+ */
+void ADC_SetChannel(ADC_BaseAddress* ADC, ADCChannel channel) {
+	unsigned int i = 0;
+	for(i=0 ; i<ADC_SQx_LENGTH ; i++) {
+		unsigned int channelMasked = channel & BIT_MASK[i];
+		if (channelMasked == 0) {
+			// Bit = '0'.
+			ADC -> SQR3 &= ~BIT_MASK[i];
+		}
+		else {
+			// Bit = '1'.
+			ADC -> SQR3 |= BIT_MASK[i];
+		}
+	}
+}
 
 /* RETURNS THE MAXIMUM VALUE READ BY AN ADC (FOR Vin=Vcc).
  * @param ADC: ADC address (should be 'ADC1', 'ADC2' or 'ADC3').

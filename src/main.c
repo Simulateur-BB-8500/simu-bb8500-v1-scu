@@ -33,6 +33,7 @@ int main(void) {
 	// ADC.
 	ADCCR_Init();
 	ADC_Init(ADC1, bit12);
+	ADC_SetChannel(ADC1, ADCChannel6);
 	ADC_StartConversion(ADC1);
 
 	// LED1.
