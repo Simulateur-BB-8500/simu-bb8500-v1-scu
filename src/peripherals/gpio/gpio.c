@@ -9,6 +9,8 @@
 #include "gpio_reg.h"
 #include "mapping.h"
 #include "masks.h"
+#include "rcc.h"
+#include "rcc_reg.h"
 #include "types.h"
 
 /*** GPIO parameters enumerations ***/
@@ -36,19 +38,19 @@ typedef enum {
 	NoPullUpNoPullDown = 0,
 	PullUp = 1,
 	PullDown = 2
-} GPIO_PullUpPullDown;
+} GPIO_PullResistor;
 
 /*** GPIO internal functions ***/
 
 /* SET THE MODE OF A GPIO PIN.
- * @param gpioStruct: Pointer to GPIO identifier (port + number).
+ * @param gpio: Pointer to GPIO identifier (port + number).
  * @param mode: Desired mode ('Input', 'Output', 'AlternateFunction' or 'Analog').
  * @return: None.
  */
-void GPIO_SetMode(GPIO_Struct* gpioStruct, GPIO_Mode mode) {
+void GPIO_SetMode(GPIO_Struct* gpio, GPIO_Mode mode) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
+	unsigned int gpioNum = gpio -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(mode) {
@@ -79,13 +81,13 @@ void GPIO_SetMode(GPIO_Struct* gpioStruct, GPIO_Mode mode) {
 }
 
 /* GET THE MODE OF A GPIO PIN.
- * @param gpioStruct: Pointer to GPIO identifier (port + number).
+ * @param gpio: Pointer to GPIO identifier (port + number).
  * @return gpioMode: Current mode of the  GPIO ('Input', 'Output', 'AlternateFunction' or 'Analog').
  */
-GPIO_Mode GPIO_GetMode(GPIO_Struct* gpioStruct) {
+GPIO_Mode GPIO_GetMode(GPIO_Struct* gpio) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
+	unsigned int gpioNum = gpio -> GPIO_Num;
 	boolean bit0 = ((gpioPort -> MODER) & BIT_MASK[2*gpioNum]) >> (2*gpioNum);
 	boolean bit1 = ((gpioPort -> MODER) & BIT_MASK[2*gpioNum+1]) >> (2*gpioNum+1);
 	GPIO_Mode gpioMode = (bit1 << 1) + bit0;
@@ -93,14 +95,14 @@ GPIO_Mode GPIO_GetMode(GPIO_Struct* gpioStruct) {
 }
 
 /* SET THE OUTPUT TYPE OF A GPIO PIN.
- * @param gpioStruct: Pointer to GPIO identifier (port + number).
+ * @param gpio: Pointer to GPIO identifier (port + number).
  * @param outputType: Desired output ('PushPull' or 'OpenDrain').
  * @return: None.
  */
-void GPIO_SetOutputType(GPIO_Struct* gpioStruct, GPIO_OutputType outputType) {
+void GPIO_SetOutputType(GPIO_Struct* gpio, GPIO_OutputType outputType) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
+	unsigned int gpioNum = gpio -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(outputType) {
@@ -119,14 +121,14 @@ void GPIO_SetOutputType(GPIO_Struct* gpioStruct, GPIO_OutputType outputType) {
 }
 
 /* SET THE OUTPUT SPEED OF A GPIO PIN.
- * @param gpioStruct: Pointer to GPIO identifier (port + number).
+ * @param gpio: Pointer to GPIO identifier (port + number).
  * @param outputSpeed: Desired output speed ('LowSpeed', 'MediumSpeed', 'HighSpeed' or 'VeryHighSpeed').
  * @return: None.
  */
-void GPIO_SetOutputSpeed(GPIO_Struct* gpioStruct, GPIO_OutputSpeed outputSpeed) {
+void GPIO_SetOutputSpeed(GPIO_Struct* gpio, GPIO_OutputSpeed outputSpeed) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
+	unsigned int gpioNum = gpio -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(outputSpeed) {
@@ -157,17 +159,17 @@ void GPIO_SetOutputSpeed(GPIO_Struct* gpioStruct, GPIO_OutputSpeed outputSpeed) 
 }
 
 /* ENABLE OR DISABLE PULL-UP AND PULL-DOWN RESISTORS ON A GPIO PIN.
- * @param gpioStruct: Pointer to GPIO identifier (port + number).
- * @param pullUpPullDown: Desired configuration ('NoPullUpNoPullDown', 'PullUp', or 'PullDown').
+ * @param gpio: Pointer to GPIO identifier (port + number).
+ * @param pullResistor: Desired configuration ('NoPullUpNoPullDown', 'PullUp', or 'PullDown').
  * @return: None.
  */
-void GPIO_SetPullUpPullDown(GPIO_Struct* gpioStruct, GPIO_PullUpPullDown pullUpPullDown) {
+void GPIO_SetPullUpPullDown(GPIO_Struct* gpio, GPIO_PullResistor pullResistor) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
+	unsigned int gpioNum = gpio -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
-		switch(pullUpPullDown) {
+		switch(pullResistor) {
 		case NoPullUpNoPullDown:
 			// PUPDRy = '00'.
 			gpioPort -> PUPDR &= ~BIT_MASK[2*gpioNum];
@@ -190,14 +192,14 @@ void GPIO_SetPullUpPullDown(GPIO_Struct* gpioStruct, GPIO_PullUpPullDown pullUpP
 }
 
 /* SELECT THE ALTERNATE FUNCTION OF A GPIO PIN (REQUIRES THE MODE 'AlternateFunction').
- * @param gpioStruct: Pointer to GPIO identifier (port + number).
+ * @param gpio: Pointer to GPIO identifier (port + number).
  * @param AFNum: Alternate function number (0 to 15).
  * @return: None.
  */
-void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
+void GPIO_SetAlternateFunction(GPIO_Struct* gpio, unsigned int AFNum) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
+	unsigned int gpioNum = gpio -> GPIO_Num;
 	// Ensure alternate function exists.
 	if ((AFNum >= 0) && (AFNum < AF_PER_GPIO)) {
 		unsigned int i = 0;
@@ -233,6 +235,24 @@ void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
 	}
 }
 
+/* FUNCTION FOR CONFIGURING A GPIO PIN.
+ * @param gpio: Pointer to GPIO identifier (port + number).
+ * @param mode: Desired mode ('Input', 'Output', 'AlternateFunction' or 'Analog').
+ * @param outputType: Desired output ('PushPull' or 'OpenDrain').
+ * @param outputSpeed: Desired output speed ('LowSpeed', 'MediumSpeed', 'HighSpeed' or 'VeryHighSpeed').
+ * @param pullResistor: Desired configuration ('NoPullUpNoPullDown', 'PullUp', or 'PullDown').
+ * @param AFNum: Alternate function number (0 to 15) if 'AlternateFunction' mode is selected.
+ */
+void GPIO_Configure(GPIO_Struct* gpio, GPIO_Mode mode, GPIO_OutputType outputType, GPIO_OutputSpeed outputSpeed, GPIO_PullResistor pullResistor, unsigned int AFNum) {
+	GPIO_SetMode(gpio, mode);
+	if (mode == AlternateFunction) {
+		GPIO_SetAlternateFunction(gpio, AFNum);
+	}
+	GPIO_SetOutputType(gpio, outputType);
+	GPIO_SetOutputSpeed(gpio, outputSpeed);
+	GPIO_SetPullUpPullDown(gpio, pullResistor);
+}
+
 /*** GPIO functions ***/
 
 /* CONFIGURE MCU GPIOs.
@@ -241,40 +261,29 @@ void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
  */
 void GPIO_Init(void) {
 
-	// LED pin configured as output.
-	GPIO_SetMode(LED1, Output);
-	GPIO_SetOutputType(LED1, PushPull);
-	GPIO_SetOutputSpeed(LED1, LowSpeed);
-	GPIO_SetPullUpPullDown(LED1, NoPullUpNoPullDown);
+	// Enable all GPIOx clocks.
+	RCC -> AHB1ENR |= 0x000007FF; // Enable GPIOx clock (GPIOxEN = '1').
 
-	// LED2 pin configured as output.
-	GPIO_SetMode(LED2, Output);
-	GPIO_SetOutputType(LED2, PushPull);
-	GPIO_SetOutputSpeed(LED2, VeryHighSpeed);
-	GPIO_SetPullUpPullDown(LED2, NoPullUpNoPullDown);
-
-	// Button pin configured as input.
-	GPIO_SetMode(BUTTON, Input);
-	GPIO_SetOutputType(BUTTON, PushPull);
-	GPIO_SetOutputSpeed(BUTTON, LowSpeed);
-	GPIO_SetPullUpPullDown(BUTTON, PullUp);
+	// LEDs.
+	GPIO_Configure(LED1, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(LED2, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 
 	// AMP pin configured as analog.
-	GPIO_SetMode(AMP, Analog);
-	GPIO_SetPullUpPullDown(AMP, NoPullUpNoPullDown);
+	GPIO_Configure(AMP_MOTEURS, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
 
 	// ZPT pin configured as analog.
-	GPIO_SetMode(ZPT, Analog);
-	GPIO_SetPullUpPullDown(ZPT, NoPullUpNoPullDown);
+	GPIO_Configure(ZPT, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
+
+	// SGKCU UART pins configured as AF7 for using USART2.
+	GPIO_Configure(SGKCU_TX, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown, 7);
+	GPIO_Configure(SGKCU_RX, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown, 7);
 
 #ifdef OUTPUT_CLOCK
 	// MCO1 configured as AF0 to output HSI clock.
-	GPIO_SetMode(MCO1, AlternateFunction);
-	GPIO_SetAlternateFunction(MCO1, 0);
+	GPIO_Configure(MCO1, AlternateFunction, PushPull, VeryHighSpeed, NoPullUpNoPullDown, 0);
 
 	// MCO2 configured as AF0 to output SYSCLK clock.
-	GPIO_SetMode(MCO2, AlternateFunction);
-	GPIO_SetAlternateFunction(MCO2, 0);
+	GPIO_Configure(MCO2, AlternateFunction, PushPull, VeryHighSpeed, NoPullUpNoPullDown, 0);
 #endif
 }
 

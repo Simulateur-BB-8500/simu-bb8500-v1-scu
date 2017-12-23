@@ -11,16 +11,16 @@
 /*** GPIOx registers ***/
 
 typedef struct {
-  volatile unsigned int MODER;    	// GPIO port mode register.
-  volatile unsigned int OTYPER;   	// GPIO port output type register.
-  volatile unsigned int OSPEEDR;  	// GPIO port output speed register.
-  volatile unsigned int PUPDR;    	// GPIO port pull-up/pull-down register.
-  volatile unsigned int IDR;      	// GPIO port input data register.
-  volatile unsigned int ODR;      	// GPIO port output data register.
-  volatile unsigned int BSRR;    	// GPIO port bit set/reset low register.
-  volatile unsigned int LCKR;     	// GPIO port configuration lock register.
-  volatile unsigned int AFRL;   	// GPIO alternate function low register.
-  volatile unsigned int AFRH;   	// GPIO alternate function high register.
+	volatile unsigned int MODER;    	// GPIO port mode register.
+	volatile unsigned int OTYPER;   	// GPIO port output type register.
+	volatile unsigned int OSPEEDR;  	// GPIO port output speed register.
+	volatile unsigned int PUPDR;    	// GPIO port pull-up/pull-down register.
+	volatile unsigned int IDR;      	// GPIO port input data register.
+	volatile unsigned int ODR;      	// GPIO port output data register.
+	volatile unsigned int BSRR;    	// GPIO port bit set/reset low register.
+	volatile unsigned int LCKR;     	// GPIO port configuration lock register.
+	volatile unsigned int AFRL;   	// GPIO alternate function low register.
+	volatile unsigned int AFRH;   	// GPIO alternate function high register.
 } GPIO_BaseAddress;
 
 /*** GPIOx base addresses ***/

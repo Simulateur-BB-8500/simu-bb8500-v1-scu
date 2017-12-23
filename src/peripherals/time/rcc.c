@@ -18,10 +18,27 @@
 void RCC_Init(void) {
 
 	// Clock sources selection.
-	RCC -> CR |= BIT_MASK[0]; // Enable HSI (X3 is not mounted on the Nucleo-F746ZG) (HSION = '1').
-	RCC -> CFGR &= 0xFFFFFFFC; // Select HSI as system clock (SW = '00') -> SYSCLK = 16 MHz.
-	RCC -> BDCR |= BIT_MASK[0]; // Enable LSE (X2) (LSEON = '1').
+#ifdef USE_HSE
+
+#else
+	// Disable HSE.
+	RCC -> CR &= ~BIT_MASK[16]; // Disable HSE (HSEON = '0').
+	// Enable HSI.
+	RCC -> CR |= BIT_MASK[0]; // Enable HSI (HSION = '1').
+	// Wait for HSI to be stable.
+	//while (((RCC -> CR) & BIT_MASK[1]) != 1); // Wait for HSIRDY = '1'.
+	// Select HSI.
+	RCC -> CFGR &= 0xFFFFFFFC; // HSI selected as system clock (SW = '00') -> SYSCLK = 16 MHz.
+	// Wait for HSI to be selected.
+	//while (((RCC -> CFGR) & 0x00000003) != 0); // Wait for SWS = '00'.
+#endif
+
+#ifdef USE_LSE
 	RCC -> CSR &= ~BIT_MASK[0]; // Disable LSI (LSION = '0').
+	RCC -> BDCR |= BIT_MASK[0]; // Enable LSE (X2) (LSEON = '1').
+#else
+
+#endif
 
 #ifdef OUTPUT_CLOCK
 	// Output HSI on MCO1 (PA8 as AF0) and SYSCLK on MCO2 (PC9 as AF0).
@@ -30,11 +47,10 @@ void RCC_Init(void) {
 	RCC -> CFGR |= 0x36000000;
 #endif
 
-	// Peripherals clocks prescaler.
+	// Peripherals clock prescaler.
 	RCC -> CFGR &= 0xFFE0030F; // All prescalers = 1.
 
-	// Enable GPIO clocks.
-	RCC -> AHB1ENR |= 0x000007FF; // Enable GPIOx clock (GPIOxEN = '1').
+
 
 	// Enable TIM clocks.
 	RCC -> APB1ENR |= 0x000001FF; // Enable TIM2-TIM7 and TIM12-14 clock (TIMxEN = '1').
@@ -45,4 +61,8 @@ void RCC_Init(void) {
 
 	// Enable all ADC clocks
 	RCC -> APB2ENR |= 0x00000700; // (ADCxEN = '1').
+
+	// Enable all USART clocks.
+	RCC -> APB1ENR |= 0xC01E0000;
+	RCC -> APB2ENR |= 0x00000030;
 }

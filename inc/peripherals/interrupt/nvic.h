@@ -10,6 +10,8 @@
 
 #include "nvic_reg.h"
 
+/*** NVIC functions ***/
+
 void NVIC_EnableInterrupt(Interrupt ITNum);
 void NVIC_DisableInterrupt(Interrupt ITNum);
 void NVIC_Init(void);

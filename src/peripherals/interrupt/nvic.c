@@ -39,6 +39,7 @@ void NVIC_Init(void) {
 	NVIC_EnableInterrupt(TIM6_DAC);
 	NVIC_EnableInterrupt(TIM7);
 	NVIC_EnableInterrupt(ADC);
+	NVIC_EnableInterrupt(USART2);
 }
 
 /* @NOTE:

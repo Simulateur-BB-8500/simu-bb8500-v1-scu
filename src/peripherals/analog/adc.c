@@ -10,11 +10,11 @@
 #include "masks.h"
 #include "types.h"
 
-/* ADC #define */
+/*** ADC #define ***/
 
 #define ADC_SQx_LENGTH 5
 
-/* ADC functions */
+/*** ADC functions ***/
 
 /* CONFIGURE ADC COMMON REGISTERS.
  * @param: None.
@@ -151,6 +151,5 @@ void ADC_Handler(void) {
 		GPIO_Write(LED2, LOW);
 	}
 	// Start new conversion.
-	GPIO_Toggle(LED1);
 	ADC_StartConversion(ADC1);
 }

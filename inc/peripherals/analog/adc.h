@@ -11,7 +11,7 @@
 #include "adc_reg.h"
 #include "types.h"
 
-/* ADC functions */
+/*** ADC functions ***/
 
 void ADCCR_Init(void);
 void ADC_Init(ADC_BaseAddress* ADC, ADCResolution resolution);
