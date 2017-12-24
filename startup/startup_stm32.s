@@ -160,8 +160,8 @@ g_pfnVectors:
 	.word	0 // 34 = I2C2_ER.
 	.word	0 // 35 = SPI1.
 	.word	0 // 36 = SPI2.
-	.word 	USART1_Handler // 37 = USART1.
-	.word	USART2_Handler // 38 = USART2.
+	.word 	0 // 37 = USART1.
+	.word	USART_SGKCU_Handler // 38 = USART2.
 	.word	0 // 39 = USART3.
 	.word	0 // 40 = EXTI15_10.
 	.word	0 // 41 = RTC_Alarm.
@@ -268,10 +268,7 @@ g_pfnVectors:
 	.weak	ADC_Handler
 	.thumb_set ADC_Handler,Default_Handler
 	
-	.weak	USART1_Handler
-	.thumb_set USART1_Handler,Default_Handler
-	
-	.weak	USART2_Handler
-	.thumb_set USART2_Handler,Default_Handler
+	.weak	USART_SGKCU_Handler
+	.thumb_set USART_SGKCU_Handler,Default_Handler
 
 /************************ (C) COPYRIGHT Ac6 *****END OF FILE****/

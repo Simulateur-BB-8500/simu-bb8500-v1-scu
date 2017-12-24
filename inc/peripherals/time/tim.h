@@ -22,13 +22,14 @@
 
 /*** TIM functions ***/
 
-void TIM_Set(TIM_BaseAddress* TIM, unsigned int duration, TimeUnit unit);
-void TIM_Start(TIM_BaseAddress* TIM, boolean reset);
-void TIM_Stop(TIM_BaseAddress* TIM, boolean reset);
-void TIM_EnableInterrupt(TIM_BaseAddress* TIM);
-void TIM_ClearFlag(TIM_BaseAddress* tim);
+// Timer 1 and 2 used to count milliseconds since start-up.
 void TIM_InitMs(void);
 unsigned int TIM_GetMs(void);
 void TIM_DelayMs(unsigned int msToWait);
+// Generic functions.
+void TIM_Init(TIM_BaseAddress* TIM, unsigned int duration, TimeUnit unit, boolean interruptEnable);
+void TIM_Start(TIM_BaseAddress* TIM, boolean reset);
+void TIM_Stop(TIM_BaseAddress* TIM, boolean reset);
+
 
 #endif /* PERIPHERALS_TIME_TIM_H_ */

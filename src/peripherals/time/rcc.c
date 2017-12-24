@@ -49,20 +49,4 @@ void RCC_Init(void) {
 
 	// Peripherals clock prescaler.
 	RCC -> CFGR &= 0xFFE0030F; // All prescalers = 1.
-
-
-
-	// Enable TIM clocks.
-	RCC -> APB1ENR |= 0x000001FF; // Enable TIM2-TIM7 and TIM12-14 clock (TIMxEN = '1').
-	RCC -> APB2ENR |= 0x00070003; // Enable TIM1 and TIM8-11 clock (TIMxEN = '1').
-
-	// Enable DAC clock.
-	RCC -> APB1ENR |= BIT_MASK[29]; // (DACEN = '1').
-
-	// Enable all ADC clocks
-	RCC -> APB2ENR |= 0x00000700; // (ADCxEN = '1').
-
-	// Enable all USART clocks.
-	RCC -> APB1ENR |= 0xC01E0000;
-	RCC -> APB2ENR |= 0x00000030;
 }

@@ -8,6 +8,8 @@
 #include "adc_reg.h"
 #include "mapping.h"
 #include "masks.h"
+#include "nvic.h"
+#include "rcc_reg.h"
 #include "types.h"
 
 /*** ADC #define ***/
@@ -21,6 +23,11 @@
  * @return: None.
  */
 void ADCCR_Init(void) {
+	// Enable interrupt.
+	NVIC_EnableInterrupt(IT_ADC);
+	// Enable all ADC clocks
+	RCC -> APB2ENR |= 0x00000700; // (ADCxEN = '1').
+	// Common registers.
 	ADCCR -> CCR &= ~BIT_MASK[23] ; // Temperature sensor disabled (TSVREFE = '0').
 	ADCCR -> CCR &= ~BIT_MASK[22] ; // Vbat channel disabled (VBATE = '0').
 	ADCCR -> CCR &= 0xFFFCFFFF; // Prescaler = 2 (ADCPRE = '00').

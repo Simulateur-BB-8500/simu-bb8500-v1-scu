@@ -10,7 +10,7 @@
 
 /*** Switch #define ***/
 
-// Confirm duration before validate ON/OFF state (in ms).
+// Confirm duration before validating ON/OFF state (in ms).
 #define CONFIRM_DURATION 50
 
 /*** Switch functions ***/

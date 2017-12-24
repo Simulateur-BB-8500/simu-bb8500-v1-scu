@@ -47,10 +47,10 @@ typedef enum {
  * @param mode: Desired mode ('Input', 'Output', 'AlternateFunction' or 'Analog').
  * @return: None.
  */
-void GPIO_SetMode(GPIO_Struct* gpio, GPIO_Mode mode) {
+void GPIO_SetMode(GPIO_Struct* gpioStruct, GPIO_Mode mode) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
-	unsigned int gpioNum = gpio -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
+	unsigned int gpioNum = gpioStruct -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(mode) {
@@ -84,10 +84,10 @@ void GPIO_SetMode(GPIO_Struct* gpio, GPIO_Mode mode) {
  * @param gpio: Pointer to GPIO identifier (port + number).
  * @return gpioMode: Current mode of the  GPIO ('Input', 'Output', 'AlternateFunction' or 'Analog').
  */
-GPIO_Mode GPIO_GetMode(GPIO_Struct* gpio) {
+GPIO_Mode GPIO_GetMode(GPIO_Struct* gpioStruct) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
-	unsigned int gpioNum = gpio -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
+	unsigned int gpioNum = gpioStruct -> GPIO_Num;
 	boolean bit0 = ((gpioPort -> MODER) & BIT_MASK[2*gpioNum]) >> (2*gpioNum);
 	boolean bit1 = ((gpioPort -> MODER) & BIT_MASK[2*gpioNum+1]) >> (2*gpioNum+1);
 	GPIO_Mode gpioMode = (bit1 << 1) + bit0;
@@ -99,10 +99,10 @@ GPIO_Mode GPIO_GetMode(GPIO_Struct* gpio) {
  * @param outputType: Desired output ('PushPull' or 'OpenDrain').
  * @return: None.
  */
-void GPIO_SetOutputType(GPIO_Struct* gpio, GPIO_OutputType outputType) {
+void GPIO_SetOutputType(GPIO_Struct* gpioStruct, GPIO_OutputType outputType) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
-	unsigned int gpioNum = gpio -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
+	unsigned int gpioNum = gpioStruct -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(outputType) {
@@ -125,10 +125,10 @@ void GPIO_SetOutputType(GPIO_Struct* gpio, GPIO_OutputType outputType) {
  * @param outputSpeed: Desired output speed ('LowSpeed', 'MediumSpeed', 'HighSpeed' or 'VeryHighSpeed').
  * @return: None.
  */
-void GPIO_SetOutputSpeed(GPIO_Struct* gpio, GPIO_OutputSpeed outputSpeed) {
+void GPIO_SetOutputSpeed(GPIO_Struct* gpioStruct, GPIO_OutputSpeed outputSpeed) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
-	unsigned int gpioNum = gpio -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
+	unsigned int gpioNum = gpioStruct -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(outputSpeed) {
@@ -163,10 +163,10 @@ void GPIO_SetOutputSpeed(GPIO_Struct* gpio, GPIO_OutputSpeed outputSpeed) {
  * @param pullResistor: Desired configuration ('NoPullUpNoPullDown', 'PullUp', or 'PullDown').
  * @return: None.
  */
-void GPIO_SetPullUpPullDown(GPIO_Struct* gpio, GPIO_PullResistor pullResistor) {
+void GPIO_SetPullUpPullDown(GPIO_Struct* gpioStruct, GPIO_PullResistor pullResistor) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
-	unsigned int gpioNum = gpio -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
+	unsigned int gpioNum = gpioStruct -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(pullResistor) {
@@ -196,10 +196,10 @@ void GPIO_SetPullUpPullDown(GPIO_Struct* gpio, GPIO_PullResistor pullResistor) {
  * @param AFNum: Alternate function number (0 to 15).
  * @return: None.
  */
-void GPIO_SetAlternateFunction(GPIO_Struct* gpio, unsigned int AFNum) {
+void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpio -> GPIO_Port;
-	unsigned int gpioNum = gpio -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
+	unsigned int gpioNum = gpioStruct -> GPIO_Num;
 	// Ensure alternate function exists.
 	if ((AFNum >= 0) && (AFNum < AF_PER_GPIO)) {
 		unsigned int i = 0;
@@ -207,7 +207,7 @@ void GPIO_SetAlternateFunction(GPIO_Struct* gpio, unsigned int AFNum) {
 		if ((gpioNum >= 0) && (gpioNum < AFRH_OFFSET)) {
 			// Set AFRL register: AFRy = 'AFNum'.
 			for (i=0 ; i<4 ; i++) {
-				if (AFNum && BIT_MASK[i]) {
+				if (AFNum & BIT_MASK[i]) {
 					// Bit = '1'.
 					gpioPort -> AFRL |= BIT_MASK[4*gpioNum+i];
 				}
@@ -243,14 +243,14 @@ void GPIO_SetAlternateFunction(GPIO_Struct* gpio, unsigned int AFNum) {
  * @param pullResistor: Desired configuration ('NoPullUpNoPullDown', 'PullUp', or 'PullDown').
  * @param AFNum: Alternate function number (0 to 15) if 'AlternateFunction' mode is selected.
  */
-void GPIO_Configure(GPIO_Struct* gpio, GPIO_Mode mode, GPIO_OutputType outputType, GPIO_OutputSpeed outputSpeed, GPIO_PullResistor pullResistor, unsigned int AFNum) {
-	GPIO_SetMode(gpio, mode);
+void GPIO_Configure(GPIO_Struct* gpioStruct, GPIO_Mode mode, GPIO_OutputType outputType, GPIO_OutputSpeed outputSpeed, GPIO_PullResistor pullResistor, unsigned int AFNum) {
+	GPIO_SetMode(gpioStruct, mode);
 	if (mode == AlternateFunction) {
-		GPIO_SetAlternateFunction(gpio, AFNum);
+		GPIO_SetAlternateFunction(gpioStruct, AFNum);
 	}
-	GPIO_SetOutputType(gpio, outputType);
-	GPIO_SetOutputSpeed(gpio, outputSpeed);
-	GPIO_SetPullUpPullDown(gpio, pullResistor);
+	GPIO_SetOutputType(gpioStruct, outputType);
+	GPIO_SetOutputSpeed(gpioStruct, outputSpeed);
+	GPIO_SetPullUpPullDown(gpioStruct, pullResistor);
 }
 
 /*** GPIO functions ***/

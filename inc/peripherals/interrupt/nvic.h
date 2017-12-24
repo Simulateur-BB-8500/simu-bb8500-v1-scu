@@ -12,8 +12,8 @@
 
 /*** NVIC functions ***/
 
-void NVIC_EnableInterrupt(Interrupt ITNum);
-void NVIC_DisableInterrupt(Interrupt ITNum);
-void NVIC_Init(void);
+void NVIC_EnableInterrupt(InterruptVector ITNum);
+void NVIC_DisableInterrupt(InterruptVector ITNum);
+void NVIC_SetPriority(InterruptVector ITNum, unsigned char priority);
 
 #endif /* PERIPHERALS_INTERRUPT_NVIC_H_ */

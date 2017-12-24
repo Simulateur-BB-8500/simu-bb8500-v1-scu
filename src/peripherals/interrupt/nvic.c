@@ -12,34 +12,31 @@
 /*** NVIC functions ***/
 
 /* ENABLE AN INTERRUPT LINE.
- * @param ITNum: Interrupt number (0 to 97).
+ * @param ITNum: Interrupt number (0 to 97, use the InterruptVector enum defined in 'nvic_reg.h').
  * @return: None.
  */
-void NVIC_EnableInterrupt(Interrupt ITNum) {
+void NVIC_EnableInterrupt(InterruptVector ITNum) {
 	// (ITNum >> 5) selects the proper register (ISER0 to ISER7) acting as a modulo.
 	// (ITNum & 0x0000001F) selects the proper bit to set.
-	NVIC -> ISER[ITNum >> 5] |= BIT_MASK[(ITNum & 0x0000001F)];
+	NVIC -> ISER[ITNum >> 5] = BIT_MASK[(ITNum & 0x0000001F)];
 }
 
 /* DISABLE AN INTERRUPT LINE.
- * @param ITNum: Interrupt number (0 to 97).
+ * @param ITNum: Interrupt number (0 to 97, use the InterruptVector enum defined in 'nvic_reg.h').
  * @return: None.
  */
-void NVIC_DisableInterrupt(Interrupt ITNum) {
-	// (ITNum >> 5) selects the proper register (ISER0 to ISER7) acting as a modulo.
+void NVIC_DisableInterrupt(InterruptVector ITNum) {
+	// (ITNum >> 5) selects the proper register (ICER0 to ICER7) acting as a modulo.
 	// (ITNum & 0x0000001F) selects the proper bit to set.
-	NVIC -> ICER[ITNum >> 5] |= BIT_MASK[(ITNum & 0x0000001F)];
+	NVIC -> ICER[ITNum >> 5] = BIT_MASK[(ITNum & 0x0000001F)];
 }
 
-/* CONFIGURE MCU INTERRUPT SYSTEM.
- * @param: None.
- * @return: None.
+/* SET THE PRIORITY OF AN INTERRUPT LINE.
+ * @param ITNum:	Interrupt number (0 to 97, use the InterruptVector enum defined in 'nvic_reg.h').
+ * @param priority:	The priority to set (between 0 and 255).
  */
-void NVIC_Init(void) {
-	NVIC_EnableInterrupt(TIM6_DAC);
-	NVIC_EnableInterrupt(TIM7);
-	NVIC_EnableInterrupt(ADC);
-	NVIC_EnableInterrupt(USART2);
+void NVIC_SetPriority(InterruptVector ITNum, unsigned char priority) {
+	NVIC -> IPR[ITNum] = priority;
 }
 
 /* @NOTE:

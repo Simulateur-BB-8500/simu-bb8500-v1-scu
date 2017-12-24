@@ -9,20 +9,143 @@
 #include "gpio.h"
 #include "mapping.h"
 #include "masks.h"
+#include "nvic.h"
+#include "nvic_reg.h"
+#include "rcc_reg.h"
 #include "tim.h"
 #include "tim_reg.h"
 #include "usart.h"
-#include "usart_reg.h"
+
+/*** TIM internal function ***/
+
+/* CLEAR A TIMER UPDATE EVENT FLAG.
+ * @param TIM: Timer address ('TIM1' to 'TIM14').
+ * @return: None.
+ */
+void TIM_ClearFlag(TIM_BaseAddress* TIM) {
+	TIM -> SR &= ~BIT_MASK[0]; // Clear flag (UIF = '0').
+}
+
+/* RETURN THE CORRESPONDING INTERRUPT INDEX OF A GIVEN TIMER.
+ * @param tim: 			Timer base address (should be 'TIM1' to 'TIM14).
+ * @return itNumber:	The corresponding IT number in NVIC.
+ */
+unsigned int TIM_GetIT(TIM_BaseAddress* TIM) {
+	unsigned int itNumber;
+	// Check peripheral address.
+	switch ((unsigned int) TIM) {
+	case ((unsigned int) TIM1):
+		itNumber = IT_TIM1_UP_TIM10;
+		break;
+	case ((unsigned int) TIM2):
+		itNumber = IT_TIM2;
+		break;
+	case ((unsigned int) TIM3):
+		itNumber = IT_TIM3;
+		break;
+	case ((unsigned int) TIM4):
+		itNumber = IT_TIM4;
+		break;
+	case ((unsigned int) TIM5):
+		itNumber = IT_TIM5;
+		break;
+	case ((unsigned int) TIM6):
+		itNumber = IT_TIM6_DAC;
+		break;
+	case ((unsigned int) TIM7):
+		itNumber = IT_TIM7;
+		break;
+	case ((unsigned int) TIM8):
+		itNumber = IT_TIM8_UP_TIM13;
+		break;
+	case ((unsigned int) TIM9):
+		itNumber = IT_TIM1_BRK_TIM9;
+		break;
+	case ((unsigned int) TIM10):
+		itNumber = IT_TIM1_UP_TIM10;
+		break;
+	case ((unsigned int) TIM11):
+		itNumber = IT_TIM1_TRG_COM_TIM11;
+		break;
+	case ((unsigned int) TIM12):
+		itNumber = IT_TIM8_BRK_TIM12;
+		break;
+	case ((unsigned int) TIM13):
+		itNumber = IT_TIM8_UP_TIM13;
+		break;
+	case ((unsigned int) TIM14):
+		itNumber = IT_TIM8_TRG_COM_TIM14;
+		break;
+	}
+	return itNumber;
+}
+
+/* ENABLE THE CORRESPONDING CLOCK OF AN TIM PERIPHERAL.
+ * @param TIM: 	TIM base address (should be 'TIM1/2/3/6' or 'TIM4/5/7/8').
+ * @return:			None.
+ */
+void TIM_EnableClock(TIM_BaseAddress* TIM) {
+	// Check peripheral address.
+	switch ((unsigned int) TIM) {
+	case ((unsigned int) TIM1):
+		RCC -> APB2ENR |= BIT_MASK[0]; // TIM1EN = '1'.
+		break;
+	case ((unsigned int) TIM2):
+		RCC -> APB1ENR |= BIT_MASK[0]; // TIM2EN = '1'.
+		break;
+	case ((unsigned int) TIM3):
+		RCC -> APB1ENR |= BIT_MASK[1]; // TIM3EN = '1'.
+		break;
+	case ((unsigned int) TIM4):
+		RCC -> APB1ENR |= BIT_MASK[2]; // TIM4EN = '1'.
+		break;
+	case ((unsigned int) TIM5):
+		RCC -> APB1ENR |= BIT_MASK[3]; // TIM5EN = '1'.
+		break;
+	case ((unsigned int) TIM6):
+		RCC -> APB1ENR |= BIT_MASK[4]; // TIM6EN = '1'.
+		break;
+	case ((unsigned int) TIM7):
+		RCC -> APB1ENR |= BIT_MASK[5]; // TIM7EN = '1'.
+		break;
+	case ((unsigned int) TIM8):
+		RCC -> APB2ENR |= BIT_MASK[1]; // TIM8EN = '1'.
+		break;
+	case ((unsigned int) TIM9):
+		RCC -> APB2ENR |= BIT_MASK[16]; // TIM9EN = '1'.
+		break;
+	case ((unsigned int) TIM10):
+		RCC -> APB2ENR |= BIT_MASK[17]; // TIM10EN = '1'.
+		break;
+	case ((unsigned int) TIM11):
+		RCC -> APB2ENR |= BIT_MASK[18]; // TIM11EN = '1'.
+		break;
+	case ((unsigned int) TIM12):
+		RCC -> APB1ENR |= BIT_MASK[6]; // TIM12EN = '1'.
+		break;
+	case ((unsigned int) TIM13):
+		RCC -> APB1ENR |= BIT_MASK[7]; // TIM13EN = '1'.
+		break;
+	case ((unsigned int) TIM14):
+		RCC -> APB1ENR |= BIT_MASK[8]; // TIM14EN = '1'.
+		break;
+	}
+}
 
 /*** TIM functions ***/
 
 /* CONFIGURE A TIMER.
- * @param TIM: Timer address ('TIM1' to 'TIM14').
- * @param duration: Timer overflow period :	(1 -> 999) 탎, (1 -> 999) ms and (1 -> 262) s.
- * @param unit: Unit of parameter 'duration' ('탎', 'ms' or 's').
- * @return: None.
+ * @param TIM: 				Timer address ('TIM1' to 'TIM14').
+ * @param duration: 		Timer overflow period :	(1 -> 999) 탎, (1 -> 999) ms and (1 -> 262) s.
+ * @param unit: 			Unit of parameter 'duration' ('탎', 'ms' or 's').
+ * @param interruptEnable: 	Indicate if interrupt is enabled for this timer.
+ * @return: 				None.
  */
-void TIM_Set(TIM_BaseAddress* TIM, unsigned int duration, TimeUnit unit) {
+void TIM_Init(TIM_BaseAddress* TIM, unsigned int duration, TimeUnit unit, boolean interruptEnable) {
+	// Enable peripheral clock.
+	TIM_EnableClock(TIM);
+	// Disable interrupt.
+	TIM -> DIER &= ~BIT_MASK[0]; // UIE = '0'.
 	// Stop and reset.
 	TIM_Stop(TIM, true);
 	// Clear update event flag (SR = '0').
@@ -53,13 +176,18 @@ void TIM_Set(TIM_BaseAddress* TIM, unsigned int duration, TimeUnit unit) {
 	default:
 		break;
 	}
+	// Enable interrupt.
+	TIM -> DIER |= BIT_MASK[0]; // UIE = '1'.
+	if (interruptEnable) {
+		NVIC_EnableInterrupt(TIM_GetIT(TIM));
+	}
 }
 
 /* START A TIMER.
- * @param TIM: Timer address ('TIM1' to 'TIM14').
+ * @param TIM: 		Timer address ('TIM1' to 'TIM14').
  * @param reset: 	'true' = reset counter to 0.
  * 					'false' = keep counter current value.
- * @return: None.
+ * @return: 		None.
  */
 void TIM_Start(TIM_BaseAddress* TIM, boolean reset) {
 	TIM -> CR1 |= BIT_MASK[0]; // Enable counter (CEN = '1').
@@ -69,10 +197,10 @@ void TIM_Start(TIM_BaseAddress* TIM, boolean reset) {
 }
 
 /* STOP A TIMER.
- * @param TIM: Timer address ('TIM1' to 'TIM14').
+ * @param TIM: 		Timer address ('TIM1' to 'TIM14').
  * @param reset: 	'true' = reset counter to 0.
  * 					'false' = keep counter current value.
- * @return: None.
+ * @return: 		None.
  */
 void TIM_Stop(TIM_BaseAddress* TIM, boolean reset) {
 	TIM -> CR1 &= ~BIT_MASK[0]; // Disable counter (CEN = '0').
@@ -81,30 +209,13 @@ void TIM_Stop(TIM_BaseAddress* TIM, boolean reset) {
 	}
 }
 
-/* ENABLE A TIMER INTERRUPT.
- * @param TIM: Timer address ('TIM1' to 'TIM14').
- * @return: None.
- */
-void TIM_EnableInterrupt(TIM_BaseAddress* TIM) {
-	TIM -> DIER |= BIT_MASK[0]; // Enable interrupt (UIE = '1').
-}
-
-/* CLEAR A TIMER UPDATE EVENT FLAG.
- * @param TIM: Timer address ('TIM1' to 'TIM14').
- * @return: None.
- */
-void TIM_ClearFlag(TIM_BaseAddress* TIM) {
-	TIM -> SR &= ~BIT_MASK[0]; // Clear flag (UIF = '0').
-}
-
 /* CONFIGURE TIM1 AND TIM2 TO COUNT MILLISECONDS SINCE START-UP.
  * @param:	None.
  * @return:	None.
  */
 void TIM_InitMs(void) {
 	// Configure TIM1 as master.
-	TIM_Set(TIM1, 1, milliseconds); // Overflows every millisecond.
-	TIM_EnableInterrupt(TIM1);
+	TIM_Init(TIM1, 1, milliseconds, false); // Overflows every millisecond.
 	// Master mode and update interrupt selected as trigger output.
 	TIM1 -> CR2 &= 0xFFFFFFAF; // MMS = '0x0'.
 	TIM1 -> CR2 |= BIT_MASK[5]; // MMS = '010'.
@@ -118,8 +229,8 @@ void TIM_InitMs(void) {
 }
 
 /* RETURNS THE NUMBER OF MILLISECONDS ELLAPSED SINCE START-UP.
- * @param: None.
- * @return milliseconds: number of milliseconds (32-bits word) ellapsed since start-up.
+ * @param: 					None.
+ * @return milliseconds: 	Number of milliseconds (32-bits word) ellapsed since start-up.
  */
 unsigned int TIM_GetMs(void) {
 	return (TIM2 -> CNT);
@@ -137,13 +248,13 @@ void TIM_DelayMs(unsigned int msToWait) {
 /*** TIM interrupt handlers ***/
 
 /* TIM6 INTERRUPT HANDLER.
- * @param: None.
+ * @param: 	None.
  * @return: None.
  */
 void TIM6_Handler(void) {
-	USART_Send(USART2, 0x46);
-	GPIO_Toggle(LED1);
 	TIM_ClearFlag(TIM6);
+	GPIO_Toggle(LED1);
+	USART_SendByte(USART_SGKCU, 0x55, Binary);
 }
 
 /* TIM7 INTERRUPT HANDLER.
@@ -152,12 +263,4 @@ void TIM6_Handler(void) {
  */
 void TIM7_Handler(void) {
 	TIM_ClearFlag(TIM7);
-	// Get DAC current voltage.
-	unsigned int currentVoltage = DAC_GetVoltage(DACChannel1);
-	if (currentVoltage == DAC_FULL_SCALE) {
-		currentVoltage = 0;
-	}
-	// Increase DAC output voltage.
-	currentVoltage++;
-	DAC_SetVoltage(DACChannel1, currentVoltage);
 }

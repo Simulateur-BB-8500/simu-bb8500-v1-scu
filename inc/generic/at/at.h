@@ -10,6 +10,6 @@
 
 /*** AT commands functions ***/
 
-void AT_DecodeExecute(unsigned char atCommand);
+void AT_DecodeSGKCU(unsigned char atCommand);
 
 #endif /* PERIPHERALS_USART_AT_H_ */

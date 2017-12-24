@@ -31,32 +31,27 @@ int main(void) {
 	RCC_Init();
 	TIM_InitMs();
 	GPIO_Init();
-	NVIC_Init();
-	DAC_Init();
+	//DAC_Init();
 
 	// ADC.
-	ADCCR_Init();
+	/*ADCCR_Init();
 	ADC_Init(ADC1, bit12);
 	ADC_SetChannel(ADC1, ADCChannel6);
-	//ADC_StartConversion(ADC1);
+	ADC_StartConversion(ADC1);*/
 
-	//USART_Init(USART2);
+	USART_Init(USART_SGKCU, USART2);
 
-	/*TIM_Set(TIM6, 1, seconds);
-	TIM_EnableInterrupt(TIM6);
-	TIM_Start(TIM6, true);*/
+	TIM_Init(TIM6, 1, seconds, true);
+	TIM_Start(TIM6, true);
 
-	/*TIM_Set(TIM7, 10, microseconds);
-	TIM_Start(TIM7, true);
-	TIM_EnableInterrupt(TIM7);*/
+	//TIM_Init(TIM7, 200, milliseconds, true);
+	//TIM_Start(TIM7, true);
 
 	/*** Global variables initialisation ***/
 
 	/*** Main loop ***/
 
 	while(1) {
-		TIM_DelayMs(3000);
-		GPIO_Toggle(LED1);
 	}
 
 	return 0;
