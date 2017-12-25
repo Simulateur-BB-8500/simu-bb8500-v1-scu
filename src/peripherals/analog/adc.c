@@ -11,6 +11,7 @@
 #include "masks.h"
 #include "nvic.h"
 #include "rcc_reg.h"
+#include "zpt.h"
 
 /*** ADC #define ***/
 
@@ -194,6 +195,7 @@ void ADC_Routine(boolean blUnlocked) {
 	case ADC_ZPT:
 		if (conversionCompleted == true) {
 			// Transmit voltage to ZPT module.
+			ZPT_SetVoltage(currentVoltage);
 			/* TBC */
 			// Next measure is PBL2 selector.
 			ADC_SetChannel((PBL2_ADC -> adcAddress), (PBL2_ADC -> channel));

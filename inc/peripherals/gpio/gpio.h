@@ -11,6 +11,10 @@
 #include "gpio_reg.h"
 #include "enum.h"
 
+/*** GPIO #define ***/
+
+#define VCC_MV	3300 // MCU power supply in mV.
+
 /*** GPIO structures ***/
 
 typedef struct {

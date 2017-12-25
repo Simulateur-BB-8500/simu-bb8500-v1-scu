@@ -12,7 +12,7 @@
 
 /*** 2-poles switch functions ***/
 
-/* INITIALISE A SW2 STRUCTURE.
+/* INITIALISE AN SW2 STRUCTURE.
  * @param sw2:				Switch structure to initialise.
  * @param pGpio:			GPIO reading the switch.
  * @param pActiveState:		GPIO state ('LOW' or 'HIGH') for which the switch is considered on.
@@ -43,7 +43,6 @@ void SW2_UpdateState(SW2_Struct* sw2) {
 		}
 		break;
 	case SW2_CONFIRM_ON:
-		sw2 -> state = OFF; // On state is not confirmed yet.
 		if (GPIO_Read(sw2 -> gpio) != (sw2 -> activeState)) {
 			sw2 -> currentState = SW2_OFF;
 		}
@@ -62,7 +61,6 @@ void SW2_UpdateState(SW2_Struct* sw2) {
 		}
 		break;
 	case SW2_CONFIRM_OFF:
-		sw2 -> state = ON; // Off state is not confirmed yet.
 		if (GPIO_Read(sw2 -> gpio) == (sw2 -> activeState)) {
 			sw2 -> currentState = SW2_ON;
 		}

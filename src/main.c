@@ -16,10 +16,12 @@
 #include "nvic.h"
 #include "rcc.h"
 #include "sw2.h"
+#include "sw3.h"
 #include "tim.h"
 #include "tim_reg.h"
 #include "usart.h"
 #include "usart_reg.h"
+#include "zpt.h"
 
 /* MAIN FUNCTION.
  * @param: None.
@@ -38,7 +40,7 @@ int main(void) {
 	DAC_Init();
 	// ADC (only ADC1 is used).
 	ADCCR_Init();
-	ADC_Init(ADC1, bits8);
+	ADC_Init(ADC1, ADC_RESOLUTION);
 	// USART;
 	USART_Init(USART_SGKCU, USART2);
 
@@ -48,22 +50,15 @@ int main(void) {
 	//TIM_Init(TIM7, 200, milliseconds, true);
 	//TIM_Start(TIM7, true);
 
-	/*** Global variables initialisation ***/
+	ZPT_Init();
 
-	SW2_Struct bl;
-	SW2_Init(&bl, BUTTON, LOW, 2000);
+	/*** Global variables initialisation ***/
 
 	/*** Main loop ***/
 
 	while(1) {
-		SW2_UpdateState(&bl);
-		if (bl.state == ON) {
-			GPIO_Write(LED1, HIGH);
-		}
-		else {
-			GPIO_Write(LED1, LOW);
-		}
 		ADC_Routine(true);
+		ZPT_Routine();
 	}
 
 	return 0;

@@ -11,6 +11,10 @@
 #include "adc_reg.h"
 #include "enum.h"
 
+/*** ADC #define ***/
+
+#define ADC_RESOLUTION	bits8
+
 /*** ADC structure ***/
 
 typedef struct {
@@ -23,6 +27,7 @@ typedef struct {
 void ADCCR_Init(void);
 void ADC_Init(ADC_BaseAddress* ADC, ADC_Resolution resolution);
 void ADC_SetChannel(ADC_BaseAddress* ADC, ADC_Channel channel);
+unsigned int ADC_GetFullScale(ADC_BaseAddress* ADC);
 void ADC_StartConversion(ADC_BaseAddress* ADC);
 unsigned int ADC_GetVoltage(ADC_BaseAddress* ADC);
 void ADC_Routine(boolean blUnlocked);

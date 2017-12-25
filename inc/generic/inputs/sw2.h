@@ -18,7 +18,7 @@ typedef struct {
 	GPIO_State activeState; // Depends on switch wiring.
 	SW2_StateMachine currentState; // Current state in SW2 state machine.
 	SW2_State state; // State after anti-bouncing (used in higher levels).
-	unsigned int debouncingMs; // Delay before validating ON/ODD state (in ms).
+	unsigned int debouncingMs; // Delay before validating ON/OFF state (in ms).
 	unsigned int confirmStartTime;
 } SW2_Struct;
 
