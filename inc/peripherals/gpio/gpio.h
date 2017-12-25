@@ -9,13 +9,13 @@
 #define PERIPHERALS_GPIO_GPIO_H_
 
 #include "gpio_reg.h"
-#include "types.h"
+#include "enum.h"
 
 /*** GPIO structures ***/
 
 typedef struct {
-	GPIO_BaseAddress* GPIO_Port; // 'GPIOA' to 'GPIOK'.
-	unsigned int GPIO_Num; // '0' to '15'.
+	GPIO_BaseAddress* port; // 'GPIOA' to 'GPIOK'.
+	unsigned int num; // '0' to '15'.
 } GPIO_Struct;
 
 /*** GPIO functions ***/

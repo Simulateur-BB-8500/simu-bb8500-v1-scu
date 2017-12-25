@@ -8,7 +8,7 @@
 #ifndef PERIPHERALS_ANALOG_DAC_H_
 #define PERIPHERALS_ANALOG_DAC_H_
 
-#include "types.h"
+#include "enum.h"
 
 /*** DAC #define ***/
 

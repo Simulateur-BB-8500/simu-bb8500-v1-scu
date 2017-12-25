@@ -7,9 +7,9 @@
 
 #include "dac.h"
 #include "dac_reg.h"
+#include "enum.h"
 #include "masks.h"
 #include "rcc_reg.h"
-#include "types.h"
 
 /*** DAC functions ***/
 

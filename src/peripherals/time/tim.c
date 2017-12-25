@@ -6,6 +6,7 @@
  */
 
 #include "dac.h"
+#include "enum.h"
 #include "gpio.h"
 #include "mapping.h"
 #include "masks.h"

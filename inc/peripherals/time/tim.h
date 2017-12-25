@@ -8,6 +8,7 @@
 #ifndef PERIPHERALS_TIME_TIM_H_
 #define PERIPHERALS_TIME_TIM_H_
 
+#include "enum.h"
 #include "masks.h"
 #include "tim_reg.h"
 

@@ -9,6 +9,7 @@
 #include "adc_reg.h"
 #include "at.h"
 #include "dac.h"
+#include "enum.h"
 #include "gpio.h"
 #include "gpio_reg.h"
 #include "mapping.h"
@@ -17,7 +18,6 @@
 #include "sw2.h"
 #include "tim.h"
 #include "tim_reg.h"
-#include "types.h"
 #include "usart.h"
 #include "usart_reg.h"
 
@@ -29,18 +29,17 @@ int main(void) {
 
 	/*** Peripherals initialisation ***/
 
+	// Clocks and timers.
 	RCC_Init();
 	TIM_InitMs();
+	// GPIO.
 	GPIO_Init();
-
-	//DAC_Init();
-
-	// ADC.
-	/*ADCCR_Init();
-	ADC_Init(ADC1, bit12);
-	ADC_SetChannel(ADC1, ADCChannel6);
-	ADC_StartConversion(ADC1);*/
-
+	// DAC.
+	DAC_Init();
+	// ADC (only ADC1 is used).
+	ADCCR_Init();
+	ADC_Init(ADC1, bits8);
+	// USART;
 	USART_Init(USART_SGKCU, USART2);
 
 	//TIM_Init(TIM6, 1, seconds, true);
@@ -52,12 +51,7 @@ int main(void) {
 	/*** Global variables initialisation ***/
 
 	SW2_Struct bl;
-	bl.gpio = BUTTON;
-	bl.activeState = LOW;
-	bl.currentState = SW2_OFF;
-	bl.state = OFF;
-	bl.confirmDuration = 2000;
-	bl.confirmStartTime = 0;
+	SW2_Init(&bl, BUTTON, LOW, 2000);
 
 	/*** Main loop ***/
 
@@ -69,6 +63,7 @@ int main(void) {
 		else {
 			GPIO_Write(LED1, LOW);
 		}
+		ADC_Routine(true);
 	}
 
 	return 0;

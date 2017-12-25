@@ -5,13 +5,13 @@
  *      Author: Ludovic
  */
 
+#include "enum.h"
 #include "gpio.h"
 #include "gpio_reg.h"
 #include "mapping.h"
 #include "masks.h"
 #include "rcc.h"
 #include "rcc_reg.h"
-#include "types.h"
 
 /*** GPIO parameters enumerations ***/
 
@@ -49,8 +49,8 @@ typedef enum {
  */
 void GPIO_SetMode(GPIO_Struct* gpioStruct, GPIO_Mode mode) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
+	unsigned int gpioNum = gpioStruct -> num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(mode) {
@@ -86,8 +86,8 @@ void GPIO_SetMode(GPIO_Struct* gpioStruct, GPIO_Mode mode) {
  */
 GPIO_Mode GPIO_GetMode(GPIO_Struct* gpioStruct) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
+	unsigned int gpioNum = gpioStruct -> num;
 	boolean bit0 = ((gpioPort -> MODER) & BIT_MASK[2*gpioNum]) >> (2*gpioNum);
 	boolean bit1 = ((gpioPort -> MODER) & BIT_MASK[2*gpioNum+1]) >> (2*gpioNum+1);
 	GPIO_Mode gpioMode = (bit1 << 1) + bit0;
@@ -101,8 +101,8 @@ GPIO_Mode GPIO_GetMode(GPIO_Struct* gpioStruct) {
  */
 void GPIO_SetOutputType(GPIO_Struct* gpioStruct, GPIO_OutputType outputType) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
+	unsigned int gpioNum = gpioStruct -> num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(outputType) {
@@ -127,8 +127,8 @@ void GPIO_SetOutputType(GPIO_Struct* gpioStruct, GPIO_OutputType outputType) {
  */
 void GPIO_SetOutputSpeed(GPIO_Struct* gpioStruct, GPIO_OutputSpeed outputSpeed) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
+	unsigned int gpioNum = gpioStruct -> num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(outputSpeed) {
@@ -165,8 +165,8 @@ void GPIO_SetOutputSpeed(GPIO_Struct* gpioStruct, GPIO_OutputSpeed outputSpeed) 
  */
 void GPIO_SetPullUpPullDown(GPIO_Struct* gpioStruct, GPIO_PullResistor pullResistor) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
+	unsigned int gpioNum = gpioStruct -> num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch(pullResistor) {
@@ -198,8 +198,8 @@ void GPIO_SetPullUpPullDown(GPIO_Struct* gpioStruct, GPIO_PullResistor pullResis
  */
 void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
+	unsigned int gpioNum = gpioStruct -> num;
 	// Ensure alternate function exists.
 	if ((AFNum >= 0) && (AFNum < AF_PER_GPIO)) {
 		unsigned int i = 0;
@@ -264,19 +264,15 @@ void GPIO_Init(void) {
 	// Enable all GPIOx clocks.
 	RCC -> AHB1ENR |= 0x000007FF; // Enable GPIOx clock (GPIOxEN = '1').
 
-	// LEDs.
+	// Debug.
 	GPIO_Configure(LED1, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 	GPIO_Configure(LED2, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-
-	// Button.
 	GPIO_Configure(BUTTON, Input, OpenDrain, LowSpeed, PullUp, 0);
-
-	// AMP pin configured as analog.
-	GPIO_Configure(AMP_MOTEURS, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
-
-	// ZPT pin configured as analog.
+	// DAC.
+	GPIO_Configure(AM_OUTPUT, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
+	// ADC.
 	GPIO_Configure(ZPT, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
-
+	GPIO_Configure(PBL2, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
 	// SGKCU UART pins configured as AF7 for using USART2.
 	GPIO_Configure(SGKCU_TX, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown, 7);
 	GPIO_Configure(SGKCU_RX, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown, 7);
@@ -284,7 +280,6 @@ void GPIO_Init(void) {
 #ifdef OUTPUT_CLOCK
 	// MCO1 configured as AF0 to output HSI clock.
 	GPIO_Configure(MCO1, AlternateFunction, PushPull, VeryHighSpeed, NoPullUpNoPullDown, 0);
-
 	// MCO2 configured as AF0 to output SYSCLK clock.
 	GPIO_Configure(MCO2, AlternateFunction, PushPull, VeryHighSpeed, NoPullUpNoPullDown, 0);
 #endif
@@ -297,8 +292,8 @@ void GPIO_Init(void) {
  */
 void GPIO_Write(GPIO_Struct* gpioStruct, GPIO_State state) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
+	unsigned int gpioNum = gpioStruct -> num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch (state) {
@@ -320,8 +315,8 @@ void GPIO_Write(GPIO_Struct* gpioStruct, GPIO_State state) {
  */
 GPIO_State GPIO_Read(GPIO_Struct* gpioStruct) {
 	// Extract port and number.
-	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
+	unsigned int gpioNum = gpioStruct -> num;
 	GPIO_State result = LOW;
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch (GPIO_GetMode(gpioStruct)) {
@@ -346,7 +341,7 @@ GPIO_State GPIO_Read(GPIO_Struct* gpioStruct) {
  */
 void GPIO_Toggle(GPIO_Struct* gpioStruct) {
 	// Extract number.
-	unsigned int gpioNum = gpioStruct -> GPIO_Num;
+	unsigned int gpioNum = gpioStruct -> num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		if (GPIO_Read(gpioStruct)) {

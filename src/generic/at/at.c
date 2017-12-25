@@ -7,9 +7,9 @@
 
 #include "at.h"
 #include "atCommands.h"
+#include "enum.h"
 #include "gpio.h"
 #include "mapping.h"
-#include "types.h"
 #include "usart.h"
 
 /*** AT commands functions ***/

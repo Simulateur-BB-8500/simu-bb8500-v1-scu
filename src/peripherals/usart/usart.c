@@ -7,6 +7,7 @@
 
 #include "at.h"
 #include "atCommands.h"
+#include "enum.h"
 #include "gpio.h"
 #include "rcc.h"
 #include "mapping.h"
@@ -51,6 +52,8 @@ unsigned int USART_GetIT(USART_BaseAddress* USART) {
 	case ((unsigned int) UART8):
 		itNumber = IT_UART8;
 		break;
+	default:
+		break;
 	}
 	return itNumber;
 }
@@ -85,6 +88,8 @@ void USART_EnableClock(USART_BaseAddress* USART) {
 		break;
 	case ((unsigned int) UART8):
 		RCC -> APB1ENR |= BIT_MASK[31]; // UART8EN = '1'.
+		break;
+	default:
 		break;
 	}
 }
