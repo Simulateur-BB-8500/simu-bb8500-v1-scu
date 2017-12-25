@@ -41,7 +41,7 @@ void ADCCR_Init(void) {
  * @param resolution: ADC resolution in bits (should be 'bit6', 'bit8', bit10' or 'bit12').
  * @return: None.
  */
-void ADC_Init(ADC_BaseAddress* ADC, ADCResolution resolution) {
+void ADC_Init(ADC_BaseAddress* ADC, ADC_Resolution resolution) {
 	ADC -> CR1 &= ~BIT_MASK[8]; // Disable scan mode (SCAN = '0').
 	ADC -> CR1 |= BIT_MASK[5]; // Enable end of conversion interrupt (EOCIE = '1').
 	ADC -> CR2 |= BIT_MASK[10]; // EOC set at the end of each regular conversion (EOCS = '1').
@@ -85,10 +85,10 @@ void ADC_Init(ADC_BaseAddress* ADC, ADCResolution resolution) {
  * @param channel: ADC channel (should be 'ADCChannel0' to 'ADCChannel15', 'NC', 'VREF' or 'VBAT').
  * @return: None.
  */
-void ADC_SetChannel(ADC_BaseAddress* ADC, ADCChannel channel) {
+void ADC_SetChannel(ADC_BaseAddress* ADC, ADC_Channel channel) {
 	unsigned int i = 0;
 	for(i=0 ; i<ADC_SQx_LENGTH ; i++) {
-		unsigned int channelMasked = channel & BIT_MASK[i];
+		unsigned int channelMasked = (channel-ADC_CHANNEL_ENUM_OFFSET) & BIT_MASK[i];
 		if (channelMasked == 0) {
 			// Bit = '0'.
 			ADC -> SQR3 &= ~BIT_MASK[i];

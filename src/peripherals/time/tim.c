@@ -141,7 +141,7 @@ void TIM_EnableClock(TIM_BaseAddress* TIM) {
  * @param interruptEnable: 	Indicate if interrupt is enabled for this timer.
  * @return: 				None.
  */
-void TIM_Init(TIM_BaseAddress* TIM, unsigned int duration, TimeUnit unit, boolean interruptEnable) {
+void TIM_Init(TIM_BaseAddress* TIM, unsigned int duration, Time_Unit unit, boolean interruptEnable) {
 	// Enable peripheral clock.
 	TIM_EnableClock(TIM);
 	// Disable interrupt.
@@ -219,6 +219,8 @@ void TIM_InitMs(void) {
 	// Master mode and update interrupt selected as trigger output.
 	TIM1 -> CR2 &= 0xFFFFFFAF; // MMS = '0x0'.
 	TIM1 -> CR2 |= BIT_MASK[5]; // MMS = '010'.
+	// Enable TIM2 clock.
+	TIM_EnableClock(TIM2);
 	// Configure TIM2 as slave.
 	TIM2 -> CNT = 0;
 	TIM2 -> SMCR &= 0xFFFFFF8F; // TS = '000' to select ITR0 = TIM1 as trigger input.

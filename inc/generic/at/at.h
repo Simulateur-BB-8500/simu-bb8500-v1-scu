@@ -11,5 +11,6 @@
 /*** AT commands functions ***/
 
 void AT_DecodeSGKCU(unsigned char atCommand);
+void AT_SendSGKCU(unsigned char atCommand);
 
 #endif /* PERIPHERALS_USART_AT_H_ */

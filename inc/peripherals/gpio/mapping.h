@@ -98,6 +98,7 @@
 
 #define LED1 			&((GPIO_Struct) {GPIOC, 0})
 #define LED2			&((GPIO_Struct) {GPIOC, 3})
+#define BUTTON			&((GPIO_Struct) {GPIOA, 3})
 #define AMP_MOTEURS		DAC1
 #define ZPT				ADC12_IN6
 #define SGKCU_TX		USART2_TX

@@ -14,6 +14,7 @@
 #include "mapping.h"
 #include "nvic.h"
 #include "rcc.h"
+#include "sw2.h"
 #include "tim.h"
 #include "tim_reg.h"
 #include "types.h"
@@ -31,6 +32,7 @@ int main(void) {
 	RCC_Init();
 	TIM_InitMs();
 	GPIO_Init();
+
 	//DAC_Init();
 
 	// ADC.
@@ -41,17 +43,32 @@ int main(void) {
 
 	USART_Init(USART_SGKCU, USART2);
 
-	TIM_Init(TIM6, 1, seconds, true);
-	TIM_Start(TIM6, true);
+	//TIM_Init(TIM6, 1, seconds, true);
+	//TIM_Start(TIM6, true);
 
 	//TIM_Init(TIM7, 200, milliseconds, true);
 	//TIM_Start(TIM7, true);
 
 	/*** Global variables initialisation ***/
 
+	SW2_Struct bl;
+	bl.gpio = BUTTON;
+	bl.activeState = LOW;
+	bl.currentState = SW2_OFF;
+	bl.state = OFF;
+	bl.confirmDuration = 2000;
+	bl.confirmStartTime = 0;
+
 	/*** Main loop ***/
 
 	while(1) {
+		SW2_UpdateState(&bl);
+		if (bl.state == ON) {
+			GPIO_Write(LED1, HIGH);
+		}
+		else {
+			GPIO_Write(LED1, LOW);
+		}
 	}
 
 	return 0;

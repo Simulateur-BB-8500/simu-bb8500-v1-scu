@@ -10,6 +10,7 @@
 #include "gpio.h"
 #include "mapping.h"
 #include "types.h"
+#include "usart.h"
 
 /*** AT commands functions ***/
 
@@ -22,16 +23,22 @@ void AT_DecodeSGKCU(unsigned char atCommand) {
 		// Transmit speed to Tachro and VACMA modules.
 	}
 	else {
+		// Decode AT command.
+		switch(atCommand) {
+		case AT_KVB_LVAL_BLINK:
+			GPIO_Write(LED2, HIGH);
+			break;
+		default:
+			// Unknown command.
+			break;
+		}
 	}
-	// Decode AT command.
-	switch(atCommand) {
-	case 0x41:
-		GPIO_Write(LED2, HIGH);
-		break;
-	case 0x42:
-		GPIO_Write(LED2, LOW);
-		break;
-	default:
-		break;
-	}
+}
+
+/* SEND AN AT COMMAND TO SGKCU.
+ * @param atCommand: 	AT command (byte) to transmit.
+ * @return: 			None.
+ */
+void AT_SendSGKCU(unsigned char atCommand) {
+	USART_SendByte(USART_SGKCU, atCommand, ASCII);
 }

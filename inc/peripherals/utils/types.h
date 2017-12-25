@@ -11,53 +11,75 @@
 /*** Types declaration ***/
 
 typedef enum {
-	LOW = 0,
-	HIGH = 1
-} GPIOState;
-
-typedef enum {
 	false = 0,
 	true = 1
 } boolean;
 
-typedef enum {
-	microseconds = 0,
-	milliseconds = 1,
-	seconds = 2
-} TimeUnit;
+#define GPIO_STATE_ENUM_OFFSET 10
 
 typedef enum {
-	DACChannel1 = 1,
-	DACChannel2 = 2
-} DACChannel;
+	LOW = 10,
+	HIGH
+} GPIO_State;
+
+typedef enum {
+	OFF = 20,
+	ON
+} SW2_State;
+
+typedef enum {
+	BACK = 30,
+	NEUTRAL,
+	FRONT
+} SW3_State;
+
+typedef enum {
+	P0 = 40,
+	P1,
+	P2,
+	P3
+} SW4_State;
+
+typedef enum {
+	microseconds = 50,
+	milliseconds,
+	seconds
+} Time_Unit;
 
 typedef enum {
 	bit6 = 63,
 	bit8 = 255,
 	bit10 = 1023,
 	bit12 = 4095
-} ADCResolution;
+} ADC_Resolution;
 
 typedef enum {
-	ADCChannel0 = 0,
-	ADCChannel1 = 1,
-	ADCChannel2 = 2,
-	ADCChannel3 = 3,
-	ADCChannel4 = 4,
-	ADCChannel5 = 5,
-	ADCChannel6 = 6,
-	ADCChannel7 = 7,
-	ADCChannel8 = 8,
-	ADCChannel9 = 9,
-	ADCChannel10 = 10,
-	ADCChannel11 = 11,
-	ADCChannel12 = 12,
-	ADCChannel13 = 13,
-	ADCChannel14 = 14,
-	ADCChannel15 = 15,
-	NC = 16,
-	VREF = 17,
-	VBAT = 18
-} ADCChannel;
+	DAC_Channel1 = 70,
+	DAC_Channel2
+} DAC_Channel;
+
+#define ADC_CHANNEL_ENUM_OFFSET 80
+
+typedef enum {
+	ADC_Channel0 = 80,
+	ADC_Channel1,
+	ADC_Channel2,
+	ADC_Channel3,
+	ADC_Channel4,
+	ADC_Channel5,
+	ADC_Channel6,
+	ADC_Channel7,
+	ADC_Channel8,
+	ADC_Channel9,
+	ADC_Channel10,
+	ADC_Channel11,
+	ADC_Channel12,
+	ADC_Channel13,
+	ADC_Channel14,
+	ADC_Channel15,
+	NC,
+	VREF,
+	VBAT
+} ADC_Channel;
 
 #endif /* REGISTERS_TYPES_H_ */

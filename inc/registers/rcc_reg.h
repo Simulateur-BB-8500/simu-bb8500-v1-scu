@@ -12,7 +12,7 @@
 
 typedef struct {
 	volatile unsigned int CR;			// RCC clock control register.
-	volatile unsigned int PLLCFGR;    // RCC PLL configuration register.
+	volatile unsigned int PLLCFGR;    	// RCC PLL configuration register.
 	volatile unsigned int CFGR;      	// RCC clock configuration register.
 	volatile unsigned int CIR;       	// RCC clock interrupt register.
 	volatile unsigned int AHB1RSTR;  	// RCC AHB1 peripheral reset register.
@@ -25,7 +25,7 @@ typedef struct {
 	unsigned int RESERVED2; 			// Reserved 0x2C.
 	volatile unsigned int AHB1ENR;  	// RCC AHB1 peripheral clock register.
 	volatile unsigned int AHB2ENR;  	// RCC AHB2 peripheral clock register.
-	volatile unsigned int AHB3ENR; 	// RCC AHB3 peripheral clock register.
+	volatile unsigned int AHB3ENR; 		// RCC AHB3 peripheral clock register.
 	unsigned int RESERVED3; 			// Reserved 0x3C.
 	volatile unsigned int APB1ENR;  	// RCC APB1 peripheral clock enable register.
 	volatile unsigned int APB2ENR;  	// RCC APB2 peripheral clock enable register.
@@ -41,13 +41,13 @@ typedef struct {
 	unsigned int RESERVED8; 			// Reserved 0x6C.
 	volatile unsigned int BDCR;     	// RCC Backup domain control register.
 	volatile unsigned int CSR;      	// RCC clock control & status register.
-	unsigned int RESERVED9;			// Reserved 0x78.
+	unsigned int RESERVED9;				// Reserved 0x78.
 	unsigned int RESERVED10; 			// Reserved 0x7C.
 	volatile unsigned int SSCGR;    	// RCC spread spectrum clock generation register.
 	volatile unsigned int PLLI2SCFGR;	// RCC PLLI2S configuration register.
 	volatile unsigned int PLLSAICFGR;	// RCC PLLSAI configuration register.
-	volatile unsigned int DCKCFGR1;	// RCC Dedicated Clocks configuration register 1.
-	volatile unsigned int DCKCFGR2;	// RCC Dedicated Clocks configuration register 2.
+	volatile unsigned int DCKCFGR1;		// RCC Dedicated Clocks configuration register 1.
+	volatile unsigned int DCKCFGR2;		// RCC Dedicated Clocks configuration register 2.
 } RCC_BaseAddress;
 
 /*** RCC base address ***/

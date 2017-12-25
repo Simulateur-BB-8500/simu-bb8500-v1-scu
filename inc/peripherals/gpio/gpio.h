@@ -21,8 +21,8 @@ typedef struct {
 /*** GPIO functions ***/
 
 void GPIO_Init(void);
-void GPIO_Write(GPIO_Struct* gpioStruct, GPIOState value);
-GPIOState GPIO_Read(GPIO_Struct* gpioStruct);
+void GPIO_Write(GPIO_Struct* gpioStruct, GPIO_State value);
+GPIO_State GPIO_Read(GPIO_Struct* gpioStruct);
 void GPIO_Toggle(GPIO_Struct* gpioStruct);
 
 #endif /* PERIPHERALS_GPIO_GPIO_H_ */

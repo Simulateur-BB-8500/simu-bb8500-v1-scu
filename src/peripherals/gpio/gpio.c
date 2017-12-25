@@ -268,6 +268,9 @@ void GPIO_Init(void) {
 	GPIO_Configure(LED1, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 	GPIO_Configure(LED2, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 
+	// Button.
+	GPIO_Configure(BUTTON, Input, OpenDrain, LowSpeed, PullUp, 0);
+
 	// AMP pin configured as analog.
 	GPIO_Configure(AMP_MOTEURS, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
 
@@ -292,17 +295,21 @@ void GPIO_Init(void) {
  * @param state: Desired state of the pin ('LOW' or 'HIGH').
  * @return: None.
  */
-void GPIO_Write(GPIO_Struct* gpioStruct, GPIOState state) {
+void GPIO_Write(GPIO_Struct* gpioStruct, GPIO_State state) {
 	// Extract port and number.
 	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
 	unsigned int gpioNum = gpioStruct -> GPIO_Num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
-		if (state == LOW) {
+		switch (state) {
+		case LOW:
 			gpioPort -> ODR &= ~BIT_MASK[gpioNum];
-		}
-		else {
+			break;
+		case HIGH:
 			gpioPort -> ODR |= BIT_MASK[gpioNum];
+			break;
+		default:
+			break;
 		}
 	}
 }
@@ -311,20 +318,20 @@ void GPIO_Write(GPIO_Struct* gpioStruct, GPIOState state) {
  * @param gpioStruct: Pointer to GPIO identifier (port + number).
  * @return: GPIO state ('LOW' or 'HIGH').
  */
-GPIOState GPIO_Read(GPIO_Struct* gpioStruct) {
+GPIO_State GPIO_Read(GPIO_Struct* gpioStruct) {
 	// Extract port and number.
 	GPIO_BaseAddress* gpioPort = gpioStruct -> GPIO_Port;
 	unsigned int gpioNum = gpioStruct -> GPIO_Num;
-	GPIOState result = LOW;
+	GPIO_State result = LOW;
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch (GPIO_GetMode(gpioStruct)) {
 		case Input:
 			// GPIO configured as input -> read IDR register.
-			result = ((gpioPort -> IDR) & BIT_MASK[gpioNum]) >> gpioNum;
+			result = (((gpioPort -> IDR) & BIT_MASK[gpioNum]) >> gpioNum) + GPIO_STATE_ENUM_OFFSET;
 			break;
 		case Output:
 			// GPIO configured as output -> read ODR register.
-			result = ((gpioPort -> ODR) & BIT_MASK[gpioNum]) >> gpioNum;
+			result = (((gpioPort -> ODR) & BIT_MASK[gpioNum]) >> gpioNum) + GPIO_STATE_ENUM_OFFSET;
 			break;
 		default:
 			break;
