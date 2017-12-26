@@ -8,6 +8,9 @@
 #ifndef REGISTERS_ENUM_H_
 #define REGISTERS_ENUM_H_
 
+// Mask for each bit of a register (BIT_MASK(i) = mask for bit i).
+#define BIT_MASK(i)	((unsigned int) (1 << (i)))
+
 /*** PERIPHERAL LEVEL ***/
 
 typedef enum {

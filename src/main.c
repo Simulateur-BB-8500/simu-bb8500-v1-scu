@@ -9,6 +9,7 @@
 #include "adc_reg.h"
 #include "dac.h"
 #include "gpio.h"
+#include "kvb.h"
 #include "rcc.h"
 #include "tim.h"
 #include "tim_reg.h"
@@ -40,6 +41,8 @@ int main(void) {
 	/*** Simulator ***/
 
 	ZPT_Init();
+	KVB_Init();
+	KVB_Display("bb8614");
 
 	/*** Global variables initialisation ***/
 

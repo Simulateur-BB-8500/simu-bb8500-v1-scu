@@ -116,5 +116,21 @@
 // USART.
 #define SGKCU_TX		USART2_TX
 #define SGKCU_RX		USART2_RX
+// KVB segments
+#define KVB_ZSA			(&((GPIO_Struct) {GPIOF, 14}))
+#define KVB_ZSB			(&((GPIO_Struct) {GPIOC, 2}))
+#define KVB_ZSC			(&((GPIO_Struct) {GPIOE, 9}))
+#define KVB_ZSD			(&((GPIO_Struct) {GPIOF, 13}))
+#define KVB_ZSE			(&((GPIO_Struct) {GPIOE, 11}))
+#define KVB_ZSF			(&((GPIO_Struct) {GPIOE, 13}))
+#define KVB_ZSG			(&((GPIO_Struct) {GPIOB, 1}))
+#define KVB_ZD			(&((GPIO_Struct) {GPIOA, 0}))
+// KVB displays
+#define KVB_ZJG			(&((GPIO_Struct) {GPIOF, 15}))
+#define KVB_ZJC			(&((GPIO_Struct) {GPIOB, 6}))
+#define KVB_ZJD			(&((GPIO_Struct) {GPIOB, 2}))
+#define KVB_ZVG			(&((GPIO_Struct) {GPIOE, 8}))
+#define KVB_ZVC			(&((GPIO_Struct) {GPIOE, 7}))
+#define KVB_ZVD			(&((GPIO_Struct) {GPIOE, 10}))
 
 #endif /* PERIPHERALS_GPIO_MAPPING_H_ */

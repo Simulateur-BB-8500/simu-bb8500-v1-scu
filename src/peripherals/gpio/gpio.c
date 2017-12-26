@@ -9,7 +9,6 @@
 #include "gpio.h"
 #include "gpio_reg.h"
 #include "mapping.h"
-#include "masks.h"
 #include "rcc.h"
 #include "rcc_reg.h"
 
@@ -56,23 +55,23 @@ void GPIO_SetMode(GPIO_Struct* gpioStruct, GPIO_Mode mode) {
 		switch(mode) {
 		case Input:
 			// MODERy = '00'.
-			gpioPort -> MODER &= ~BIT_MASK[2*gpioNum];
-			gpioPort -> MODER &= ~BIT_MASK[2*gpioNum+1];
+			gpioPort -> MODER &= ~BIT_MASK(2*gpioNum);
+			gpioPort -> MODER &= ~BIT_MASK(2*gpioNum+1);
 			break;
 		case Output:
 			// MODERy = '01'.
-			gpioPort -> MODER |= BIT_MASK[2*gpioNum];
-			gpioPort -> MODER &= ~BIT_MASK[2*gpioNum+1];
+			gpioPort -> MODER |= BIT_MASK(2*gpioNum);
+			gpioPort -> MODER &= ~BIT_MASK(2*gpioNum+1);
 			break;
 		case Analog:
 			// MODERy = '11'.
-			gpioPort -> MODER |= BIT_MASK[2*gpioNum];
-			gpioPort -> MODER |= BIT_MASK[2*gpioNum+1];
+			gpioPort -> MODER |= BIT_MASK(2*gpioNum);
+			gpioPort -> MODER |= BIT_MASK(2*gpioNum+1);
 			break;
 		case AlternateFunction:
 			// MODERy = '10'.
-			gpioPort -> MODER &= ~BIT_MASK[2*gpioNum];
-			gpioPort -> MODER |= BIT_MASK[2*gpioNum+1];
+			gpioPort -> MODER &= ~BIT_MASK(2*gpioNum);
+			gpioPort -> MODER |= BIT_MASK(2*gpioNum+1);
 			break;
 		default:
 			break;
@@ -88,8 +87,8 @@ GPIO_Mode GPIO_GetMode(GPIO_Struct* gpioStruct) {
 	// Extract port and number.
 	GPIO_BaseAddress* gpioPort = gpioStruct -> port;
 	unsigned int gpioNum = gpioStruct -> num;
-	boolean bit0 = ((gpioPort -> MODER) & BIT_MASK[2*gpioNum]) >> (2*gpioNum);
-	boolean bit1 = ((gpioPort -> MODER) & BIT_MASK[2*gpioNum+1]) >> (2*gpioNum+1);
+	boolean bit0 = ((gpioPort -> MODER) & BIT_MASK(2*gpioNum)) >> (2*gpioNum);
+	boolean bit1 = ((gpioPort -> MODER) & BIT_MASK(2*gpioNum+1)) >> (2*gpioNum+1);
 	GPIO_Mode gpioMode = (bit1 << 1) + bit0;
 	return gpioMode;
 }
@@ -108,11 +107,11 @@ void GPIO_SetOutputType(GPIO_Struct* gpioStruct, GPIO_OutputType outputType) {
 		switch(outputType) {
 		case PushPull:
 			// OTy = '0'.
-			gpioPort -> OTYPER &= ~BIT_MASK[gpioNum];
+			gpioPort -> OTYPER &= ~BIT_MASK(gpioNum);
 			break;
 		case OpenDrain:
 			// OTy = '1'.
-			gpioPort -> OTYPER |= BIT_MASK[gpioNum];
+			gpioPort -> OTYPER |= BIT_MASK(gpioNum);
 			break;
 		default:
 			break;
@@ -134,23 +133,23 @@ void GPIO_SetOutputSpeed(GPIO_Struct* gpioStruct, GPIO_OutputSpeed outputSpeed) 
 		switch(outputSpeed) {
 		case LowSpeed:
 			// OSPEEDRy = '00'.
-			gpioPort -> OSPEEDR &= ~BIT_MASK[2*gpioNum];
-			gpioPort -> OSPEEDR &= ~BIT_MASK[2*gpioNum+1];
+			gpioPort -> OSPEEDR &= ~BIT_MASK(2*gpioNum);
+			gpioPort -> OSPEEDR &= ~BIT_MASK(2*gpioNum+1);
 			break;
 		case MediumSpeed:
 			// OSPEEDRy = '01'.
-			gpioPort -> OSPEEDR |= BIT_MASK[2*gpioNum];
-			gpioPort -> OSPEEDR &= ~BIT_MASK[2*gpioNum+1];
+			gpioPort -> OSPEEDR |= BIT_MASK(2*gpioNum);
+			gpioPort -> OSPEEDR &= ~BIT_MASK(2*gpioNum+1);
 			break;
 		case HighSpeed:
 			// OSPEEDRy = '10'.
-			gpioPort -> OSPEEDR &= ~BIT_MASK[2*gpioNum];
-			gpioPort -> OSPEEDR |= BIT_MASK[2*gpioNum+1];
+			gpioPort -> OSPEEDR &= ~BIT_MASK(2*gpioNum);
+			gpioPort -> OSPEEDR |= BIT_MASK(2*gpioNum+1);
 			break;
 		case VeryHighSpeed:
 			// OSPEEDRy = '11'.
-			gpioPort -> OSPEEDR |= BIT_MASK[2*gpioNum];
-			gpioPort -> OSPEEDR |= BIT_MASK[2*gpioNum+1];
+			gpioPort -> OSPEEDR |= BIT_MASK(2*gpioNum);
+			gpioPort -> OSPEEDR |= BIT_MASK(2*gpioNum+1);
 			break;
 		default:
 			break;
@@ -172,18 +171,18 @@ void GPIO_SetPullUpPullDown(GPIO_Struct* gpioStruct, GPIO_PullResistor pullResis
 		switch(pullResistor) {
 		case NoPullUpNoPullDown:
 			// PUPDRy = '00'.
-			gpioPort -> PUPDR &= ~BIT_MASK[2*gpioNum];
-			gpioPort -> PUPDR &= ~BIT_MASK[2*gpioNum+1];
+			gpioPort -> PUPDR &= ~BIT_MASK(2*gpioNum);
+			gpioPort -> PUPDR &= ~BIT_MASK(2*gpioNum+1);
 			break;
 		case PullUp:
 			// PUPDRy = '01'.
-			gpioPort -> PUPDR |= BIT_MASK[2*gpioNum];
-			gpioPort -> PUPDR &= ~BIT_MASK[2*gpioNum+1];
+			gpioPort -> PUPDR |= BIT_MASK(2*gpioNum);
+			gpioPort -> PUPDR &= ~BIT_MASK(2*gpioNum+1);
 			break;
 		case PullDown:
 			// PUPDRy = '10'.
-			gpioPort -> PUPDR &= ~BIT_MASK[2*gpioNum];
-			gpioPort -> PUPDR |= BIT_MASK[2*gpioNum+1];
+			gpioPort -> PUPDR &= ~BIT_MASK(2*gpioNum);
+			gpioPort -> PUPDR |= BIT_MASK(2*gpioNum+1);
 			break;
 		default:
 			break;
@@ -207,13 +206,13 @@ void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
 		if ((gpioNum >= 0) && (gpioNum < AFRH_OFFSET)) {
 			// Set AFRL register: AFRy = 'AFNum'.
 			for (i=0 ; i<4 ; i++) {
-				if (AFNum & BIT_MASK[i]) {
+				if (AFNum & BIT_MASK(i)) {
 					// Bit = '1'.
-					gpioPort -> AFRL |= BIT_MASK[4*gpioNum+i];
+					gpioPort -> AFRL |= BIT_MASK(4*gpioNum+i);
 				}
 				else {
 					// Bit = '0'.
-					gpioPort -> AFRL &= ~BIT_MASK[4*gpioNum+i];
+					gpioPort -> AFRL &= ~BIT_MASK(4*gpioNum+i);
 				}
 			}
 		}
@@ -221,13 +220,13 @@ void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
 			if ((gpioNum >= AFRH_OFFSET) && (gpioNum < GPIO_PER_PORT)) {
 				// Set AFRH register: AFRy = 'AFNum'.
 				for (i=0 ; i<4 ; i++) {
-					if (AFNum && BIT_MASK[i]) {
+					if (AFNum && BIT_MASK(i)) {
 						// Bit = '1'.
-						gpioPort -> AFRH |= BIT_MASK[4*(gpioNum-AFRH_OFFSET)+i];
+						gpioPort -> AFRH |= BIT_MASK(4*(gpioNum-AFRH_OFFSET)+i);
 					}
 					else {
 						// Bit = '0'.
-						gpioPort -> AFRH &= ~BIT_MASK[4*(gpioNum-AFRH_OFFSET)+i];
+						gpioPort -> AFRH &= ~BIT_MASK(4*(gpioNum-AFRH_OFFSET)+i);
 					}
 				}
 			}
@@ -278,6 +277,20 @@ void GPIO_Init(void) {
 	// SGKCU UART pins configured as AF7 for using USART2.
 	GPIO_Configure(SGKCU_TX, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown, 7);
 	GPIO_Configure(SGKCU_RX, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown, 7);
+	// KVB.
+	GPIO_Configure(KVB_ZSA, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSB, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSE, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSF, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZJG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZJC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZJD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZVG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZVC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZVD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 
 #ifdef OUTPUT_CLOCK
 	// MCO1 configured as AF0 to output HSI clock.
@@ -300,10 +313,10 @@ void GPIO_Write(GPIO_Struct* gpioStruct, GPIO_State state) {
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
 		switch (state) {
 		case LOW:
-			gpioPort -> ODR &= ~BIT_MASK[gpioNum];
+			gpioPort -> ODR &= ~BIT_MASK(gpioNum);
 			break;
 		case HIGH:
-			gpioPort -> ODR |= BIT_MASK[gpioNum];
+			gpioPort -> ODR |= BIT_MASK(gpioNum);
 			break;
 		default:
 			break;
@@ -324,11 +337,11 @@ GPIO_State GPIO_Read(GPIO_Struct* gpioStruct) {
 		switch (GPIO_GetMode(gpioStruct)) {
 		case Input:
 			// GPIO configured as input -> read IDR register.
-			result = (((gpioPort -> IDR) & BIT_MASK[gpioNum]) >> gpioNum) + GPIO_STATE_ENUM_OFFSET;
+			result = (((gpioPort -> IDR) & BIT_MASK(gpioNum)) >> gpioNum) + GPIO_STATE_ENUM_OFFSET;
 			break;
 		case Output:
 			// GPIO configured as output -> read ODR register.
-			result = (((gpioPort -> ODR) & BIT_MASK[gpioNum]) >> gpioNum) + GPIO_STATE_ENUM_OFFSET;
+			result = (((gpioPort -> ODR) & BIT_MASK(gpioNum)) >> gpioNum) + GPIO_STATE_ENUM_OFFSET;
 			break;
 		default:
 			break;

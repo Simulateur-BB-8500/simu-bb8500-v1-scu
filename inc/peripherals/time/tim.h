@@ -9,7 +9,6 @@
 #define PERIPHERALS_TIME_TIM_H_
 
 #include "enum.h"
-#include "masks.h"
 #include "tim_reg.h"
 
 /*** TIM #define ***/
@@ -23,14 +22,14 @@
 
 /*** TIM functions ***/
 
-// Timer 1 and 2 used to count milliseconds since start-up.
-void TIM_InitMs(void);
-unsigned int TIM_GetMs(void);
-void TIM_DelayMs(unsigned int msToWait);
 // Generic functions.
 void TIM_Init(TIM_BaseAddress* TIM, unsigned int duration, Time_Unit unit, boolean interruptEnable);
 void TIM_Start(TIM_BaseAddress* TIM, boolean reset);
 void TIM_Stop(TIM_BaseAddress* TIM, boolean reset);
-
+void TIM_ClearFlag(TIM_BaseAddress* TIM);
+// Timer 1 and 2 used to count milliseconds since start-up.
+void TIM_InitMs(void);
+unsigned int TIM_GetMs(void);
+void TIM_DelayMs(unsigned int msToWait);
 
 #endif /* PERIPHERALS_TIME_TIM_H_ */

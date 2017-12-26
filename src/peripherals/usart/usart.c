@@ -11,7 +11,6 @@
 #include "gpio.h"
 #include "rcc.h"
 #include "mapping.h"
-#include "masks.h"
 #include "nvic.h"
 #include "nvic_reg.h"
 #include "rcc_reg.h"
@@ -66,28 +65,28 @@ void USART_EnableClock(USART_BaseAddress* USART) {
 	// Check peripheral address.
 	switch ((unsigned int) USART) {
 	case ((unsigned int) USART1):
-		RCC -> APB2ENR |= BIT_MASK[4]; // USART1EN = '1'.
+		RCC -> APB2ENR |= BIT_MASK(4); // USART1EN = '1'.
 		break;
 	case ((unsigned int) USART2):
-		RCC -> APB1ENR |= BIT_MASK[17]; // USART2EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(17); // USART2EN = '1'.
 		break;
 	case ((unsigned int) USART3):
-		RCC -> APB1ENR |= BIT_MASK[18]; // USART3EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(18); // USART3EN = '1'.
 		break;
 	case ((unsigned int) UART4):
-		RCC -> APB1ENR |= BIT_MASK[19]; // UART4EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(19); // UART4EN = '1'.
 		break;
 	case ((unsigned int) UART5):
-		RCC -> APB1ENR |= BIT_MASK[20]; // UART5EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(20); // UART5EN = '1'.
 		break;
 	case ((unsigned int) USART6):
-		RCC -> APB2ENR |= BIT_MASK[5]; // USART6EN = '1'.
+		RCC -> APB2ENR |= BIT_MASK(5); // USART6EN = '1'.
 		break;
 	case ((unsigned int) UART7):
-		RCC -> APB1ENR |= BIT_MASK[30]; // UART7EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(30); // UART7EN = '1'.
 		break;
 	case ((unsigned int) UART8):
-		RCC -> APB1ENR |= BIT_MASK[31]; // UART8EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(31); // UART8EN = '1'.
 		break;
 	default:
 		break;
@@ -132,12 +131,12 @@ void USART_Init(USART_Struct* usartStruct, USART_BaseAddress* USART) {
 	// Baud rate.
 	USART -> BRR = SYSCLK/BAUD_RATE; // USART clock = SYSCLK because prescaler = 1.
 	// Bidirectionnal.
-	USART -> CR1 |= BIT_MASK[3]; // Enable transmitter (TE = '1').
-	USART -> CR1 |= BIT_MASK[2]; // Enable receiver (RE = '1').
+	USART -> CR1 |= BIT_MASK(3); // Enable transmitter (TE = '1').
+	USART -> CR1 |= BIT_MASK(2); // Enable receiver (RE = '1').
 	// Enable interrupts.
-	USART -> CR1 |= BIT_MASK[5]; // RXNEIE = '1'.
+	USART -> CR1 |= BIT_MASK(5); // RXNEIE = '1'.
 	// Enable peripheral.
-	USART -> CR1 |= BIT_MASK[0]; // Enable USART (UE = '1').
+	USART -> CR1 |= BIT_MASK(0); // Enable USART (UE = '1').
 	NVIC_EnableInterrupt(USART_GetIT(USART));
 }
 
@@ -198,7 +197,7 @@ void USART_SendByte(USART_Struct* usartStruct, unsigned char byte, ByteDisplayFo
 		break;
 	}
 	NVIC_EnableInterrupt(USART_GetIT(USART));
-	USART -> CR1 |= BIT_MASK[7]; // TXEIE = '1'.
+	USART -> CR1 |= BIT_MASK(7); // TXEIE = '1'.
 }
 
 /* RETURNS THE LAST RECEIVED BYTE.
@@ -227,18 +226,18 @@ void USART_SGKCU_Handler(void) {
 	// Get perpheral address.
 	USART_BaseAddress* USART = USART_SGKCU -> usartAddress;
 	// Interrupt was risen by TXE.
-	if (((USART -> ISR) & BIT_MASK[7]) != 0) {
+	if (((USART -> ISR) & BIT_MASK(7)) != 0) {
 		if ((USART_SGKCU -> txReadIndex) != (USART_SGKCU -> txWriteIndex)) {
 			// Send byte.
 			USART -> TDR = (USART_SGKCU -> txBuffer)[(USART_SGKCU -> txReadIndex)++];
 		}
 		else {
 			// No more bytes.
-			USART -> CR1 &= ~BIT_MASK[7]; // TXEIE = '0'.
+			USART -> CR1 &= ~BIT_MASK(7); // TXEIE = '0'.
 		}
 	}
 	// Interrupt was risen by RXNE.
-	if (((USART -> ISR) & BIT_MASK[5]) != 0) {
+	if (((USART -> ISR) & BIT_MASK(5)) != 0) {
 		unsigned char rxByte = USART -> RDR;
 		// Decode received byte.
 		AT_DecodeSGKCU(rxByte);

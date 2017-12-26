@@ -5,7 +5,7 @@
  *      Author: Ludovic
  */
 
-#include "masks.h"
+#include "enum.h"
 #include "nvic.h"
 #include "nvic_reg.h"
 
@@ -18,7 +18,7 @@
 void NVIC_EnableInterrupt(InterruptVector ITNum) {
 	// (ITNum >> 5) selects the proper register (ISER0 to ISER7) acting as a modulo.
 	// (ITNum & 0x0000001F) selects the proper bit to set.
-	NVIC -> ISER[ITNum >> 5] = BIT_MASK[(ITNum & 0x0000001F)];
+	NVIC -> ISER[ITNum >> 5] = BIT_MASK((ITNum & 0x0000001F));
 }
 
 /* DISABLE AN INTERRUPT LINE.
@@ -28,7 +28,7 @@ void NVIC_EnableInterrupt(InterruptVector ITNum) {
 void NVIC_DisableInterrupt(InterruptVector ITNum) {
 	// (ITNum >> 5) selects the proper register (ICER0 to ICER7) acting as a modulo.
 	// (ITNum & 0x0000001F) selects the proper bit to set.
-	NVIC -> ICER[ITNum >> 5] = BIT_MASK[(ITNum & 0x0000001F)];
+	NVIC -> ICER[ITNum >> 5] = BIT_MASK((ITNum & 0x0000001F));
 }
 
 /* SET THE PRIORITY OF AN INTERRUPT LINE.

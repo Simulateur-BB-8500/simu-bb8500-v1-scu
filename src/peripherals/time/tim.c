@@ -9,7 +9,6 @@
 #include "enum.h"
 #include "gpio.h"
 #include "mapping.h"
-#include "masks.h"
 #include "nvic.h"
 #include "nvic_reg.h"
 #include "rcc_reg.h"
@@ -18,14 +17,6 @@
 #include "usart.h"
 
 /*** TIM internal function ***/
-
-/* CLEAR A TIMER UPDATE EVENT FLAG.
- * @param TIM: Timer address ('TIM1' to 'TIM14').
- * @return: None.
- */
-void TIM_ClearFlag(TIM_BaseAddress* TIM) {
-	TIM -> SR &= ~BIT_MASK[0]; // Clear flag (UIF = '0').
-}
 
 /* RETURN THE CORRESPONDING INTERRUPT INDEX OF A GIVEN TIMER.
  * @param tim: 			Timer base address (should be 'TIM1' to 'TIM14).
@@ -89,46 +80,46 @@ void TIM_EnableClock(TIM_BaseAddress* TIM) {
 	// Check peripheral address.
 	switch ((unsigned int) TIM) {
 	case ((unsigned int) TIM1):
-		RCC -> APB2ENR |= BIT_MASK[0]; // TIM1EN = '1'.
+		RCC -> APB2ENR |= BIT_MASK(0); // TIM1EN = '1'.
 		break;
 	case ((unsigned int) TIM2):
-		RCC -> APB1ENR |= BIT_MASK[0]; // TIM2EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(0); // TIM2EN = '1'.
 		break;
 	case ((unsigned int) TIM3):
-		RCC -> APB1ENR |= BIT_MASK[1]; // TIM3EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(1); // TIM3EN = '1'.
 		break;
 	case ((unsigned int) TIM4):
-		RCC -> APB1ENR |= BIT_MASK[2]; // TIM4EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(2); // TIM4EN = '1'.
 		break;
 	case ((unsigned int) TIM5):
-		RCC -> APB1ENR |= BIT_MASK[3]; // TIM5EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(3); // TIM5EN = '1'.
 		break;
 	case ((unsigned int) TIM6):
-		RCC -> APB1ENR |= BIT_MASK[4]; // TIM6EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(4); // TIM6EN = '1'.
 		break;
 	case ((unsigned int) TIM7):
-		RCC -> APB1ENR |= BIT_MASK[5]; // TIM7EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(5); // TIM7EN = '1'.
 		break;
 	case ((unsigned int) TIM8):
-		RCC -> APB2ENR |= BIT_MASK[1]; // TIM8EN = '1'.
+		RCC -> APB2ENR |= BIT_MASK(1); // TIM8EN = '1'.
 		break;
 	case ((unsigned int) TIM9):
-		RCC -> APB2ENR |= BIT_MASK[16]; // TIM9EN = '1'.
+		RCC -> APB2ENR |= BIT_MASK(16); // TIM9EN = '1'.
 		break;
 	case ((unsigned int) TIM10):
-		RCC -> APB2ENR |= BIT_MASK[17]; // TIM10EN = '1'.
+		RCC -> APB2ENR |= BIT_MASK(17); // TIM10EN = '1'.
 		break;
 	case ((unsigned int) TIM11):
-		RCC -> APB2ENR |= BIT_MASK[18]; // TIM11EN = '1'.
+		RCC -> APB2ENR |= BIT_MASK(18); // TIM11EN = '1'.
 		break;
 	case ((unsigned int) TIM12):
-		RCC -> APB1ENR |= BIT_MASK[6]; // TIM12EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(6); // TIM12EN = '1'.
 		break;
 	case ((unsigned int) TIM13):
-		RCC -> APB1ENR |= BIT_MASK[7]; // TIM13EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(7); // TIM13EN = '1'.
 		break;
 	case ((unsigned int) TIM14):
-		RCC -> APB1ENR |= BIT_MASK[8]; // TIM14EN = '1'.
+		RCC -> APB1ENR |= BIT_MASK(8); // TIM14EN = '1'.
 		break;
 	}
 }
@@ -146,7 +137,7 @@ void TIM_Init(TIM_BaseAddress* TIM, unsigned int duration, Time_Unit unit, boole
 	// Enable peripheral clock.
 	TIM_EnableClock(TIM);
 	// Disable interrupt.
-	TIM -> DIER &= ~BIT_MASK[0]; // UIE = '0'.
+	TIM -> DIER &= ~BIT_MASK(0); // UIE = '0'.
 	// Stop and reset.
 	TIM_Stop(TIM, true);
 	// Clear update event flag (SR = '0').
@@ -178,7 +169,7 @@ void TIM_Init(TIM_BaseAddress* TIM, unsigned int duration, Time_Unit unit, boole
 		break;
 	}
 	// Enable interrupt.
-	TIM -> DIER |= BIT_MASK[0]; // UIE = '1'.
+	TIM -> DIER |= BIT_MASK(0); // UIE = '1'.
 	if (interruptEnable) {
 		NVIC_EnableInterrupt(TIM_GetIT(TIM));
 	}
@@ -191,7 +182,7 @@ void TIM_Init(TIM_BaseAddress* TIM, unsigned int duration, Time_Unit unit, boole
  * @return: 		None.
  */
 void TIM_Start(TIM_BaseAddress* TIM, boolean reset) {
-	TIM -> CR1 |= BIT_MASK[0]; // Enable counter (CEN = '1').
+	TIM -> CR1 |= BIT_MASK(0); // Enable counter (CEN = '1').
 	if (reset) {
 		TIM -> CNT = 0;
 	}
@@ -204,10 +195,18 @@ void TIM_Start(TIM_BaseAddress* TIM, boolean reset) {
  * @return: 		None.
  */
 void TIM_Stop(TIM_BaseAddress* TIM, boolean reset) {
-	TIM -> CR1 &= ~BIT_MASK[0]; // Disable counter (CEN = '0').
+	TIM -> CR1 &= ~BIT_MASK(0); // Disable counter (CEN = '0').
 	if (reset) {
 		TIM -> CNT = 0;
 	}
+}
+
+/* CLEAR A TIMER UPDATE EVENT FLAG.
+ * @param TIM: Timer address ('TIM1' to 'TIM14').
+ * @return: None.
+ */
+void TIM_ClearFlag(TIM_BaseAddress* TIM) {
+	TIM -> SR &= ~BIT_MASK(0); // Clear flag (UIF = '0').
 }
 
 /* CONFIGURE TIM1 AND TIM2 TO COUNT MILLISECONDS SINCE START-UP.
@@ -219,7 +218,7 @@ void TIM_InitMs(void) {
 	TIM_Init(TIM1, 1, milliseconds, false); // Overflows every millisecond.
 	// Master mode and update interrupt selected as trigger output.
 	TIM1 -> CR2 &= 0xFFFFFFAF; // MMS = '0x0'.
-	TIM1 -> CR2 |= BIT_MASK[5]; // MMS = '010'.
+	TIM1 -> CR2 |= BIT_MASK(5); // MMS = '010'.
 	// Enable TIM2 clock.
 	TIM_EnableClock(TIM2);
 	// Configure TIM2 as slave.
@@ -246,24 +245,4 @@ unsigned int TIM_GetMs(void) {
 void TIM_DelayMs(unsigned int msToWait) {
 	unsigned int now = TIM_GetMs();
 	while (TIM_GetMs() < (now + msToWait));
-}
-
-/*** TIM interrupt handlers ***/
-
-/* TIM6 INTERRUPT HANDLER.
- * @param: 	None.
- * @return: None.
- */
-void TIM6_Handler(void) {
-	TIM_ClearFlag(TIM6);
-	GPIO_Toggle(LED1);
-	USART_SendByte(USART_SGKCU, 0x55, Binary);
-}
-
-/* TIM7 INTERRUPT HANDLER.
- * @param: None.
- * @return: None.
- */
-void TIM7_Handler(void) {
-	TIM_ClearFlag(TIM7);
 }

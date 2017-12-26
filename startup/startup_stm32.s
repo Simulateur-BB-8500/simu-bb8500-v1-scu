@@ -152,7 +152,7 @@ g_pfnVectors:
 	.word	0 // 26 = TIM1_TRG_COM_TIM11.
 	.word	0 // 27 = TIM1_CC.
 	.word	0 // 28 = TIM2.
-	.word	0 // 29 = TIM3.
+	.word	TIM_KVB_Handler // 29 = TIM3.
 	.word	0 // 30 = TIM4.
 	.word	0 // 31 = I2C1_EV.
 	.word	0 // 32 = I2C1_ER.
@@ -177,8 +177,8 @@ g_pfnVectors:
 	.word	0 // 51 = SPI3.
 	.word	0 // 52 = UART4.
 	.word	0 // 53 = UART5.
-	.word	TIM6_Handler // 54 = TIM6_DAC.
-	.word	TIM7_Handler // 55 = TIM7.
+	.word	0 // 54 = TIM6_DAC.
+	.word	0 // 55 = TIM7.
 	.word	0 // 56 = DMA2_Stream0.
 	.word	0 // 57 = DMA2_Stream1.
 	.word	0 // 58 = DMA2_Stream2.
@@ -259,16 +259,13 @@ g_pfnVectors:
 
 	.weak	SystemInit
 	
-	.weak	TIM6_Handler
-	.thumb_set TIM6_Handler,Default_Handler
-	
-	.weak	TIM7_Handler
-	.thumb_set TIM7_Handler,Default_Handler
-	
 	.weak	ADC_Handler
 	.thumb_set ADC_Handler,Default_Handler
 	
 	.weak	USART_SGKCU_Handler
 	.thumb_set USART_SGKCU_Handler,Default_Handler
+	
+	.weak	TIM_KVB_Handler
+	.thumb_set TIM_KVB_Handler,Default_Handler
 
 /************************ (C) COPYRIGHT Ac6 *****END OF FILE****/

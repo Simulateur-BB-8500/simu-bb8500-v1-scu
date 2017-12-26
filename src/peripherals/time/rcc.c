@@ -5,7 +5,7 @@
  *      Author: Ludovic
  */
 
-#include "masks.h"
+#include "enum.h"
 #include "rcc.h"
 #include "rcc_reg.h"
 
@@ -22,11 +22,11 @@ void RCC_Init(void) {
 
 #else
 	// Disable HSE.
-	RCC -> CR &= ~BIT_MASK[16]; // Disable HSE (HSEON = '0').
+	RCC -> CR &= ~BIT_MASK(16); // Disable HSE (HSEON = '0').
 	// Enable HSI.
-	RCC -> CR |= BIT_MASK[0]; // Enable HSI (HSION = '1').
+	RCC -> CR |= BIT_MASK(0); // Enable HSI (HSION = '1').
 	// Wait for HSI to be stable.
-	//while (((RCC -> CR) & BIT_MASK[1]) != 1); // Wait for HSIRDY = '1'.
+	//while (((RCC -> CR) & BIT_MASK(1)) != 1); // Wait for HSIRDY = '1'.
 	// Select HSI.
 	RCC -> CFGR &= 0xFFFFFFFC; // HSI selected as system clock (SW = '00') -> SYSCLK = 16 MHz.
 	// Wait for HSI to be selected.
@@ -34,8 +34,8 @@ void RCC_Init(void) {
 #endif
 
 #ifdef USE_LSE
-	RCC -> CSR &= ~BIT_MASK[0]; // Disable LSI (LSION = '0').
-	RCC -> BDCR |= BIT_MASK[0]; // Enable LSE (X2) (LSEON = '1').
+	RCC -> CSR &= ~BIT_MASK(0); // Disable LSI (LSION = '0').
+	RCC -> BDCR |= BIT_MASK(0); // Enable LSE (X2) (LSEON = '1').
 #else
 
 #endif

@@ -8,7 +8,6 @@
 #include "adc_reg.h"
 #include "enum.h"
 #include "mapping.h"
-#include "masks.h"
 #include "nvic.h"
 #include "rcc_reg.h"
 #include "zpt.h"
@@ -33,13 +32,13 @@ void ADC_EnableClock(ADC_BaseAddress* ADC) {
 	// Check peripheral address.
 	switch ((unsigned int) ADC) {
 	case ((unsigned int) ADC1):
-		RCC -> APB2ENR |= BIT_MASK[8]; // (ADC1EN = '1').
+		RCC -> APB2ENR |= BIT_MASK(8); // (ADC1EN = '1').
 		break;
 	case ((unsigned int) ADC2):
-		RCC -> APB2ENR |= BIT_MASK[9]; // (ADC2EN = '1').
+		RCC -> APB2ENR |= BIT_MASK(9); // (ADC2EN = '1').
 		break;
 	case ((unsigned int) ADC3):
-		RCC -> APB2ENR |= BIT_MASK[10]; // (ADC3EN = '1').
+		RCC -> APB2ENR |= BIT_MASK(10); // (ADC3EN = '1').
 		break;
 	default:
 		break;
@@ -56,8 +55,8 @@ void ADCCR_Init(void) {
 	// Enable interrupt.
 	NVIC_EnableInterrupt(IT_ADC);
 	// Common registers.
-	ADCCR -> CCR &= ~BIT_MASK[23] ; // Temperature sensor disabled (TSVREFE = '0').
-	ADCCR -> CCR &= ~BIT_MASK[22] ; // Vbat channel disabled (VBATE = '0').
+	ADCCR -> CCR &= ~BIT_MASK(23) ; // Temperature sensor disabled (TSVREFE = '0').
+	ADCCR -> CCR &= ~BIT_MASK(22) ; // Vbat channel disabled (VBATE = '0').
 	ADCCR -> CCR &= 0xFFFCFFFF; // Prescaler = 2 (ADCPRE = '00').
 	ADCCR -> CCR &= 0xFFFF2FFF; // DMA disabled (DMA = '00').
 	ADCCR -> CCR &= 0xFFFFF0FF; // Delay between to sampling phases = 5*T (DELAY = '0000').
@@ -73,29 +72,29 @@ void ADC_Init(ADC_BaseAddress* ADC, ADC_Resolution resolution) {
 	// Enable peripheral clock.
 	ADC_EnableClock(ADC);
 	// Configure registers.
-	ADC -> CR1 &= ~BIT_MASK[8]; // Disable scan mode (SCAN = '0').
-	ADC -> CR1 |= BIT_MASK[5]; // Enable end of conversion interrupt (EOCIE = '1').
-	ADC -> CR2 |= BIT_MASK[10]; // EOC set at the end of each regular conversion (EOCS = '1').
-	ADC -> CR2 &= ~BIT_MASK[1]; // Single conversion mode (CONT = '0').
+	ADC -> CR1 &= ~BIT_MASK(8); // Disable scan mode (SCAN = '0').
+	ADC -> CR1 |= BIT_MASK(5); // Enable end of conversion interrupt (EOCIE = '1').
+	ADC -> CR2 |= BIT_MASK(10); // EOC set at the end of each regular conversion (EOCS = '1').
+	ADC -> CR2 &= ~BIT_MASK(1); // Single conversion mode (CONT = '0').
 	ADC -> SMPR1 &= 0xF7000000; // Sampling time = 3 cycles (SMPx = '000').
 	ADC -> SMPR2 &= 0xC0000000; // Sampling time = 3 cycles (SMPx = '000').
 	// Configure resolution.
 	switch(resolution) {
 	case bits6:
-		ADC -> CR1 |= BIT_MASK[25];
-		ADC -> CR1 |= BIT_MASK[24];
+		ADC -> CR1 |= BIT_MASK(25);
+		ADC -> CR1 |= BIT_MASK(24);
 		break;
 	case bits8:
-		ADC -> CR1 |= BIT_MASK[25];
-		ADC -> CR1 &= ~BIT_MASK[24];
+		ADC -> CR1 |= BIT_MASK(25);
+		ADC -> CR1 &= ~BIT_MASK(24);
 		break;
 	case bits10:
-		ADC -> CR1 &= ~BIT_MASK[25];
-		ADC -> CR1 |= BIT_MASK[24];
+		ADC -> CR1 &= ~BIT_MASK(25);
+		ADC -> CR1 |= BIT_MASK(24);
 		break;
 	case bits12:
-		ADC -> CR1 &= ~BIT_MASK[25];
-		ADC -> CR1 &= ~BIT_MASK[24];
+		ADC -> CR1 &= ~BIT_MASK(25);
+		ADC -> CR1 &= ~BIT_MASK(24);
 		break;
 	default:
 		break;
@@ -106,9 +105,9 @@ void ADC_Init(ADC_BaseAddress* ADC, ADC_Resolution resolution) {
 	ADC -> SQR2 &= 0xC0000000;
 	ADC -> SQR3 &= 0xC0000000;
 	// Result in right alignement.
-	ADC -> CR2 &= ~BIT_MASK[11]; // (ALIGN = '0').
+	ADC -> CR2 &= ~BIT_MASK(11); // (ALIGN = '0').
 	// Enable ADC.
-	ADC -> CR2 |= BIT_MASK[0]; // (ADON = '1').
+	ADC -> CR2 |= BIT_MASK(0); // (ADON = '1').
 }
 
 /* SET THE CURRENT CHANNEL OF AN ADC.
@@ -119,14 +118,14 @@ void ADC_Init(ADC_BaseAddress* ADC, ADC_Resolution resolution) {
 void ADC_SetChannel(ADC_BaseAddress* ADC, ADC_Channel channel) {
 	unsigned int i = 0;
 	for(i=0 ; i<ADC_SQx_LENGTH ; i++) {
-		unsigned int channelMasked = (channel-ADC_CHANNEL_ENUM_OFFSET) & BIT_MASK[i];
+		unsigned int channelMasked = (channel-ADC_CHANNEL_ENUM_OFFSET) & BIT_MASK(i);
 		if (channelMasked == 0) {
 			// Bit = '0'.
-			ADC -> SQR3 &= ~BIT_MASK[i];
+			ADC -> SQR3 &= ~BIT_MASK(i);
 		}
 		else {
 			// Bit = '1'.
-			ADC -> SQR3 |= BIT_MASK[i];
+			ADC -> SQR3 |= BIT_MASK(i);
 		}
 	}
 }
@@ -137,8 +136,8 @@ void ADC_SetChannel(ADC_BaseAddress* ADC, ADC_Channel channel) {
  */
 unsigned int ADC_GetFullScale(ADC_BaseAddress* ADC) {
 	unsigned int result = 0;
-	if ((ADC -> CR1 & BIT_MASK[25]) == 0) {
-		if ((ADC -> CR1 & BIT_MASK[24]) == 0) {
+	if ((ADC -> CR1 & BIT_MASK(25)) == 0) {
+		if ((ADC -> CR1 & BIT_MASK(24)) == 0) {
 			// RES = '00'.
 			result = bits12;
 		}
@@ -148,7 +147,7 @@ unsigned int ADC_GetFullScale(ADC_BaseAddress* ADC) {
 		}
 	}
 	else {
-		if ((ADC -> CR1 & BIT_MASK[24]) == 0) {
+		if ((ADC -> CR1 & BIT_MASK(24)) == 0) {
 			// RES = '10'.
 			result = bits8;
 		}
@@ -166,7 +165,7 @@ unsigned int ADC_GetFullScale(ADC_BaseAddress* ADC) {
  */
 void ADC_StartConversion(ADC_BaseAddress* ADC) {
 	conversionCompleted = false;
-	ADC -> CR2 |= BIT_MASK[30]; // Start conversion (SWSTART = '1').
+	ADC -> CR2 |= BIT_MASK(30); // Start conversion (SWSTART = '1').
 }
 
 /* RETURNS THE ADC OUTPUT VALUE.

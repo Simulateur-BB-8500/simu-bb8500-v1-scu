@@ -8,7 +8,6 @@
 #include "dac.h"
 #include "dac_reg.h"
 #include "enum.h"
-#include "masks.h"
 #include "rcc_reg.h"
 
 /*** DAC functions ***/
@@ -19,7 +18,7 @@
  */
 void DAC_Init(void) {
 	// Enable DAC clock.
-	RCC -> APB1ENR |= BIT_MASK[29]; // (DACEN = '1').
+	RCC -> APB1ENR |= BIT_MASK(29); // (DACEN = '1').
 	// Enable channels.
 	DAC -> CR |= 0x00010001; // Enable channels 1 and 2 (ENx = '1').
 	// Enable output.
