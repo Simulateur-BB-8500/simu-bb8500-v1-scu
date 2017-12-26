@@ -7,16 +7,9 @@
 
 #include "adc.h"
 #include "adc_reg.h"
-#include "at.h"
 #include "dac.h"
-#include "enum.h"
 #include "gpio.h"
-#include "gpio_reg.h"
-#include "mapping.h"
-#include "nvic.h"
 #include "rcc.h"
-#include "sw2.h"
-#include "sw3.h"
 #include "tim.h"
 #include "tim_reg.h"
 #include "usart.h"
@@ -29,7 +22,7 @@
  */
 int main(void) {
 
-	/*** Peripherals initialisation ***/
+	/*** Peripherals ***/
 
 	// Clocks and timers.
 	RCC_Init();
@@ -41,14 +34,10 @@ int main(void) {
 	// ADC (only ADC1 is used).
 	ADCCR_Init();
 	ADC_Init(ADC1, ADC_RESOLUTION);
-	// USART;
+	// USART.
 	USART_Init(USART_SGKCU, USART2);
 
-	//TIM_Init(TIM6, 1, seconds, true);
-	//TIM_Start(TIM6, true);
-
-	//TIM_Init(TIM7, 200, milliseconds, true);
-	//TIM_Start(TIM7, true);
+	/*** Simulator ***/
 
 	ZPT_Init();
 

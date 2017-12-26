@@ -15,6 +15,7 @@
 /*** 3-poles switch #define ***/
 
 #define SW3_DELTA_HYSTERESIS_MV		100 // Set the voltage difference (in mV) between low and high thresholds.
+
 #define SW3_DELTA_HYSTERESIS		((SW3_DELTA_HYSTERESIS_MV*ADC_RESOLUTION)/(VCC_MV))
 #define SW3_BACK_THRESHOLD_LOW 		((ADC_RESOLUTION/4)-(SW3_DELTA_HYSTERESIS/2))
 #define SW3_BACK_THRESHOLD_HIGH 	((ADC_RESOLUTION/4)+(SW3_DELTA_HYSTERESIS/2))
@@ -27,7 +28,7 @@ typedef struct {
 	GPIO_Struct* gpio;
 	ADC_Struct* adc;
 	unsigned int voltage; // Current voltage measured by ADC.
-	SW3_StateMachine currentState; // Current state in SW3 state machine.
+	SW3_StateMachine machineState; // Current state in SW3 state machine.
 	SW3_State state; // State after anti-bouncing (used in higher levels).
 	unsigned int debouncingMs; // Delay before validating states (in ms).
 	unsigned int confirmStartTime;

@@ -62,7 +62,7 @@ void SW3_Init(SW3_Struct* sw3, GPIO_Struct* pGpio, ADC_Struct* pAdc, unsigned in
 	sw3 -> gpio = pGpio;
 	sw3 -> adc = pAdc;
 	sw3 -> voltage = (ADC_GetFullScale(pAdc -> adcAddress))/(2); // Neutral = Vcc/2.
-	sw3 -> currentState = SW3_NEUTRAL;
+	sw3 -> machineState = SW3_NEUTRAL;
 	sw3 -> state = NEUTRAL;
 	sw3 -> debouncingMs = pDebouncingMs;
 	sw3 -> confirmStartTime = 0;
@@ -81,27 +81,26 @@ void SW3_SetVoltage(SW3_Struct* sw3, unsigned int newVoltage) {
  * @return:		None.
  */
 void SW3_UpdateState(SW3_Struct* sw3) {
-
-	switch(sw3 -> currentState) {
+	switch(sw3 -> machineState) {
 	case SW3_CONFIRM_NEUTRAL:
 		// Check previous state.
 		switch (sw3 -> state) {
 		case BACK:
 			if (SW3_VoltageIsBack(sw3)) {
 				// Come back to BACK without confirmation because it's the previous confirmed state.
-				sw3 -> currentState = BACK;
+				sw3 -> machineState = BACK;
 			}
 			else {
 				if (SW3_VoltageIsFront(sw3)) {
 					// New state to confirm.
-					sw3 -> currentState = SW3_CONFIRM_FRONT;
+					sw3 -> machineState = SW3_CONFIRM_FRONT;
 					// Reset confirm start time.
 					sw3 -> confirmStartTime = TIM_GetMs();
 				}
 				else {
-					if (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs)) {
+					if ((SW3_VoltageIsNeutral(sw3)) && (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs))) {
 						// NEUTRAL position confirmed.
-						sw3 -> currentState = SW3_NEUTRAL;
+						sw3 -> machineState = SW3_NEUTRAL;
 					}
 				}
 			}
@@ -109,19 +108,19 @@ void SW3_UpdateState(SW3_Struct* sw3) {
 		case FRONT:
 			if (SW3_VoltageIsFront(sw3)) {
 				// Come back to FRONT without confirmation because it's the previous confirmed state.
-				sw3 -> currentState = FRONT;
+				sw3 -> machineState = FRONT;
 			}
 			else {
 				if (SW3_VoltageIsBack(sw3)) {
 					// New state to confirm.
-					sw3 -> currentState = SW3_CONFIRM_BACK;
+					sw3 -> machineState = SW3_CONFIRM_BACK;
 					// Reset confirm start time.
 					sw3 -> confirmStartTime = TIM_GetMs();
 				}
 				else {
-					if (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs)) {
+					if ((SW3_VoltageIsNeutral(sw3)) && (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs))) {
 						// NEUTRAL position confirmed.
-						sw3 -> currentState = SW3_NEUTRAL;
+						sw3 -> machineState = SW3_NEUTRAL;
 					}
 				}
 			}
@@ -134,13 +133,13 @@ void SW3_UpdateState(SW3_Struct* sw3) {
 	case SW3_NEUTRAL:
 		sw3 -> state = NEUTRAL; // Switch is in neutral position.
 		if (SW3_VoltageIsBack(sw3)) {
-			sw3 -> currentState = SW3_CONFIRM_BACK;
+			sw3 -> machineState = SW3_CONFIRM_BACK;
 			// Reset confirm start time.
 			sw3 -> confirmStartTime = TIM_GetMs();
 		}
 		else {
 			if (SW3_VoltageIsFront(sw3)) {
-				sw3 -> currentState = SW3_CONFIRM_FRONT;
+				sw3 -> machineState = SW3_CONFIRM_FRONT;
 				// Reset confirm start time.
 				sw3 -> confirmStartTime = TIM_GetMs();
 			}
@@ -152,19 +151,19 @@ void SW3_UpdateState(SW3_Struct* sw3) {
 		case NEUTRAL:
 			if (SW3_VoltageIsNeutral(sw3)) {
 				// Come back to NEUTRAL without confirmation because it's the previous confirmed state.
-				sw3 -> currentState = NEUTRAL;
+				sw3 -> machineState = NEUTRAL;
 			}
 			else {
 				if (SW3_VoltageIsFront(sw3)) {
 					// New state to confirm.
-					sw3 -> currentState = SW3_CONFIRM_FRONT;
+					sw3 -> machineState = SW3_CONFIRM_FRONT;
 					// Reset confirm start time.
 					sw3 -> confirmStartTime = TIM_GetMs();
 				}
 				else {
-					if (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs)) {
+					if ((SW3_VoltageIsBack(sw3)) && (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs))) {
 						// BACK position confirmed.
-						sw3 -> currentState = SW3_BACK;
+						sw3 -> machineState = SW3_BACK;
 					}
 				}
 			}
@@ -172,19 +171,19 @@ void SW3_UpdateState(SW3_Struct* sw3) {
 		case FRONT:
 			if (SW3_VoltageIsFront(sw3)) {
 				// Come back to FRONT without confirmation because it's the previous confirmed state.
-				sw3 -> currentState = FRONT;
+				sw3 -> machineState = FRONT;
 			}
 			else {
 				if (SW3_VoltageIsNeutral(sw3)) {
 					// New state to confirm.
-					sw3 -> currentState = SW3_CONFIRM_NEUTRAL;
+					sw3 -> machineState = SW3_CONFIRM_NEUTRAL;
 					// Reset confirm start time.
 					sw3 -> confirmStartTime = TIM_GetMs();
 				}
 				else {
-					if (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs)) {
+					if ((SW3_VoltageIsBack(sw3)) && (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs))) {
 						// BACK position confirmed.
-						sw3 -> currentState = SW3_BACK;
+						sw3 -> machineState = SW3_BACK;
 					}
 				}
 			}
@@ -197,13 +196,13 @@ void SW3_UpdateState(SW3_Struct* sw3) {
 	case SW3_BACK:
 		sw3 -> state = BACK; // Switch is in back position.
 		if (SW3_VoltageIsNeutral(sw3)) {
-			sw3 -> currentState = SW3_CONFIRM_NEUTRAL;
+			sw3 -> machineState = SW3_CONFIRM_NEUTRAL;
 			// Reset confirm start time.
 			sw3 -> confirmStartTime = TIM_GetMs();
 		}
 		else {
 			if (SW3_VoltageIsFront(sw3)) {
-				sw3 -> currentState = SW3_CONFIRM_FRONT;
+				sw3 -> machineState = SW3_CONFIRM_FRONT;
 				// Reset confirm start time.
 				sw3 -> confirmStartTime = TIM_GetMs();
 			}
@@ -215,19 +214,19 @@ void SW3_UpdateState(SW3_Struct* sw3) {
 		case BACK:
 			if (SW3_VoltageIsBack(sw3)) {
 				// Come back to BACK without confirmation because it's the previous confirmed state.
-				sw3 -> currentState = BACK;
+				sw3 -> machineState = BACK;
 			}
 			else {
 				if (SW3_VoltageIsNeutral(sw3)) {
 					// New state to confirm.
-					sw3 -> currentState = SW3_CONFIRM_NEUTRAL;
+					sw3 -> machineState = SW3_CONFIRM_NEUTRAL;
 					// Reset confirm start time.
 					sw3 -> confirmStartTime = TIM_GetMs();
 				}
 				else {
-					if (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs)) {
+					if ((SW3_VoltageIsFront(sw3)) && (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs))) {
 						// FRONT position confirmed.
-						sw3 -> currentState = SW3_FRONT;
+						sw3 -> machineState = SW3_FRONT;
 					}
 				}
 			}
@@ -235,19 +234,19 @@ void SW3_UpdateState(SW3_Struct* sw3) {
 		case NEUTRAL:
 			if (SW3_VoltageIsNeutral(sw3)) {
 				// Come back to NEUTRAL without confirmation because it's the previous confirmed state.
-				sw3 -> currentState = NEUTRAL;
+				sw3 -> machineState = NEUTRAL;
 			}
 			else {
 				if (SW3_VoltageIsBack(sw3)) {
 					// New state to confirm.
-					sw3 -> currentState = SW3_CONFIRM_BACK;
+					sw3 -> machineState = SW3_CONFIRM_BACK;
 					// Reset confirm start time.
 					sw3 -> confirmStartTime = TIM_GetMs();
 				}
 				else {
-					if (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs)) {
+					if ((SW3_VoltageIsFront(sw3)) && (TIM_GetMs() > (sw3 -> confirmStartTime) + (sw3 -> debouncingMs))) {
 						// FRONT position confirmed.
-						sw3 -> currentState = SW3_FRONT;
+						sw3 -> machineState = SW3_FRONT;
 					}
 				}
 			}
@@ -260,13 +259,13 @@ void SW3_UpdateState(SW3_Struct* sw3) {
 	case SW3_FRONT:
 		sw3 -> state = FRONT; // Switch is in front position.
 		if (SW3_VoltageIsNeutral(sw3)) {
-			sw3 -> currentState = SW3_CONFIRM_NEUTRAL;
+			sw3 -> machineState = SW3_CONFIRM_NEUTRAL;
 			// Reset confirm start time.
 			sw3 -> confirmStartTime = TIM_GetMs();
 		}
 		else {
 			if (SW3_VoltageIsBack(sw3)) {
-				sw3 -> currentState = SW3_CONFIRM_BACK;
+				sw3 -> machineState = SW3_CONFIRM_BACK;
 				// Reset confirm start time.
 				sw3 -> confirmStartTime = TIM_GetMs();
 			}

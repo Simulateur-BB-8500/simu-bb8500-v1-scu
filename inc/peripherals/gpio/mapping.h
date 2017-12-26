@@ -103,6 +103,7 @@
 #define LED1 			(&((GPIO_Struct) {GPIOC, 0}))
 #define LED2			(&((GPIO_Struct) {GPIOC, 3}))
 #define LED3			(&((GPIO_Struct) {GPIOD, 7}))
+#define LED4			(&((GPIO_Struct) {GPIOD, 4}))
 #define BUTTON			(&((GPIO_Struct) {GPIOA, 3}))
 // ZPT
 #define ZPT				ADC12_IN8

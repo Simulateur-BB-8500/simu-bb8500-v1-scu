@@ -7,40 +7,49 @@
 
 #include "gpio.h"
 #include "mapping.h"
-#include "sw3.h"
+#include "sw4.h"
 #include "zpt.h"
 
 /*** ZPT global variables ***/
 
-static SW3_Struct zpt;
+static SW4_Struct zpt;
 
 /*** ZPT functions ***/
 
 void ZPT_Init(void) {
-	SW3_Init(&zpt, ZPT, ZPT_ADC, 2000);
+	SW4_Init(&zpt, ZPT, ZPT_ADC, 2000);
 }
 
 void ZPT_SetVoltage(unsigned int newVoltage) {
-	SW3_SetVoltage(&zpt, newVoltage);
+	SW4_SetVoltage(&zpt, newVoltage);
 }
 
 void ZPT_Routine(void) {
-	SW3_UpdateState(&zpt);
+	SW4_UpdateState(&zpt);
 	switch (zpt.state) {
-	case NEUTRAL:
+	case P0:
 		GPIO_Write(LED1, LOW);
-		GPIO_Write(LED2, HIGH);
+		GPIO_Write(LED2, LOW);
 		GPIO_Write(LED3, LOW);
+		GPIO_Write(LED4, HIGH);
 		break;
-	case BACK:
+	case P1:
 		GPIO_Write(LED1, LOW);
 		GPIO_Write(LED2, LOW);
 		GPIO_Write(LED3, HIGH);
+		GPIO_Write(LED4, LOW);
 		break;
-	case FRONT:
+	case P2:
+		GPIO_Write(LED1, LOW);
+		GPIO_Write(LED2, HIGH);
+		GPIO_Write(LED3, LOW);
+		GPIO_Write(LED4, LOW);
+		break;
+	case P3:
 		GPIO_Write(LED1, HIGH);
 		GPIO_Write(LED2, LOW);
 		GPIO_Write(LED3, LOW);
+		GPIO_Write(LED4, LOW);
 		break;
 	default:
 		// Unknown state.

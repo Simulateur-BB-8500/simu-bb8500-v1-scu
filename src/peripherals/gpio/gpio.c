@@ -268,6 +268,7 @@ void GPIO_Init(void) {
 	GPIO_Configure(LED1, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 	GPIO_Configure(LED2, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 	GPIO_Configure(LED3, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(LED4, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 	GPIO_Configure(BUTTON, Input, OpenDrain, LowSpeed, PullUp, 0);
 	// DAC.
 	GPIO_Configure(AM_OUTPUT, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
