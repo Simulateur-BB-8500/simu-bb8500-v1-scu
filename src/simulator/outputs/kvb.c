@@ -14,10 +14,18 @@
 
 /*** KVB #define ***/
 
-#define NUMBER_OF_SEGMENTS 	8 		// 7 segments + dot.
-#define NUMBER_OF_DISPLAYS 	6 		// KVB has 6 7-segments displays (3 yellow and 3 green).
-#define KVB_TIMER 			TIM3 	// Address of timer used for KVB displaying.
-#define KVB_SWEEP_MS		1 		// Sweep period in ms.
+#define NUMBER_OF_SEGMENTS 			8 		// 7 segments + dot.
+#define NUMBER_OF_DISPLAYS 			6 		// KVB has 6 7-segments displays (3 yellow and 3 green).
+#define KVB_TIMER 					TIM3 	// Address of timer used for KVB displaying.
+#define KVB_SWEEP_MS				2 		// Sweep period in ms.
+// Display durations in ms.
+#define KVB_PA400_TEXT				((unsigned char*) "PA 400")
+#define KVB_PA400_DURATION_MS		2000
+#define KVB_PA400_OFF_DURATION_MS	2000
+#define KVB_UC512_TEXT				((unsigned char*) "UC 512")
+#define KVB_UC512_DURATION_MS		2000
+#define KVB_888888_TEXT				((unsigned char*) "888888")
+#define KVB_888888_DURATION_MS		3000
 
 /*** KVB global variables ***/
 
@@ -29,7 +37,9 @@ static unsigned char displayIndex = 0;
 static unsigned char segmentIndex = 0;
 static GPIO_Struct* segmentsGpio[NUMBER_OF_SEGMENTS] = {KVB_ZSA, KVB_ZSB, KVB_ZSC, KVB_ZSD, KVB_ZSE, KVB_ZSF, KVB_ZSG, KVB_ZD};
 static GPIO_Struct* displaysGpio[NUMBER_OF_DISPLAYS] = {KVB_ZJG, KVB_ZJC, KVB_ZJD, KVB_ZVG, KVB_ZVC, KVB_ZVD};
-static boolean interDisplay = false; // Used in timer handler to avoid streaks.
+// KVB state machine.
+static KVB_State kvbState = KVB_OFF;
+static unsigned int kvbSwitchStateTime = 0; // In ms.
 
 /*** KVB internal functions ***/
 
@@ -128,25 +138,14 @@ unsigned char KVB_AsciiTo7Segments(unsigned char ascii) {
 	case '9':
 		segment = 0b01101111;
 		break;
+	case '-':
+		segment = 0b01000000;
+		break;
 	default:
 		segment = 0;
 		break;
 	}
 	return segment;
-}
-
-/* SWITCH OFF ALL KVB PANEL.
- * @param:	None.
- * @return:	None.
- */
-void KVB_DisplayOff(void) {
-	unsigned int i = 0;
-	for (i=0 ; i<NUMBER_OF_DISPLAYS ; i++) {
-		GPIO_Write(displaysGpio[i], LOW);
-	}
-	for (i=0 ; i<NUMBER_OF_SEGMENTS ; i++) {
-		GPIO_Write(segmentsGpio[i], LOW);
-	}
 }
 
 /*** KVB functions ***/
@@ -193,37 +192,126 @@ void KVB_Display(unsigned char* display) {
 	}
 }
 
+/* SWITCH OFF ALL KVB PANEL.
+ * @param:	None.
+ * @return:	None.
+ */
+void KVB_DisplayOff(void) {
+	unsigned int i = 0;
+	// Flush buffers and switch off GPIOs.
+	for (i=0 ; i<NUMBER_OF_DISPLAYS ; i++) {
+		GPIO_Write(displaysGpio[i], LOW);
+		asciiData[i] = 0;
+		segmentsData[i] = 0;
+	}
+	for (i=0 ; i<NUMBER_OF_SEGMENTS ; i++) {
+		GPIO_Write(segmentsGpio[i], LOW);
+	}
+}
+
+/* MAIN ROUTINE OF KVB.
+ * @param blUnlocked:	Indicates if the BL is unlocked ('true') or not ('false').
+ * @return:				None.
+ */
+void KVB_Routine(boolean blUnlocked) {
+	switch (kvbState) {
+	case KVB_OFF:
+		KVB_DisplayOff();
+		if (blUnlocked == true) {
+			kvbState = KVB_PA400;
+			kvbSwitchStateTime = TIM_GetMs();
+		}
+		break;
+	case KVB_PA400:
+		KVB_Display(KVB_PA400_TEXT);
+		if (blUnlocked == false) {
+			kvbState = KVB_OFF;
+		}
+		else {
+			if (TIM_GetMs() > (kvbSwitchStateTime + KVB_PA400_DURATION_MS)) {
+				kvbState = KVB_PA400_OFF;
+				kvbSwitchStateTime = TIM_GetMs();
+			}
+		}
+		break;
+	case KVB_PA400_OFF:
+		KVB_DisplayOff();
+		if (blUnlocked == false) {
+			kvbState = KVB_OFF;
+		}
+		else {
+			if (TIM_GetMs() > (kvbSwitchStateTime + KVB_PA400_OFF_DURATION_MS)) {
+				kvbState = KVB_UC512;
+				kvbSwitchStateTime = TIM_GetMs();
+			}
+		}
+		break;
+	case KVB_UC512:
+		KVB_Display(KVB_UC512_TEXT);
+		if (blUnlocked == false) {
+			kvbState = KVB_OFF;
+		}
+		else {
+			if (TIM_GetMs() > (kvbSwitchStateTime + KVB_UC512_DURATION_MS)) {
+				kvbState = KVB_888888;
+				kvbSwitchStateTime = TIM_GetMs();
+			}
+		}
+		break;
+	case KVB_888888:
+		KVB_Display(KVB_888888_TEXT);
+		if (blUnlocked == false) {
+			kvbState = KVB_OFF;
+		}
+		else {
+			if (TIM_GetMs() > (kvbSwitchStateTime + KVB_888888_DURATION_MS)) {
+				kvbState = KVB_888888_OFF;
+				kvbSwitchStateTime = TIM_GetMs();
+			}
+		}
+		break;
+	case KVB_888888_OFF:
+		KVB_DisplayOff();
+		if (blUnlocked == false) {
+			kvbState = KVB_OFF;
+		}
+		else {
+			// TBC.
+		}
+		break;
+	case KVB_SLAVE_MODE:
+		// TBC.
+		break;
+	default:
+		break;
+	}
+}
+
 /* KVB TIMER INTERRUPT HANDLER.
  * @param: 	None.
  * @return: None.
  */
 void TIM_KVB_Handler(void) {
 	TIM_ClearFlag(KVB_TIMER);
-	if (interDisplay == true) {
-		// Switch off previous display to avoid streaks.
-		KVB_DisplayOff();
-		// Increment and manage index.
-		displayIndex++;
-		if (displayIndex > (NUMBER_OF_DISPLAYS-1)) {
-			displayIndex = 0;
-		}
-		interDisplay = false;
+	// Switch off previous display.
+	GPIO_Write(displaysGpio[displayIndex], LOW);
+	// Increment and manage index.
+	displayIndex++;
+	if (displayIndex > (NUMBER_OF_DISPLAYS-1)) {
+		displayIndex = 0;
 	}
-	else {
-		// Process display only if a character is present.
-		if (segmentsData[displayIndex] != 0) {
-			// Switch on current display.
-			GPIO_Write(displaysGpio[displayIndex], HIGH);
-			// Switch on and off the segments of the current display.
-			for (segmentIndex=0 ; segmentIndex<NUMBER_OF_SEGMENTS ; segmentIndex++) {
-				if ((segmentsData[displayIndex] & BIT_MASK(segmentIndex)) != 0) {
-					GPIO_Write(segmentsGpio[segmentIndex], HIGH);
-				}
-				else {
-					GPIO_Write(segmentsGpio[segmentIndex], LOW);
-				}
+	// Process display only if a character is present.
+	if (segmentsData[displayIndex] != 0) {
+		// Switch on and off the segments of the current display.
+		for (segmentIndex=0 ; segmentIndex<NUMBER_OF_SEGMENTS ; segmentIndex++) {
+			if ((segmentsData[displayIndex] & BIT_MASK(segmentIndex)) != 0) {
+				GPIO_Write(segmentsGpio[segmentIndex], HIGH);
+			}
+			else {
+				GPIO_Write(segmentsGpio[segmentIndex], LOW);
 			}
 		}
-		interDisplay = true;
+		// Finally switch on current display.
+		GPIO_Write(displaysGpio[displayIndex], HIGH);
 	}
 }

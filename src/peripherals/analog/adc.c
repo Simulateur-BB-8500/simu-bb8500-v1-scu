@@ -177,8 +177,8 @@ unsigned int ADC_GetVoltage(ADC_BaseAddress* ADC) {
 }
 
 /* MAIN ROUTINE OF ADC.
- * @param:	None.
- * @return:	None.
+ * @param blUnlocked:	Indicates if the BL is unlocked ('true') or not ('false').
+ * @return:				None.
  */
 void ADC_Routine(boolean blUnlocked) {
 	switch (adcState) {

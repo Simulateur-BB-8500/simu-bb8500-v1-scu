@@ -128,4 +128,14 @@ typedef enum {
 	P3
 } SW4_State;
 
+typedef enum {
+	KVB_OFF = 160,
+	KVB_PA400,
+	KVB_PA400_OFF,
+	KVB_UC512,
+	KVB_888888,
+	KVB_888888_OFF,
+	KVB_SLAVE_MODE
+} KVB_State;
+
 #endif /* REGISTERS_ENUM_H_ */

@@ -13,5 +13,6 @@
 void KVB_Init(void);
 void KVB_Display(unsigned char* display);
 void KVB_DisplayOff(void);
+void KVB_Routine(boolean blUnlocked);
 
 #endif /* SIMULATOR_OUTPUTS_KVB_H_ */

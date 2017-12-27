@@ -42,7 +42,6 @@ int main(void) {
 
 	ZPT_Init();
 	KVB_Init();
-	KVB_Display("bb8614");
 
 	/*** Global variables initialisation ***/
 
@@ -51,6 +50,7 @@ int main(void) {
 	while(1) {
 		ADC_Routine(true);
 		ZPT_Routine();
+		KVB_Routine(true);
 	}
 
 	return 0;
