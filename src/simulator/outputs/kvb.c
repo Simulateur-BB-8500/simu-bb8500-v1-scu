@@ -14,9 +14,10 @@
 
 /*** KVB #define ***/
 
+// KVB segments.
 #define NUMBER_OF_SEGMENTS 			8 		// 7 segments + dot.
 #define NUMBER_OF_DISPLAYS 			6 		// KVB has 6 7-segments displays (3 yellow and 3 green).
-#define KVB_TIMER 					TIM3 	// Address of timer used for KVB displaying.
+#define TIM_KVB 					TIM6 	// Address of timer used for KVB displaying.
 #define KVB_SWEEP_MS				2 		// Sweep period in ms.
 // Display durations in ms.
 #define KVB_PA400_TEXT				((unsigned char*) "PA 400")
@@ -26,15 +27,20 @@
 #define KVB_UC512_DURATION_MS		2000
 #define KVB_888888_TEXT				((unsigned char*) "888888")
 #define KVB_888888_DURATION_MS		3000
+// KVB LVAL
+#define TIM_LVAL					TIM8			// Address of timer used for LVAL light PWM.
+#define CHANNEL_LVAL				PWM_Channel1	// PWM channel.
+#define T_PWM						900				// PWM period in µs.
+#define KVB_LVAL_BLINK_PERIOD_MS	900				// Period of LVAL blinking (in ms).
 
 /*** KVB global variables ***/
 
 // Each display state is coded in a byte: <dot G F E D B C B A>.
 // A '1' bit means the segment is on, a '0' means the segment is off.
-static unsigned char asciiData[NUMBER_OF_DISPLAYS];
-static unsigned char segmentsData[NUMBER_OF_DISPLAYS];
-static unsigned char displayIndex = 0;
-static unsigned char segmentIndex = 0;
+static volatile unsigned char asciiData[NUMBER_OF_DISPLAYS];
+static volatile unsigned char segmentsData[NUMBER_OF_DISPLAYS];
+static volatile unsigned char displayIndex = 0;
+static volatile unsigned char segmentIndex = 0;
 static GPIO_Struct* segmentsGpio[NUMBER_OF_SEGMENTS] = {KVB_ZSA, KVB_ZSB, KVB_ZSC, KVB_ZSD, KVB_ZSE, KVB_ZSF, KVB_ZSG, KVB_ZD};
 static GPIO_Struct* displaysGpio[NUMBER_OF_DISPLAYS] = {KVB_ZJG, KVB_ZJC, KVB_ZJD, KVB_ZVG, KVB_ZVC, KVB_ZVD};
 // KVB state machine.
@@ -162,9 +168,27 @@ void KVB_Init(void) {
 		segmentsData[i] = 0;
 	}
 	// Init KVB GPIOs.
+	GPIO_Configure(KVB_ZSA, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSB, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSE, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSF, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZSG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZJG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZJC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZJD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZVG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZVC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_ZVD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
+	GPIO_Configure(KVB_LVAL, AlternateFunction, PushPull, HighSpeed, NoPullUpNoPullDown, 3); // TIM8_CH1.
 	// Init and start KVB timer.
-	TIM_Init(KVB_TIMER, KVB_SWEEP_MS, milliseconds, true);
-	TIM_Start(KVB_TIMER, true);
+	TIM_Init(TIM_KVB, KVB_SWEEP_MS, milliseconds, true);
+	TIM_Start(TIM_KVB, true);
+	// Init and start LVAL PWM timer.
+	PWM_Init(TIM_LVAL, T_PWM, microseconds);
+	PWM_SetDutyCycle(TIM_LVAL, CHANNEL_LVAL, 0);
+	PWM_Start(TIM_LVAL, true);
 }
 
 /* DISPLAY A STRING ON KVB PANEL.
@@ -173,12 +197,12 @@ void KVB_Init(void) {
  */
 void KVB_Display(unsigned char* display) {
 	unsigned char charIndex = 0;
-	// Copy message into asciidata.
+	// Copy message into asciiData.
 	while (*display) {
 		asciiData[charIndex] = *display++;
 		charIndex++;
 		if (charIndex == NUMBER_OF_DISPLAYS) {
-			// Number of display reached.
+			// Number of displays reached.
 			break;
 		}
 	}
@@ -190,6 +214,25 @@ void KVB_Display(unsigned char* display) {
 	for (charIndex=0 ; charIndex<NUMBER_OF_DISPLAYS ; charIndex++) {
 		segmentsData[charIndex] = KVB_AsciiTo7Segments(asciiData[charIndex]);
 	}
+}
+
+/* COMPUTE THE DUTY CYCLE TO MAKE LVAL BLINK.
+ * @param:	None.
+ * @return:	None.
+ */
+void KVB_BlinkLVAL(void) {
+	// TBC: add time offset to start at 0%.
+	unsigned int t = TIM_GetMs() % KVB_LVAL_BLINK_PERIOD_MS;
+	unsigned int lvalDutyCycle = 0;
+	// Triangle wave equation.
+	if (t <= (KVB_LVAL_BLINK_PERIOD_MS/2)) {
+		lvalDutyCycle = (200*t)/KVB_LVAL_BLINK_PERIOD_MS;
+	}
+	else {
+		lvalDutyCycle = 200-((200*t)/KVB_LVAL_BLINK_PERIOD_MS);
+	}
+	// Set duty cycle.
+	PWM_SetDutyCycle(TIM_LVAL, CHANNEL_LVAL, lvalDutyCycle);
 }
 
 /* SWITCH OFF ALL KVB PANEL.
@@ -259,6 +302,7 @@ void KVB_Routine(boolean blUnlocked) {
 		}
 		break;
 	case KVB_888888:
+		KVB_BlinkLVAL();
 		KVB_Display(KVB_888888_TEXT);
 		if (blUnlocked == false) {
 			kvbState = KVB_OFF;
@@ -271,15 +315,17 @@ void KVB_Routine(boolean blUnlocked) {
 		}
 		break;
 	case KVB_888888_OFF:
+		KVB_BlinkLVAL();
 		KVB_DisplayOff();
 		if (blUnlocked == false) {
 			kvbState = KVB_OFF;
 		}
 		else {
-			// TBC.
+			kvbState = KVB_SLAVE_MODE;
 		}
 		break;
 	case KVB_SLAVE_MODE:
+		KVB_BlinkLVAL();
 		// TBC.
 		break;
 	default:
@@ -292,7 +338,8 @@ void KVB_Routine(boolean blUnlocked) {
  * @return: None.
  */
 void TIM_KVB_Handler(void) {
-	TIM_ClearFlag(KVB_TIMER);
+	TIM_Stop(TIM_KVB, true);
+	TIM_ClearFlag(TIM_KVB);
 	// Switch off previous display.
 	GPIO_Write(displaysGpio[displayIndex], LOW);
 	// Increment and manage index.
@@ -314,4 +361,5 @@ void TIM_KVB_Handler(void) {
 		// Finally switch on current display.
 		GPIO_Write(displaysGpio[displayIndex], HIGH);
 	}
+	TIM_Start(TIM_KVB, true);
 }

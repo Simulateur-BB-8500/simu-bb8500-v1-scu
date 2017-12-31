@@ -32,6 +32,13 @@ typedef enum {
 } Time_Unit;
 
 typedef enum {
+	PWM_Channel1 = 25,
+	PWM_Channel2,
+	PWM_Channel3,
+	PWM_Channel4
+} PWM_Channel;
+
+typedef enum {
 	DAC_Channel1 = 30,
 	DAC_Channel2
 } DAC_Channel;

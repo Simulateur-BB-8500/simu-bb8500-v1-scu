@@ -12,33 +12,6 @@
 #include "rcc.h"
 #include "rcc_reg.h"
 
-/*** GPIO parameters enumerations ***/
-
-typedef enum {
-	Input = 0,
-	Output = 1,
-	AlternateFunction = 2,
-	Analog = 3
-} GPIO_Mode;
-
-typedef enum {
-	PushPull = 0,
-	OpenDrain = 1
-} GPIO_OutputType;
-
-typedef enum {
-	LowSpeed = 0,
-	MediumSpeed = 1,
-	HighSpeed = 2,
-	VeryHighSpeed = 3
-} GPIO_OutputSpeed;
-
-typedef enum {
-	NoPullUpNoPullDown = 0,
-	PullUp = 1,
-	PullDown = 2
-} GPIO_PullResistor;
-
 /*** GPIO internal functions ***/
 
 /* SET THE MODE OF A GPIO PIN.
@@ -234,6 +207,8 @@ void GPIO_SetAlternateFunction(GPIO_Struct* gpioStruct, unsigned int AFNum) {
 	}
 }
 
+/*** GPIO functions ***/
+
 /* FUNCTION FOR CONFIGURING A GPIO PIN.
  * @param gpio: Pointer to GPIO identifier (port + number).
  * @param mode: Desired mode ('Input', 'Output', 'AlternateFunction' or 'Analog').
@@ -251,8 +226,6 @@ void GPIO_Configure(GPIO_Struct* gpioStruct, GPIO_Mode mode, GPIO_OutputType out
 	GPIO_SetOutputSpeed(gpioStruct, outputSpeed);
 	GPIO_SetPullUpPullDown(gpioStruct, pullResistor);
 }
-
-/*** GPIO functions ***/
 
 /* CONFIGURE MCU GPIOs.
  * @param: None.
@@ -275,22 +248,8 @@ void GPIO_Init(void) {
 	GPIO_Configure(ZPT, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
 	GPIO_Configure(PBL2, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown, 0);
 	// SGKCU UART pins configured as AF7 for using USART2.
-	GPIO_Configure(SGKCU_TX, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown, 7);
+	GPIO_Configure(SGKCU_TX, AlternateFunction, PushPull, LowSpeed, NoPullUpNoPullDown, 7);
 	GPIO_Configure(SGKCU_RX, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown, 7);
-	// KVB.
-	GPIO_Configure(KVB_ZSA, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZSB, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZSC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZSD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZSE, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZSF, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZSG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZJG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZJC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZJD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZVG, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZVC, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
-	GPIO_Configure(KVB_ZVD, Output, PushPull, LowSpeed, NoPullUpNoPullDown, 0);
 
 #ifdef OUTPUT_CLOCK
 	// MCO1 configured as AF0 to output HSI clock.
@@ -337,11 +296,15 @@ GPIO_State GPIO_Read(GPIO_Struct* gpioStruct) {
 		switch (GPIO_GetMode(gpioStruct)) {
 		case Input:
 			// GPIO configured as input -> read IDR register.
-			result = (((gpioPort -> IDR) & BIT_MASK(gpioNum)) >> gpioNum) + GPIO_STATE_ENUM_OFFSET;
+			if (((gpioPort -> IDR) & BIT_MASK(gpioNum)) >> gpioNum) {
+				result = HIGH;
+			}
 			break;
 		case Output:
 			// GPIO configured as output -> read ODR register.
-			result = (((gpioPort -> ODR) & BIT_MASK(gpioNum)) >> gpioNum) + GPIO_STATE_ENUM_OFFSET;
+			if (((gpioPort -> ODR) & BIT_MASK(gpioNum)) >> gpioNum) {
+				result = HIGH;
+			}
 			break;
 		default:
 			break;
@@ -359,11 +322,11 @@ void GPIO_Toggle(GPIO_Struct* gpioStruct) {
 	unsigned int gpioNum = gpioStruct -> num;
 	// Ensure GPIO exists.
 	if ((gpioNum >= 0) && (gpioNum < GPIO_PER_PORT)) {
-		if (GPIO_Read(gpioStruct)) {
-			GPIO_Write(gpioStruct, LOW);
+		if (GPIO_Read(gpioStruct) == LOW) {
+			GPIO_Write(gpioStruct, HIGH);
 		}
 		else {
-			GPIO_Write(gpioStruct, HIGH);
+			GPIO_Write(gpioStruct, LOW);
 		}
 	}
 }

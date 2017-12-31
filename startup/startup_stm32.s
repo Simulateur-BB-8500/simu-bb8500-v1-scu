@@ -152,7 +152,7 @@ g_pfnVectors:
 	.word	0 // 26 = TIM1_TRG_COM_TIM11.
 	.word	0 // 27 = TIM1_CC.
 	.word	0 // 28 = TIM2.
-	.word	TIM_KVB_Handler // 29 = TIM3.
+	.word	0 // 29 = TIM3.
 	.word	0 // 30 = TIM4.
 	.word	0 // 31 = I2C1_EV.
 	.word	0 // 32 = I2C1_ER.
@@ -177,7 +177,7 @@ g_pfnVectors:
 	.word	0 // 51 = SPI3.
 	.word	0 // 52 = UART4.
 	.word	0 // 53 = UART5.
-	.word	0 // 54 = TIM6_DAC.
+	.word	TIM_KVB_Handler // 54 = TIM6_DAC.
 	.word	0 // 55 = TIM7.
 	.word	0 // 56 = DMA2_Stream0.
 	.word	0 // 57 = DMA2_Stream1.

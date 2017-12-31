@@ -40,16 +40,19 @@ int main(void) {
 
 	/*** Simulator ***/
 
-	ZPT_Init();
+	//ZPT_Init();
 	KVB_Init();
+
+	//TIM_Init(TIM6, 500, microseconds, true);
+	//TIM_Start(TIM6, true);
 
 	/*** Global variables initialisation ***/
 
 	/*** Main loop ***/
 
 	while(1) {
-		ADC_Routine(true);
-		ZPT_Routine();
+		//ADC_Routine(true);
+		//ZPT_Routine();
 		KVB_Routine(true);
 	}
 

@@ -132,5 +132,7 @@
 #define KVB_ZVG			(&((GPIO_Struct) {GPIOE, 8}))
 #define KVB_ZVC			(&((GPIO_Struct) {GPIOE, 7}))
 #define KVB_ZVD			(&((GPIO_Struct) {GPIOE, 10}))
+// KVB lights
+#define KVB_LVAL		(&((GPIO_Struct) {GPIOC, 6}))
 
 #endif /* PERIPHERALS_GPIO_MAPPING_H_ */
