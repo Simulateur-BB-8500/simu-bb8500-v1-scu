@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_ADC_REG_H_
-#define REGISTERS_ADC_REG_H_
+#ifndef REGISTERS_ADC_REG_H
+#define REGISTERS_ADC_REG_H
 
 /*** ADC registers ***/
 
@@ -48,4 +48,4 @@ typedef struct {
 #define ADC3	((ADC_BaseAddress*) ((unsigned int) 0x40012200))
 #define ADCCR	((ADCCR_BaseAddress*) ((unsigned int) 0x40012300))
 
-#endif /* REGISTERS_ADC_REG_H_ */
+#endif /* REGISTERS_ADC_REG_H */

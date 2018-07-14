@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_RCC_REG_H_
-#define REGISTERS_RCC_REG_H_
+#ifndef REGISTERS_RCC_REG_H
+#define REGISTERS_RCC_REG_H
 
 /*** RCC registers ***/
 
@@ -54,4 +54,4 @@ typedef struct {
 
 #define RCC		((RCC_BaseAddress*) ((unsigned int) 0x40023800))
 
-#endif /* REGISTERS_RCC_REG_H_ */
+#endif /* REGISTERS_RCC_REG_H */

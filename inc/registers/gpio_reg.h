@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_GPIO_REG_H_
-#define REGISTERS_GPIO_REG_H_
+#ifndef REGISTERS_GPIO_REG_H
+#define REGISTERS_GPIO_REG_H
 
 /*** GPIOx registers ***/
 
@@ -43,4 +43,4 @@ typedef struct {
 #define AF_PER_GPIO 16 // Each GPIO has 16 alternate functions.
 #define AFRH_OFFSET 8 // Limit between AFRL and AFRH registers.
 
-#endif /* REGISTERS_GPIO_REG_H_ */
+#endif /* REGISTERS_GPIO_REG_H */

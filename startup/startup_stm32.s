@@ -141,7 +141,7 @@ g_pfnVectors:
 	.word	0 // 15 = DMA_Stream4.
 	.word	0 // 16 = DMA_Stream5.
 	.word	0 // 17 = DMA_Stream6.
-	.word	ADC_Handler // 18 = ADC.
+	.word	ADC_InterruptHandler // 18 = ADC.
 	.word	0 // 19 = CAN1_TX.
 	.word	0 // 20 = CAN1_RX0.
 	.word	0 // 21 = CAN1_RX1.
@@ -161,7 +161,7 @@ g_pfnVectors:
 	.word	0 // 35 = SPI1.
 	.word	0 // 36 = SPI2.
 	.word 	0 // 37 = USART1.
-	.word	USART_SGKCU_Handler // 38 = USART2.
+	.word	USART2_InterruptHandler // 38 = USART2.
 	.word	0 // 39 = USART3.
 	.word	0 // 40 = EXTI15_10.
 	.word	0 // 41 = RTC_Alarm.
@@ -177,7 +177,7 @@ g_pfnVectors:
 	.word	0 // 51 = SPI3.
 	.word	0 // 52 = UART4.
 	.word	0 // 53 = UART5.
-	.word	TIM_KVB_Handler // 54 = TIM6_DAC.
+	.word	TIM6_DAC_InterruptHandler // 54 = TIM6_DAC.
 	.word	0 // 55 = TIM7.
 	.word	0 // 56 = DMA2_Stream0.
 	.word	0 // 57 = DMA2_Stream1.
@@ -259,13 +259,13 @@ g_pfnVectors:
 
 	.weak	SystemInit
 	
-	.weak	ADC_Handler
-	.thumb_set ADC_Handler,Default_Handler
+	.weak	ADC_InterruptHandler
+	.thumb_set ADC_InterruptHandler,Default_Handler
 	
-	.weak	USART_SGKCU_Handler
-	.thumb_set USART_SGKCU_Handler,Default_Handler
+	.weak	USART2_InterruptHandler
+	.thumb_set USART2_InterruptHandler,Default_Handler
 	
-	.weak	TIM_KVB_Handler
-	.thumb_set TIM_KVB_Handler,Default_Handler
+	.weak	TIM6_DAC_InterruptHandler
+	.thumb_set TIM6_DAC_InterruptHandler,Default_Handler
 
 /************************ (C) COPYRIGHT Ac6 *****END OF FILE****/
