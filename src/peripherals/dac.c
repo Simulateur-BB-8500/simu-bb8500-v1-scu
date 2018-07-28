@@ -26,7 +26,7 @@ void DAC_Init(void) {
 
 	/* Configure analog GPIOs */
 
-	GPIO_Configure(DAC_MOTOR_AMP_GPIO, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown);
+	GPIO_Configure(AM_GPIO, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown);
 
 	/* Enable peripheral clock */
 

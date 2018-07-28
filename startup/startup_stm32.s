@@ -264,7 +264,7 @@ g_pfnVectors:
 	
 	.weak	USART2_InterruptHandler
 	.thumb_set USART2_InterruptHandler,Default_Handler
-	
+
 	.weak	TIM6_DAC_InterruptHandler
 	.thumb_set TIM6_DAC_InterruptHandler,Default_Handler
 

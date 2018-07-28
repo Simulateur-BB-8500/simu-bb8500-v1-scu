@@ -94,8 +94,8 @@ void USART2_Init(void) {
 
 	/* Configure TX and RX GPIOs */
 
-	GPIO_Configure(USART_SGKCU_TX_GPIO, AlternateFunction, PushPull, LowSpeed, NoPullUpNoPullDown);
-	GPIO_Configure(USART_SGKCU_RX_GPIO, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown);
+	GPIO_Configure(USART2_TX_GPIO, AlternateFunction, PushPull, LowSpeed, NoPullUpNoPullDown);
+	GPIO_Configure(USART2_RX_GPIO, AlternateFunction, OpenDrain, LowSpeed, NoPullUpNoPullDown);
 
 	/* Enable peripheral clock */
 

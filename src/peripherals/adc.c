@@ -87,7 +87,7 @@ void ADC1_Init(void) {
 
 	/* Configure analog GPIOs */
 
-	GPIO_Configure(ADC_ZPT_GPIO, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown);
+	GPIO_Configure(ZPT_GPIO, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown);
 
 	/* Enable peripheral clock */
 

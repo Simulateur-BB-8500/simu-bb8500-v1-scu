@@ -217,7 +217,7 @@ void GPIO_Init(void) {
 
 	RCC -> AHB1ENR |= 0x000007FF; // GPIOxEN='1'.
 
-	/* Configure single GPIOs */
+	/* Configure standard GPIOs */
 
 	GPIO_Configure(LED1_GPIO, Output, PushPull, LowSpeed, NoPullUpNoPullDown);
 	GPIO_Configure(LED2_GPIO, Output, PushPull, LowSpeed, NoPullUpNoPullDown);

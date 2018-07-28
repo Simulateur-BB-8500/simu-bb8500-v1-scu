@@ -15,6 +15,14 @@ void TIM2_Init(void);
 unsigned int TIM2_GetMs(void);
 void TIM2_DelayMs(unsigned ms_to_wait);
 
+// Tachro step timer
+void TIM5_Init(void);
+void TIM5_Start(void);
+void TIM5_Stop(void);
+void TIM5_SetDelayUs(unsigned int arr_value);
+unsigned char TIM5_GetUifFlag(void);
+void TIM5_ClearUifFlag(void);
+
 // KVB.
 void TIM6_Init(void);
 void TIM6_Start(void);

@@ -6,18 +6,15 @@
  */
 
 #include "adc.h"
-#include "adc_reg.h"
 #include "at.h"
 #include "bl.h"
 #include "dac.h"
 #include "gpio.h"
 #include "kvb.h"
-#include "mapping.h"
 #include "mpinv.h"
 #include "rcc.h"
+#include "tch.h"
 #include "tim.h"
-#include "tim_reg.h"
-#include "usart.h"
 #include "zpt.h"
 
 /* MAIN FUNCTION.
@@ -26,51 +23,44 @@
  */
 int main(void) {
 
-	/*** Peripherals ***/
+	/* LSMCU init */
 
-	// Clocks and timers.
+	// Peripherals.
 	RCC_Init();
 	TIM2_Init();
-	// GPIO.
 	GPIO_Init();
-	// DAC.
 	DAC_Init();
-	DAC_SetVoltageMv(0, VCC_MV/2);
-	// ADC.
 	ADC1_Init();
-	// USART.
-	USART2_Init();
 
-	// AT manager.
+	// Generic.
 	AT_Init();
 
-	/*** Simulator ***/
-
-	//BL_Init();
-
-	//MPINV_Init();
-	//ZPT_Init();
-
+	// Simulator.
+	BL_Init();
+	MPINV_Init();
+	ZPT_Init();
 	KVB_Init();
+	TCH_Init();
 
-	/*** Global variables initialisation ***/
+	// Global variables.
+	unsigned char bl_unlocked = 0;
 
-	/*** Main loop ***/
+	/* LSMCU main loop */
 
 	while(1) {
-		//TIM2_DelayMs(1000);
-		//GPIO_Toggle(LED1_GPIO);
 
-		//USART2_SendByte(0x46, Hexadecimal);
-		//AT_Routine();
+		// Peripherals.
+		ADC1_Routine(bl_unlocked);
 
-		//BL_Routine();
+		// Generic.
+		AT_Routine();
 
-		//ADC1_Routine(1);
-		//MPINV_Routine();
-		//ZPT_Routine();
-
-		KVB_Routine(1);
+		// Simulator.
+		BL_Routine(&bl_unlocked);
+		MPINV_Routine();
+		ZPT_Routine();
+		KVB_Routine(bl_unlocked);
+		TCH_Routine();
 	}
 
 	return (0);

@@ -29,12 +29,12 @@ void BL_Init(void) {
  * @param:	None.
  * @return:	None.
  */
-void BL_Routine(void) {
+void BL_Routine(unsigned char* bl_unlocked) {
 	SW2_UpdateState(&zdv);
 	if (zdv.state == SW2_ON) {
-		GPIO_Write(LED1_GPIO, 1);
+		(*bl_unlocked) = 1;
 	}
 	else {
-		GPIO_Write(LED1_GPIO, 0);
+		(*bl_unlocked) = 0;
 	}
 }

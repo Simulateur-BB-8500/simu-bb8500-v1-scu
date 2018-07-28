@@ -52,7 +52,7 @@ typedef struct KVB_Context {
 	unsigned char lval_blinking;
 	unsigned char lssf_blink_enable;
 	// State machine.
-	KVB_InternalState internal_state;
+	KVB_InternalState kvb_internal_state;
 	unsigned int switch_state_time; // In ms.
 } KVB_Context;
 
@@ -223,7 +223,7 @@ void KVB_Init(void) {
 	kvb_ctx.display_idx = 0;
 	kvb_ctx.segment_idx = 0;
 	// Init state machine.
-	kvb_ctx.internal_state = KVB_STATE_OFF;
+	kvb_ctx.kvb_internal_state = KVB_STATE_OFF;
 	kvb_ctx.switch_state_time = 0;
 	// Blinks.
 	kvb_ctx.lssf_blink_enable = 1;
@@ -234,6 +234,7 @@ void KVB_Init(void) {
 
 	for (i=0 ; i<KVB_NUMBER_OF_SEGMENTS ; i++) GPIO_Configure(segment_gpio_buf[i], Output, PushPull, LowSpeed, NoPullUpNoPullDown);
 	for (i=0 ; i<KVB_NUMBER_OF_DISPLAYS ; i++) GPIO_Configure(display_gpio_buf[i], Output, PushPull, LowSpeed, NoPullUpNoPullDown);
+	// LVAL is configured in TIM8_Init() function since it is linked to TIM8 channel 1.
 	GPIO_Configure(KVB_LSSF_GPIO, Output, PushPull, LowSpeed, NoPullUpNoPullDown);
 
 	/* Init timers */
@@ -331,11 +332,11 @@ void KVB_Sweep(void) {
  * @return:				None.
  */
 void KVB_Routine(unsigned char bl_unlocked) {
-	switch (kvb_ctx.internal_state) {
+	switch (kvb_ctx.kvb_internal_state) {
 	case KVB_STATE_OFF:
 		KVB_DisplayOff();
 		if (bl_unlocked == 1) {
-			kvb_ctx.internal_state = KVB_STATE_PA400;
+			kvb_ctx.kvb_internal_state = KVB_STATE_PA400;
 			kvb_ctx.switch_state_time = TIM2_GetMs();
 		}
 		break;
@@ -343,11 +344,11 @@ void KVB_Routine(unsigned char bl_unlocked) {
 		KVB_Display(KVB_PA400_TEXT);
 		KVB_BlinkLSSF();
 		if (bl_unlocked == 0) {
-			kvb_ctx.internal_state = KVB_STATE_OFF;
+			kvb_ctx.kvb_internal_state = KVB_STATE_OFF;
 		}
 		else {
 			if (TIM2_GetMs() > (kvb_ctx.switch_state_time + KVB_PA400_DURATION_MS)) {
-				kvb_ctx.internal_state = KVB_STATE_PA400_OFF;
+				kvb_ctx.kvb_internal_state = KVB_STATE_PA400_OFF;
 				kvb_ctx.switch_state_time = TIM2_GetMs();
 			}
 		}
@@ -356,11 +357,11 @@ void KVB_Routine(unsigned char bl_unlocked) {
 		KVB_DisplayOff();
 		KVB_BlinkLSSF();
 		if (bl_unlocked == 0) {
-			kvb_ctx.internal_state = KVB_STATE_OFF;
+			kvb_ctx.kvb_internal_state = KVB_STATE_OFF;
 		}
 		else {
 			if (TIM2_GetMs() > (kvb_ctx.switch_state_time + KVB_PA400_OFF_DURATION_MS)) {
-				kvb_ctx.internal_state = KVB_STATE_UC512;
+				kvb_ctx.kvb_internal_state = KVB_STATE_UC512;
 				kvb_ctx.switch_state_time = TIM2_GetMs();
 			}
 		}
@@ -369,11 +370,11 @@ void KVB_Routine(unsigned char bl_unlocked) {
 		KVB_Display(KVB_UC512_TEXT);
 		KVB_BlinkLSSF();
 		if (bl_unlocked == 0) {
-			kvb_ctx.internal_state = KVB_STATE_OFF;
+			kvb_ctx.kvb_internal_state = KVB_STATE_OFF;
 		}
 		else {
 			if (TIM2_GetMs() > (kvb_ctx.switch_state_time + KVB_UC512_DURATION_MS)) {
-				kvb_ctx.internal_state = KVB_STATE_888888;
+				kvb_ctx.kvb_internal_state = KVB_STATE_888888;
 				kvb_ctx.switch_state_time = TIM2_GetMs();
 				// Init LVAL PWM before calling blink function.
 				TIM8_Start();
@@ -387,11 +388,11 @@ void KVB_Routine(unsigned char bl_unlocked) {
 		KVB_BlinkLVAL();
 		KVB_BlinkLSSF();
 		if (bl_unlocked == 0) {
-			kvb_ctx.internal_state = KVB_STATE_OFF;
+			kvb_ctx.kvb_internal_state = KVB_STATE_OFF;
 		}
 		else {
 			if (TIM2_GetMs() > (kvb_ctx.switch_state_time + KVB_888888_DURATION_MS)) {
-				kvb_ctx.internal_state = KVB_STATE_888888_OFF;
+				kvb_ctx.kvb_internal_state = KVB_STATE_888888_OFF;
 				kvb_ctx.switch_state_time = TIM2_GetMs();
 			}
 		}
@@ -401,10 +402,10 @@ void KVB_Routine(unsigned char bl_unlocked) {
 		KVB_BlinkLVAL();
 		KVB_BlinkLSSF();
 		if (bl_unlocked == 0) {
-			kvb_ctx.internal_state = KVB_STATE_OFF;
+			kvb_ctx.kvb_internal_state = KVB_STATE_OFF;
 		}
 		else {
-			kvb_ctx.internal_state = KVB_STATE_SLAVE_MODE;
+			kvb_ctx.kvb_internal_state = KVB_STATE_SLAVE_MODE;
 		}
 		break;
 	case KVB_STATE_SLAVE_MODE:
@@ -427,6 +428,7 @@ void KVB_Routine(unsigned char bl_unlocked) {
 		// All other functions are directly called by the AT manager.
 		break;
 	default:
+		// Unknown state.
 		break;
 	}
 }

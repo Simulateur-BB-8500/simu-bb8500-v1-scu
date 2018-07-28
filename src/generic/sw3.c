@@ -93,7 +93,7 @@ void SW3_UpdateState(SW3_Context* sw3) {
 		case SW3_BACK:
 			if (SW3_VoltageIsBack(sw3)) {
 				// Come back to BACK without confirmation because it's the previous confirmed state.
-//				sw3 -> internal_state = SW3_STATE_BACK;
+				sw3 -> internal_state = SW3_STATE_BACK;
 			}
 			else {
 				if (SW3_VoltageIsFront(sw3)) {

@@ -11,6 +11,6 @@
 /*** BL functions ***/
 
 void BL_Init(void);
-void BL_Routine(void);
+void BL_Routine(unsigned char* bl_unlocked);
 
 #endif /* SIMULATOR_BL_H */

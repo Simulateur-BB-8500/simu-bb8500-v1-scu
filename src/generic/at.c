@@ -10,6 +10,7 @@
 #include "kvb.h"
 #include "gpio.h"
 #include "mapping.h"
+#include "tch.h"
 #include "usart.h"
 
 /*** AT local macros ***/
@@ -30,17 +31,19 @@ static AT_Context at_ctx;
 
 /*** AT local functions ***/
 
-/* DECODE AN AT COMMAND FROM SGKCU.
- * @param at_cmd: 	Received AT command (byte).
- * @return: 		None.
+/* DECODE THE CURRENT AT COMMAND.
+ * @param:	None.
+ * @return: None.
  */
 void AT_DecodeSGKCU(void) {
-	if (at_ctx.rx_buf[at_ctx.rx_read_idx] <= AT_SPEED_MAX_KMH) {
-		// TBC: transmit speed to Tachro and VACMA modules.
+	unsigned char at_command = at_ctx.rx_buf[at_ctx.rx_read_idx];
+	if (at_command <= TCH_SPEED_MAX_KMH) {
+		// Transmit speed to Tachro and VACMA modules.
+		TCH_SetSpeed(at_command);
 	}
 	else {
 		// Decode AT command.
-		switch(at_ctx.rx_buf[at_ctx.rx_read_idx]) {
+		switch(at_command) {
 		case AT_KVB_LVAL_BLINK:
 			GPIO_Write(KVB_LVAL_GPIO, 0);
 			KVB_EnableBlinkLVAL(1);
@@ -128,11 +131,17 @@ void AT_DecodeSGKCU(void) {
  * @return:	None.
  */
 void AT_Init(void) {
-	// SGKCU.
+
+	/* Init context */
+
 	unsigned int i = 0;
 	for(i=0 ; i<AT_RX_BUFFER_SIZE ; i++) at_ctx.rx_buf[i] = 0;
 	at_ctx.rx_write_idx = 0;
 	at_ctx.rx_read_idx = 0;
+
+	/* Init USART peripheral */
+
+	USART2_Init();
 }
 
 /* FILL AT BUFFER (CALLED BY USART2 INTERRUPT HANDLER).

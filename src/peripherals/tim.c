@@ -8,13 +8,14 @@
 #include "kvb.h"
 #include "mapping.h"
 #include "nvic.h"
+#include "rcc.h"
 #include "rcc_reg.h"
 #include "tim.h"
 #include "tim_reg.h"
 
 /*** TIM functions ***/
 
-/* CONFIGURE TIM2 (USED TO COUNT MILLISECONDS SINCE START-UP).
+/* CONFIGURE TIM2 TO COUNT MILLISECONDS SINCE START-UP.
  * @param:	None.
  * @return:	None.
  */
@@ -56,6 +57,75 @@ unsigned int TIM2_GetMs(void) {
 void TIM2_DelayMs(unsigned int ms_to_wait) {
 	unsigned int start_ms = TIM2_GetMs();
 	while (TIM2_GetMs() < (start_ms + ms_to_wait));
+}
+
+/* CONFIGURE TIM5 FOR TACHRO STEPPING.
+ * @param:	None.
+ * @return:	None.
+ */
+void TIM5_Init(void) {
+
+	/* Enable peripheral clock */
+
+	RCC -> APB1ENR |= (0b1 << 3); // TIM5EN='1'.
+
+	/* Configure peripheral */
+
+	// Disable and reset counter.
+	TIM5 -> CR1 &= ~(0b1 << 0); // CEN='0'.
+	TIM5 -> CNT = 0;
+	// Disable interrupt.
+	TIM5 -> DIER &= ~(0b1 << 0); // UIE='0'.
+	TIM5 -> SR &= ~(0b1 << 0); // UIF='0'.
+	// Set PSC and ARR registers to reach 2 ms.
+	TIM5 -> PSC = 49; // TIM5 input clock = PCLK1/(49+1) = PCLK1/50 = 1MHz.
+	TIM5 -> ARR = 0; // Default value.
+	// Generate event to update registers.
+	TIM5 -> EGR |= (0b1 << 0); // UG='1'.
+}
+
+/* START TIM5.
+ * @param:	None.
+ * @return: None.
+ */
+void TIM5_Start(void) {
+	// Enable counter.
+	TIM5 -> CR1 |= (0b1 << 0); // CEN='1'.
+}
+
+/* STOP TIM5.
+ * @param: 	None.
+ * @return:	None.
+ */
+void TIM5_Stop(void) {
+	// Disable and reset counter.
+	TIM5 -> CR1 &= ~(0b1 << 0); // CEN='0'.
+	TIM5 -> CNT = 0;
+	TIM5 -> SR &= ~(0b1 << 0);
+}
+
+/* SET TIM5 ARR REGISTER VALUE TO CHANGE OVERFLOW PERIOD.
+ * @param arr_value:	New value of ARR register.
+ * @return:				None.
+ */
+void TIM5_SetDelayUs(unsigned int delay_us) {
+	TIM5 -> ARR = delay_us*2; // delay_us fronts @ 1MHz = delay_us µs. HACK: The prescaler clock is 2 times faster than the desired one (?).
+}
+
+/* GET TIM5 UPDATE EVENT FLAG.
+ * @param:	None.
+ * @return:	UIF flag status (0/1).
+ */
+unsigned char TIM5_GetUifFlag(void) {
+	return ((TIM5 -> SR) & (0b1 << 0));
+}
+
+/* CLEAR TIM5 UPDATE EVENT FLAG.
+ * @param:	None.
+ * @return:	None.
+ */
+void TIM5_ClearUifFlag(void) {
+	TIM5 -> SR &= ~(0b1 << 0);
 }
 
 /* CONFIGURE TIM6 FOR KVB DISPLAY.
@@ -116,13 +186,13 @@ void TIM6_DAC_InterruptHandler(void) {
 	KVB_Sweep();
 }
 
-/* CONFIGURE TIM8 (USED IN PWM MODE FOR LVAL BLINKLING).
+/* CONFIGURE TIM8 IN PWM MODE FOR LVAL BLINKLING.
  * @param:	None.
  * @return: None.
  */
 void TIM8_Init(void) {
 
-	/* Configure output GPIO */
+	/* Configure GPIOs */
 
 	GPIO_Configure(KVB_LVAL_GPIO, AlternateFunction, PushPull, HighSpeed, NoPullUpNoPullDown);
 

@@ -21,7 +21,7 @@ static SW3_Context mpinv;
  * @return:	None.
  */
 void MPINV_Init(void) {
-	GPIO_Configure(ADC_MPINV_GPIO, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown);
+	GPIO_Configure(MPINV_GPIO, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown);
 	SW3_Init(&mpinv, 2000);
 }
 

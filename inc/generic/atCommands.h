@@ -10,6 +10,8 @@
 #ifndef GENERIC_ATCOMMANDS_H
 #define GENERIC_ATCOMMANDS_H
 
+#include "tch.h"
+
 /*** SCU -> SGKCU ***/
 
 // AT commands list.
@@ -92,15 +94,13 @@ typedef enum {
 #define CP_HYSTERESIS_HIGH 	9.0 // In bars.
 #define CP_MAXIMUM_VALUE 	9.5 // In bars.
 #define CP_SUPPLY_SPEED 	(CP_HYSTERESIS_HIGH)/(CP_SUPPLY_TIME) // In bars/ms.
-// Maximum speed in km/h.
-#define AT_SPEED_MAX_KMH	160
 
 /*** SGKCU -> SCU ***/
 
 typedef enum {
 	// Bytes 0 to AT_SPEED_MAX_KMH are reserved for coding speed in km/h.
 	// KVB lights.
-	AT_KVB_LVAL_BLINK = AT_SPEED_MAX_KMH+1,
+	AT_KVB_LVAL_BLINK = TCH_SPEED_MAX_KMH+1,
 	AT_KVB_LVAL_ON,
 	AT_KVB_LVAL_OFF,
 	AT_KVB_LMV_ON,
