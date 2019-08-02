@@ -5,25 +5,22 @@
  *      Author: Ludovic
  */
 
-#ifndef PERIPHERALS_USART_H
-#define PERIPHERALS_USART_H
+#ifndef USART_H
+#define USART_H
 
-#include "usart_reg.h"
-
-/*** USART enumerations ***/
+/*** USART structures ***/
 
 // Display format.
-typedef enum ByteDisplayFormat {
-	Binary,
-	Hexadecimal,
-	Decimal,
-	ASCII
+typedef enum {
+	USART_FORMAT_BINARY,
+	USART_FORMAT_HEXADECIMAL,
+	USART_FORMAT_DECIMAL,
+	USART_FORMAT_ASCII
 } USART_Format;
 
 /*** USART functions ***/
 
 void USART2_Init(void);
 void USART2_SendByte(unsigned char tx_byte, USART_Format format);
-unsigned char USART2_GetLastByte(unsigned char* last_rx_byte);
 
-#endif /* PERIPHERALS_USART_H */
+#endif /* _USART_H */

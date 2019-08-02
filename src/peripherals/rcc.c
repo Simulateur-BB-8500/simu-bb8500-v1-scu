@@ -5,8 +5,9 @@
  *      Author: Ludovic
  */
 
-#include "flash_reg.h"
 #include "rcc.h"
+
+#include "flash_reg.h"
 #include "rcc_reg.h"
 
 /*** RCC functions ***/
@@ -18,10 +19,7 @@
 void RCC_Init(void) {
 
 	/* Use HSI first for start-up*/
-
-	// Disable HSE.
 	RCC -> CR &= ~(0b11 << 16); // HSEON = '0'.
-	// Enable HSI.
 	RCC -> CR |= (0b1 <<0); // HSION='1'.
 	// Wait for HSI to be stable.
 	while (((RCC -> CR) & (0b1 << 1)) != (0b1 << 1)); // HSIRDY='1'.
@@ -31,7 +29,6 @@ void RCC_Init(void) {
 	while (((RCC -> CFGR) & (0b11 << 0)) != 0b00); // SWS='00'.
 
 	/* Peripherals clock prescalers */
-
 	// HPRE = 1 -> HCLK = SYSCLK = 200MHz (max 216).
 	// PPRE1 = 4 -> PCLK1 = HCLK/4 = 50MHz (max 54 for device, max 65 for TIM2 use (PSC register)).
 	// PPRE2 = 4 -> PCLK2 = HCLK/4 = 50MHz (max 108).
@@ -39,7 +36,6 @@ void RCC_Init(void) {
 	RCC -> CFGR |= (0b101 << 10) | (0b101 << 13); // PPRE1='101' (4) and PPRE2='101' (4).
 
 	/* Configure main PLL */
-
 	// Ensure PLL is off before configure it.
 	RCC -> CR &= ~(0b1 << 24);
 	// Source = HSI 16MHz
@@ -55,7 +51,6 @@ void RCC_Init(void) {
 	while (((RCC -> CR) & (0b1 << 25)) == 0);
 
 	/* Use main PLL output clock as system clock */
-
 	// Enable flash prefetch.
 	FLASH -> ACR |= (0b1 << 8);
 	// Increase flash latency according to new system clock frequency (see p.74 of RM0385 datasheet).
@@ -63,7 +58,6 @@ void RCC_Init(void) {
 	FLASH -> ACR &= ~(0b1111 << 0); // Reset bits 0-3.
 	FLASH -> ACR |= 6; // LATENCY=6.
 	while (((FLASH -> ACR) & (0b1111 << 0)) != 6);
-
 	// Select PLLCLK.
 	RCC -> CFGR |= (0b10 << 0); // SW='10'.
 	// Wait for clock switch.

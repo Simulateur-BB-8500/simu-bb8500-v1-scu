@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef PERIPHERALS_RCC_H
-#define PERIPHERALS_RCC_H
+#ifndef RCC_H
+#define RCC_H
 
 /*** RCC macros ***/
 
@@ -22,4 +22,4 @@
 
 void RCC_Init(void);
 
-#endif /* PERIPHERALS_RCC_H */
+#endif /* RCC_H */

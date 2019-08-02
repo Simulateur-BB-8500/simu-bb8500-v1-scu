@@ -1,12 +1,13 @@
 /*
- * sw2 -> c
+ * sw2.c
  *
- *  Created on: 1 oct ->  2017
+ *  Created on: 1 oct. 2017
  *      Author: Ludovic
  */
 
-#include "gpio.h"
 #include "sw2.h"
+
+#include "gpio.h"
 #include "tim.h"
 
 /*** 2-poles switch functions ***/
@@ -18,7 +19,7 @@
  * @param pDebouncingMs:	Delay before validating ON/ODD state (in ms).
  * @return:					None.
  */
-void SW2_Init(SW2_Context* sw2, GPIO_Periph sw2_gpio, unsigned char sw2_active_state, unsigned int sw2_debouncing_ms) {
+void SW2_Init(SW2_Context* sw2, const GPIO* sw2_gpio, unsigned char sw2_active_state, unsigned int sw2_debouncing_ms) {
 	sw2 -> gpio = sw2_gpio;
 	sw2 -> active_state = sw2_active_state;
 	sw2 -> internal_state = SW2_STATE_OFF;

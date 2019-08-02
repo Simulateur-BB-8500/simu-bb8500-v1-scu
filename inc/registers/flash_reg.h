@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_FLASH_REG_H_
-#define REGISTERS_FLASH_REG_H_
+#ifndef FLASH_REG_H
+#define FLASH_REG_H
 
 /*** FLASH interface registers ***/
 
@@ -24,4 +24,4 @@ typedef struct {
 
 #define FLASH	((FLASH_BaseAddress*) ((unsigned int) 0x40023C00))
 
-#endif /* REGISTERS_FLASH_REG_H_ */
+#endif /* FLASH_REG_H */

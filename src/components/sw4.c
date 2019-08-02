@@ -5,9 +5,10 @@
  *      Author: Ludovic
  */
 
+#include "sw4.h"
+
 #include "adc.h"
 #include "gpio.h"
-#include "sw4.h"
 #include "tim.h"
 
 /*** 4-poles switch local macros ***/
@@ -91,8 +92,8 @@ void SW4_Init(SW4_Context* sw4, unsigned int sw4_debouncing_ms) {
  * @param sw4:			The switch to set.
  * @param newVoltage:	New voltage measured by ADC.
  */
-void SW4_SetVoltage(SW4_Context* sw4, unsigned int new_voltage) {
-	sw4 -> voltage = new_voltage;
+void SW4_SetVoltageMv(SW4_Context* sw4, unsigned int sw4_voltage_mv) {
+	sw4 -> voltage = sw4_voltage_mv;
 }
 
 /* UPDATE THE STATE OF AN SW4 STRUCTURE PERFORMING HYSTERESIS AND CONFIRMATION.

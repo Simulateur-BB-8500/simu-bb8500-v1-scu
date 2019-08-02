@@ -5,17 +5,27 @@
  *      Author: Ludovic
  */
 
-#include "adc.h"
-#include "at.h"
 #include "bl.h"
+#include "kvb.h"
+#include "lssgkcu.h"
+#include "mpinv.h"
+#include "tch.h"
+#include "zpt.h"
+#include "adc.h"
 #include "dac.h"
 #include "gpio.h"
-#include "kvb.h"
-#include "mpinv.h"
 #include "rcc.h"
-#include "tch.h"
 #include "tim.h"
-#include "zpt.h"
+
+/*** Main structures ***/
+
+typedef struct {
+	unsigned char bl_unlocked;
+} LSMCU_Context;
+
+/*** Main global variables ***/
+
+static LSMCU_Context lsmcu_ctx;
 
 /* MAIN FUNCTION.
  * @param: 	None.
@@ -23,44 +33,37 @@
  */
 int main(void) {
 
-	/* LSMCU init */
-
-	// Peripherals.
+	/* Init peripherals */
 	RCC_Init();
 	TIM2_Init();
 	GPIO_Init();
 	DAC_Init();
 	ADC1_Init();
 
-	// Generic.
-	AT_Init();
-
-	// Simulator.
+	/* Applicative layers */
 	BL_Init();
-	MPINV_Init();
-	ZPT_Init();
 	KVB_Init();
+	LSSGKCU_Init();
+	MPINV_Init();
 	TCH_Init();
+	ZPT_Init();
 
-	// Global variables.
-	unsigned char bl_unlocked = 0;
+	/* Init context */
+	lsmcu_ctx.bl_unlocked = 0;
 
 	/* LSMCU main loop */
-
 	while(1) {
 
-		// Peripherals.
-		ADC1_Routine(bl_unlocked);
+		// Peripherals tasks.
+		ADC1_Task(lsmcu_ctx.bl_unlocked);
 
-		// Generic.
-		AT_Routine();
-
-		// Simulator.
-		BL_Routine(&bl_unlocked);
-		MPINV_Routine();
-		ZPT_Routine();
-		KVB_Routine(bl_unlocked);
-		TCH_Routine();
+		// Applicative tasks.
+		BL_Task(&lsmcu_ctx.bl_unlocked);
+		KVB_Task(lsmcu_ctx.bl_unlocked);
+		LSSGKCU_Task();
+		MPINV_Task();
+		TCH_Task();
+		ZPT_Task();
 	}
 
 	return (0);

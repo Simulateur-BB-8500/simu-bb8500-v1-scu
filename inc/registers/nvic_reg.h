@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_NVIC_REG_H
-#define REGISTERS_NVIC_REG_H
+#ifndef NVIC_REG_H
+#define NVIC_REG_H
 
 /*** NVIC registers ***/
 
@@ -30,4 +30,4 @@ typedef struct {
 
 #define NVIC	((NVIC_BaseAddress*) ((unsigned int) 0xE000E100))
 
-#endif /* REGISTERS_NVIC_REG_H */
+#endif /* NVIC_REG_H */

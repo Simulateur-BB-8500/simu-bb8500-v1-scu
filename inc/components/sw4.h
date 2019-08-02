@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef GENERIC_SW4_H
-#define GENERIC_SW4_H
+#ifndef SW4_H
+#define SW4_H
 
 /*** 4-poles switch structures ***/
 
@@ -41,7 +41,7 @@ typedef struct {
 /*** 4-poles switch functions ***/
 
 void SW4_Init(SW4_Context* sw4, unsigned int sw4_debouncing_ms);
-void SW4_SetVoltage(SW4_Context* sw4, unsigned int new_voltage);
+void SW4_SetVoltageMv(SW4_Context* sw4, unsigned int sw4_voltage_mv);
 void SW4_UpdateState(SW4_Context* sw4);
 
-#endif /* GENERIC_SW4_H */
+#endif /* SW4_H */

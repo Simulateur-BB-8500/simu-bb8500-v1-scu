@@ -5,9 +5,10 @@
  *      Author: Ludovic
  */
 
+#include "sw3.h"
+
 #include "adc.h"
 #include "gpio.h"
-#include "sw3.h"
 #include "tim.h"
 
 /*** 3-poles switch local macros ***/
@@ -77,8 +78,8 @@ void SW3_Init(SW3_Context* sw3, unsigned int sw3_debouncing_ms) {
  * @param sw3:			The switch to set.
  * @param newVoltage:	New voltage measured by ADC.
  */
-void SW3_SetVoltage(SW3_Context* sw3, unsigned int new_voltage) {
-	sw3 -> voltage = new_voltage;
+void SW3_SetVoltageMv(SW3_Context* sw3, unsigned int sw3_voltage_mv) {
+	sw3 -> voltage = sw3_voltage_mv;
 }
 
 /* UPDATE THE STATE OF AN SW3 STRUCTURE PERFORMING HYSTERESIS AND CONFIRMATION.

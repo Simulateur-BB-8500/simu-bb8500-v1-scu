@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef PERIPHERALS_NVIC_H
-#define PERIPHERALS_NVIC_H
+#ifndef NVIC_H
+#define NVIC_H
 
 #include "nvic_reg.h"
 
@@ -119,4 +119,4 @@ void NVIC_EnableInterrupt(InterruptVector it_num);
 void NVIC_DisableInterrupt(InterruptVector it_num);
 void NVIC_SetPriority(InterruptVector it_num, unsigned char priority);
 
-#endif /* PERIPHERALS_NVIC_H */
+#endif /* NVIC_H */

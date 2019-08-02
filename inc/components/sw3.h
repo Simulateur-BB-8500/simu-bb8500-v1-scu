@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef GENERIC_SW3_H
-#define GENERIC_SW3_H
+#ifndef SW3_H
+#define SW3_H
 
 #include "gpio.h"
 
@@ -41,7 +41,7 @@ typedef struct {
 /*** 3-poles switch functions ***/
 
 void SW3_Init(SW3_Context* sw3, unsigned int sw3_debouncing_ms);
-void SW3_SetVoltage(SW3_Context* sw3, unsigned int new_voltage);
+void SW3_SetVoltageMv(SW3_Context* sw3, unsigned int sw3_voltage_mv);
 void SW3_UpdateState(SW3_Context* sw3);
 
-#endif /* GENERIC_SW3_H */
+#endif /* SW3_H */

@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_DAC_REG_H
-#define REGISTERS_DAC_REG_H
+#ifndef DAC_REG_H
+#define DAC_REG_H
 
 /*** DAC registers ***/
 
@@ -31,4 +31,4 @@ typedef struct {
 
 #define DAC	((DAC_BaseAddress*) ((unsigned int) 0x40007400))
 
-#endif /* REGISTERS_DAC_REG_H */
+#endif /* DAC_REG_H */

@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef SIMULATOR_TACHRO_H
-#define SIMULATOR_TACHRO_H
+#ifndef TCH_H
+#define TCH_H
 
 /*** TACHRO macros ***/
 
@@ -16,7 +16,7 @@
 /*** TACHRO functions ***/
 
 void TCH_Init(void);
-void TCH_SetSpeed(unsigned char new_speed_kmh);
-void TCH_Routine(void);
+void TCH_SetSpeedKmh(unsigned char tch_speed_kmh);
+void TCH_Task(void);
 
-#endif /* SIMULATOR_TACHRO_H */
+#endif /* TCH_H */

@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_TIM_REG_H
-#define REGISTERS_TIM_REG_H
+#ifndef TIM_REG_H
+#define TIM_REG_H
 
 /*** TIMx registers ***/
 
@@ -57,4 +57,4 @@ When accessing those registers in a generic function, the timer number has to be
 #define TIM13	((TIM_BaseAddress*) ((unsigned int) 0x40001C00))
 #define TIM14	((TIM_BaseAddress*) ((unsigned int) 0x40002000))
 
-#endif /* REGISTERS_TIM_REG_H */
+#endif /* TIM_REG_H */

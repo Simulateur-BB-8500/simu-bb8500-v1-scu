@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef PERIPHERALS_DAC_H
-#define PERIPHERALS_DAC_H
+#ifndef DAC_H
+#define DAC_H
 
 /*** DAC functions ***/
 
@@ -14,4 +14,4 @@ void DAC_Init(void);
 void DAC_SetVoltageMv(unsigned char channel, unsigned int voltage_mv);
 unsigned int DAC_GetVoltageMv(unsigned char channel);
 
-#endif /* PERIPHERALS_DAC_H */
+#endif /* DAC_H */

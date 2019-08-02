@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef REGISTERS_USART_REG_H
-#define REGISTERS_USART_REG_H
+#ifndef USART_REG_H
+#define USART_REG_H
 
 /*** USARTx registers ***/
 
@@ -35,4 +35,4 @@ typedef struct {
 #define UART7	((USART_BaseAddress*) ((unsigned int) 0x40007800))
 #define UART8	((USART_BaseAddress*) ((unsigned int) 0x40007C00))
 
-#endif /* REGISTERS_USART_REG_H */
+#endif /* USART_REG_H */

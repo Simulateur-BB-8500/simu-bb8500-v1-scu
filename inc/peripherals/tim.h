@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef PERIPHERALS_TIM_H
-#define PERIPHERALS_TIM_H
+#ifndef TIM_H
+#define TIM_H
 
 /*** TIM functions ***/
 
@@ -34,4 +34,4 @@ void TIM8_SetDutyCycle(unsigned char duty_cycle);
 void TIM8_Start(void);
 void TIM8_Stop(void);
 
-#endif /* PERIPHERALS_TIM_H */
+#endif /* TIM_H */

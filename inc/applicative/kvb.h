@@ -5,8 +5,8 @@
  *      Author: Ludovic
  */
 
-#ifndef SIMULATOR_KVB_H
-#define SIMULATOR_KVB_H
+#ifndef KVB_H
+#define KVB_H
 
 /*** KVB macros ***/
 
@@ -22,6 +22,6 @@ void KVB_DisplayOff(void);
 void KVB_Sweep(void);
 void KVB_EnableBlinkLVAL(unsigned char blink_enabled);
 void KVB_EnableBlinkLSSF(unsigned char blink_enabled);
-void KVB_Routine(unsigned char bl_unlocked);
+void KVB_Task(unsigned char bl_unlocked);
 
-#endif /* SIMULATOR_KVB_H */
+#endif /* KVB_H */

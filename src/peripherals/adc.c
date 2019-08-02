@@ -6,6 +6,7 @@
  */
 
 #include "adc.h"
+
 #include "adc_reg.h"
 #include "gpio.h"
 #include "mapping.h"
@@ -26,11 +27,11 @@ typedef enum {
 	ADC_STATE_OFF,
 	ADC_STATE_READ_MPINV,
 	ADC_STATE_READ_ZPT,
-} ADC_InternalState;
+} ADC_State;
 
 typedef struct {
-	ADC_InternalState internal_state;
-	unsigned char conversion_completed;
+	ADC_State adc_state;
+	unsigned char adc_conversion_completed;
 } ADC_Context;
 
 /*** ADC local global variables ***/
@@ -38,6 +39,16 @@ typedef struct {
 static ADC_Context adc_ctx;
 
 /*** ADC local functions ***/
+
+/* ADCx INTERRUPT HANDLER.
+ * @param: 	None.
+ * @return: None.
+ */
+void ADC_InterruptHandler(void) {
+	adc_ctx.adc_conversion_completed = 1;
+	// Clear EOC flag (since DR register read is performed later).
+	ADC1 -> SR &= ~(0b1 << 1);
+}
 
 /* SET THE CURRENT CHANNEL OF ADC1.
  * @param channel: 		ADC channel (x for 'ADCChannelx', 17 for 'VREF' or 18 for 'VBAT').
@@ -59,7 +70,7 @@ void ADC1_SetChannel(unsigned char channel) {
  * @return: None.
  */
 void ADC1_StartConversion(void) {
-	adc_ctx.conversion_completed = 0;
+	adc_ctx.adc_conversion_completed = 0;
 	// Start conversion.
 	ADC1 -> CR2 |= (0b1 << 30); // SWSTART='1'.
 }
@@ -69,7 +80,7 @@ void ADC1_StartConversion(void) {
  * @return:	ADC conversion result represented in mV.
  */
 unsigned int ADC1_GetVoltageMv(void) {
-	return ((VCC_MV*(ADC1 -> DR)) / (ADC1_FULL_SCALE));
+	return ((VCC_MV * (ADC1 -> DR)) / (ADC1_FULL_SCALE));
 }
 
 /*** ADC functions ***/
@@ -81,20 +92,13 @@ unsigned int ADC1_GetVoltageMv(void) {
 void ADC1_Init(void) {
 
 	/* Init context */
-
-	adc_ctx.internal_state = ADC_STATE_OFF;
-	adc_ctx.conversion_completed = 0;
-
-	/* Configure analog GPIOs */
-
-	GPIO_Configure(ZPT_GPIO, Analog, OpenDrain, LowSpeed, NoPullUpNoPullDown);
+	adc_ctx.adc_state = ADC_STATE_OFF;
+	adc_ctx.adc_conversion_completed = 0;
 
 	/* Enable peripheral clock */
-
 	RCC -> APB2ENR |= (0b1 << 8);
 
 	/* Common registers */
-
 	ADCCR -> CCR &= ~(0b1 << 23) ; // Temperature sensor disabled (TSVREFE='0').
 	ADCCR -> CCR &= ~(0b1 << 22) ; // Vbat channel disabled (VBATE='0').
 	ADCCR -> CCR &= 0xFFFCFFFF; // Prescaler = 2 (ADCPRE='00').
@@ -103,7 +107,6 @@ void ADC1_Init(void) {
 	ADCCR -> CCR &= 0xFFFFFFE0; // All ADC independent (MULTI='00000').
 
 	/* Configure peripheral */
-
 	ADC1 -> CR1 &= ~(0b1 << 8); // Disable scan mode (SCAN='0').
 	ADC1 -> CR1 |= (0b1 << 5); // Enable end of conversion interrupt (EOCIE='1').
 	ADC1 -> CR2 |= (0b1 << 10); // EOC set at the end of each regular conversion (EOCS='1').
@@ -129,47 +132,37 @@ void ADC1_Init(void) {
  * @param bl_unlocked:	Indicates if the BL is unlocked ('1') or not ('0').
  * @return:				None.
  */
-void ADC1_Routine(unsigned char bl_unlocked) {
-	switch (adc_ctx.internal_state) {
+void ADC1_Task(unsigned char bl_unlocked) {
+	switch (adc_ctx.adc_state) {
 	case ADC_STATE_OFF:
-		// ADC routine only runs if BL is unlocked.
-		if (bl_unlocked == 1) {
+		// ADC task only runs if BL is unlocked.
+		if (bl_unlocked != 0) {
 			// Next measure is ZPT selector.
 			ADC1_SetChannel(8);
-			adc_ctx.internal_state = ADC_STATE_READ_MPINV;
+			adc_ctx.adc_state = ADC_STATE_READ_MPINV;
 			ADC1_StartConversion();
 		}
 		break;
 	case ADC_STATE_READ_MPINV:
-		if (adc_ctx.conversion_completed == 1) {
+		if (adc_ctx.adc_conversion_completed != 0) {
 			// Transmit voltage to MPINV module.
-			MPINV_SetVoltage(ADC1_GetVoltageMv());
+			MPINV_SetVoltageMv(ADC1_GetVoltageMv());
 			// Next measure is ZPT selector.
 			ADC1_SetChannel(8);
-			adc_ctx.internal_state = ADC_STATE_READ_ZPT;
+			adc_ctx.adc_state = ADC_STATE_READ_ZPT;
 			ADC1_StartConversion();
 		}
 		break;
 	case ADC_STATE_READ_ZPT:
-		if (adc_ctx.conversion_completed == 1) {
+		if (adc_ctx.adc_conversion_completed != 0) {
 			// Transmit voltage to ZPT module.
-			ZPT_SetVoltage(ADC1_GetVoltageMv());
+			ZPT_SetVoltageMv(ADC1_GetVoltageMv());
 			// End of routine.
-			adc_ctx.internal_state = ADC_STATE_OFF;
+			adc_ctx.adc_state = ADC_STATE_OFF;
 		}
 		break;
 	default:
 		// Unknown state.
 		break;
 	}
-}
-
-/* ADCx INTERRUPT HANDLER.
- * @param: 	None.
- * @return: None.
- */
-void ADC_InterruptHandler(void) {
-	adc_ctx.conversion_completed = 1;
-	// Clear EOC flag (since DR register read is performed later).
-	ADC1 -> SR &= ~(0b1 << 1);
 }

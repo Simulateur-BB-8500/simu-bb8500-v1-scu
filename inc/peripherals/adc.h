@@ -5,14 +5,14 @@
  *      Author: Ludovic
  */
 
-#ifndef PERIPHERALS_ADC_H
-#define PERIPHERALS_ADC_H
+#ifndef ADC_H
+#define ADC_H
 
 #include "adc_reg.h"
 
 /*** ADC functions ***/
 
 void ADC1_Init(void);
-void ADC1_Routine(unsigned char bl_unlocked);
+void ADC1_Task(unsigned char bl_unlocked);
 
-#endif /* PERIPHERALS_ADC_H */
+#endif /* ADC_H */
