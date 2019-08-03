@@ -46,7 +46,7 @@ void TIM2_Init(void) {
 	TIM2 -> DIER &= ~(0b1 << 0); // UIE='0'.
 	TIM2 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 1 ms.
-	TIM2 -> PSC = (RCC_PCLK1_KHZ - 1); // TIM2 input clock = PCLK1/(49999+1) = PCLK1/50000 = 1kHz.
+	TIM2 -> PSC = (2 * RCC_PCLK1_KHZ) - 1; // TIM2 input clock = (2*PCLK1)/((2*PLCK1-1)+1) = 1kHz.
 	TIM2 -> ARR = 0xFFFFFFFF; // No overflow (49 days).
 	// Generate event to update registers.
 	TIM2 -> EGR |= (0b1 << 0); // UG='1'.
@@ -59,7 +59,7 @@ void TIM2_Init(void) {
  * @return:	Number of milliseconds (32-bits word) ellapsed since start-up.
  */
 unsigned int TIM2_GetMs(void) {
-	return ((TIM2 -> CNT) >> 1); // HACK: The prescaler clock is 2 times faster than the desired one (?).
+	return (TIM2 -> CNT);
 }
 
 /* DELAY FUNCTION.
@@ -88,7 +88,7 @@ void TIM5_Init(void) {
 	TIM5 -> DIER &= ~(0b1 << 0); // UIE='0'.
 	TIM5 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 2 ms.
-	TIM5 -> PSC = 49; // TIM5 input clock = PCLK1/(49+1) = PCLK1/50 = 1MHz.
+	TIM5 -> PSC = ((2 * RCC_PCLK1_KHZ) / 1000) - 1; // TIM5 input clock = (2*PCLK1)/((((2*PCLK1)/1000)-1)+1) = 1MHz.
 	TIM5 -> ARR = 0; // Default value.
 	// Generate event to update registers.
 	TIM5 -> EGR |= (0b1 << 0); // UG='1'.
@@ -119,7 +119,7 @@ void TIM5_Stop(void) {
  * @return:				None.
  */
 void TIM5_SetDelayUs(unsigned int delay_us) {
-	TIM5 -> ARR = (delay_us * 2); // delay_us fronts @ 1MHz = delay_us µs. HACK: The prescaler clock is 2 times faster than the desired one (?).
+	TIM5 -> ARR = delay_us; // <delay_us> fronts @ 1MHz = <delay_us> µs.
 }
 
 /* GET TIM5 UPDATE EVENT FLAG.
@@ -155,8 +155,8 @@ void TIM6_Init(void) {
 	TIM6 -> DIER &= ~(0b1 << 0); // UIE='0'.
 	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 2 ms.
-	TIM6 -> PSC = 999; // TIM6 input clock = PCLK1/(999+1) = PCLK1/1000 = 50kHz.
-	TIM6 -> ARR = 200; // 200 fronts @ 50kHz = 4ms -> leading to 2ms (?)
+	TIM6 -> PSC = ((2 * RCC_PCLK1_KHZ) / 50) - 1; // TIM6 input clock = (2*PCLK1)/((((2*PCLK1)/50)-1)+1) = 50kHz.
+	TIM6 -> ARR = 100; // 100 fronts @ 50kHz = 2ms.
 	// Generate event to update registers.
 	TIM6 -> EGR |= (0b1 << 0); // UG='1'.
 	// Enable interrupt.
@@ -203,8 +203,8 @@ void TIM8_Init(void) {
 	TIM8 -> DIER &= ~(0b1 << 0); // UIE='0'.
 	TIM8 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to set PWM frequency to 2kHz.
-	TIM8 -> PSC = 49; // TIM8 input clock = PCLK2/(49+1) = PCLK2/50 = 1MHz.
-	TIM8 -> ARR = 500; // 500 fronts @ 1MHz = 2kHz -> leading to 4kHz (?).
+	TIM8 -> PSC = ((2 * RCC_PCLK2_KHZ) / 1000) - 1;; // TIM8 input clock = (2*PCLK2)/((((2*PCLK2)/1000)-1)+1) = 1MHz.
+	TIM8 -> ARR = 250; // 250 fronts @ 1MHz = 4kHz.
 	// Configure channel 1 in PWM mode 1.
 	TIM8 -> CCMR1 &= 0xFFFFFF00; // Reset bits 0-7 and output mode (CC1S='00').
 	TIM8 -> CCMR1 |= (0b001101000 << 0); // 0C1M='0110' and OC1PE='1'.

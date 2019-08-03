@@ -14,9 +14,9 @@
 //#define RCC_OUTPUT_CLOCK
 
 // System clocks frequency in kHz.
-#define RCC_SYSCLK_KHZ	200000
-#define RCC_PCLK1_KHZ	50000
-#define RCC_PCLK2_KHZ	50000
+#define RCC_SYSCLK_KHZ	100000
+#define RCC_PCLK1_KHZ	25000
+#define RCC_PCLK2_KHZ	25000
 
 /*** RCC functions ***/
 

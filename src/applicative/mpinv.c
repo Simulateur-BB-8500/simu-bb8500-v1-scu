@@ -30,11 +30,8 @@ static MPINV_Context mpinv_ctx;
  */
 void MPINV_Init(void) {
 
-	/* Init GPIOs */
-	GPIO_Configure(&GPIO_MPINV, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
 	/* Init context */
-	SW3_Init(&mpinv_ctx.mpinv_sw3, 2000);
+	SW3_Init(&mpinv_ctx.mpinv_sw3, &GPIO_MPINV, 2000);
 	mpinv_ctx.mpinv_previous_state = SW3_NEUTRAL;
 }
 
@@ -54,7 +51,7 @@ void MPINV_Task(void) {
 	// Update current state.
 	SW3_UpdateState(&mpinv_ctx.mpinv_sw3);
 	// Perform actions according to state.
-	switch (mpinv_ctx.mpinv_sw3.state) {
+	switch (mpinv_ctx.mpinv_sw3.sw3_state) {
 	case SW3_BACK:
 		// TBD.
 		break;
@@ -69,5 +66,5 @@ void MPINV_Task(void) {
 		break;
 	}
 	// Update previous state.
-	mpinv_ctx.mpinv_previous_state = mpinv_ctx.mpinv_sw3.state;
+	mpinv_ctx.mpinv_previous_state = mpinv_ctx.mpinv_sw3.sw3_state;
 }

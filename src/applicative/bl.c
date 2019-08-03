@@ -30,9 +30,6 @@ static BL_Context bl_ctx;
  */
 void BL_Init(void) {
 
-	/* Init GPIOs */
-	GPIO_Configure(&GPIO_BL_ZDV, GPIO_MODE_INPUT, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_UP);
-
 	/* Init context */
 	SW2_Init(&bl_ctx.zdv, &GPIO_BL_ZDV, 0, 2000); // ZDV active low = 0.
 	bl_ctx.bl_unlocked = 0;
@@ -46,7 +43,7 @@ void BL_Task(unsigned char* bl_unlocked) {
 
 	// Unlock switch.
 	SW2_UpdateState(&bl_ctx.zdv);
-	if (bl_ctx.zdv.state == SW2_ON) {
+	if (bl_ctx.zdv.sw2_state == SW2_ON) {
 		bl_ctx.bl_unlocked = 1;
 	}
 	else {

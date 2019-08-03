@@ -8,6 +8,8 @@
 #ifndef SW4_H
 #define SW4_H
 
+#include "gpio.h"
+
 /*** 4-poles switch structures ***/
 
 // Output state.
@@ -31,16 +33,16 @@ typedef enum {
 } SW4_InternalState;
 
 typedef struct {
-	unsigned int voltage; // Current voltage measured by ADC.
-	SW4_InternalState internal_state; // Current state in SW4 state machine.
-	SW4_State state; // State after anti-bouncing (used in higher levels).
-	unsigned int debouncing_ms; // Delay before validating states (in ms).
-	unsigned int confirm_start_time;
+	unsigned int sw4_voltage; // Current voltage measured by ADC.
+	SW4_InternalState sw4_internal_state; // Current state in SW4 state machine.
+	SW4_State sw4_state; // State after anti-bouncing (used in higher levels).
+	unsigned int sw4_debouncing_ms; // Delay before validating states (in ms).
+	unsigned int sw4_confirm_start_time;
 } SW4_Context;
 
 /*** 4-poles switch functions ***/
 
-void SW4_Init(SW4_Context* sw4, unsigned int sw4_debouncing_ms);
+void SW4_Init(SW4_Context* sw4, const GPIO* sw4_gpio, unsigned int sw4_debouncing_ms);
 void SW4_SetVoltageMv(SW4_Context* sw4, unsigned int sw4_voltage_mv);
 void SW4_UpdateState(SW4_Context* sw4);
 

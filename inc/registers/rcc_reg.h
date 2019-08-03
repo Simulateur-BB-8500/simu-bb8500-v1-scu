@@ -46,8 +46,8 @@ typedef struct {
 	volatile unsigned int SSCGR;    	// RCC spread spectrum clock generation register.
 	volatile unsigned int PLLI2SCFGR;	// RCC PLLI2S configuration register.
 	volatile unsigned int PLLSAICFGR;	// RCC PLLSAI configuration register.
-	volatile unsigned int DCKCFGR1;		// RCC Dedicated Clocks configuration register 1.
-	volatile unsigned int DCKCFGR2;		// RCC Dedicated Clocks configuration register 2.
+	volatile unsigned int DKCFGR1;		// RCC Dedicated Clocks configuration register 1.
+	volatile unsigned int DKCFGR2;		// RCC Dedicated Clocks configuration register 2.
 } RCC_BaseAddress;
 
 /*** RCC base address ***/

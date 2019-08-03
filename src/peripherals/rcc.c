@@ -18,33 +18,34 @@
  */
 void RCC_Init(void) {
 
-	/* Use HSI first for start-up*/
-	RCC -> CR &= ~(0b11 << 16); // HSEON = '0'.
-	RCC -> CR |= (0b1 <<0); // HSION='1'.
+	/* Use HSI first for start-up  */
+	RCC -> CR &= ~(0b1 << 16); // HSEON = '0'.
+	RCC -> CR |= (0b1 << 0); // HSION='1'.
 	// Wait for HSI to be stable.
-	while (((RCC -> CR) & (0b1 << 1)) != (0b1 << 1)); // HSIRDY='1'.
+	while (((RCC -> CR) & (0b1 << 1)) == 0); // HSIRDY='1'.
 	// Select HSI as system clock.
 	RCC -> CFGR &= ~(0b11 << 0); // SW='00'.
 	// Wait for clock switch.
 	while (((RCC -> CFGR) & (0b11 << 0)) != 0b00); // SWS='00'.
 
 	/* Peripherals clock prescalers */
-	// HPRE = 1 -> HCLK = SYSCLK = 200MHz (max 216).
-	// PPRE1 = 4 -> PCLK1 = HCLK/4 = 50MHz (max 54 for device, max 65 for TIM2 use (PSC register)).
-	// PPRE2 = 4 -> PCLK2 = HCLK/4 = 50MHz (max 108).
+	// HPRE = 1 -> HCLK = SYSCLK = 100MHz (max 216).
+	// PPRE1 = 4 -> PCLK1 = HCLK/4 = 25MHz (max 54).
+	// PPRE2 = 4 -> PCLK2 = HCLK/4 = 25MHz (max 108).
 	RCC -> CFGR &= 0xFFE0030F; // Reset bits 4-7 and 10-15 + HPRE='0000' (1).
 	RCC -> CFGR |= (0b101 << 10) | (0b101 << 13); // PPRE1='101' (4) and PPRE2='101' (4).
+	RCC -> DKCFGR1 &= ~(0b1 << 24); // Timers clock is 2*PLCKx (PPRE1 and PPRE2 != 1).
 
 	/* Configure main PLL */
 	// Ensure PLL is off before configure it.
 	RCC -> CR &= ~(0b1 << 24);
 	// Source = HSI 16MHz
 	// M = 16 -> input clock = 1MHz (typical value).
-	// N = 400 -> VCO output clock = 400MHz (max 432).
-	// P = 2 -> PLLCLK = 200MHz (max 216).
-	// Q = 8 -> PLL48CLK = 50MHz (min 48 - max 75).
+	// N = 200 -> VCO output clock = 200MHz (max 432).
+	// P = 2 -> PLLCLK = 100MHz (max 216).
+	// Q = 4 -> PLL48CLK = 50MHz (min 48 - max 75).
 	RCC -> PLLCFGR = 0; // Reset all bits + PLLSRC='0' (HSI) + PLLP='00' (2)
-	RCC -> PLLCFGR |= (16 << 0) | (400 << 6) | (8 << 24);
+	RCC -> PLLCFGR |= (16 << 0) | (200 << 6) | (4 << 24);
 	// Enable PLL.
 	RCC -> CR |= (0b1 << 24);
 	// Wait for PLL to be ready.
@@ -54,10 +55,10 @@ void RCC_Init(void) {
 	// Enable flash prefetch.
 	FLASH -> ACR |= (0b1 << 8);
 	// Increase flash latency according to new system clock frequency (see p.74 of RM0385 datasheet).
-	// HCLK = SYSCLK = 200MHz -> flash latency must be set to 6 wait states (WS).
+	// HCLK = SYSCLK = 100MHz -> flash latency must be set to 3 wait states (WS).
 	FLASH -> ACR &= ~(0b1111 << 0); // Reset bits 0-3.
-	FLASH -> ACR |= 6; // LATENCY=6.
-	while (((FLASH -> ACR) & (0b1111 << 0)) != 6);
+	FLASH -> ACR |= 3; // LATENCY=3.
+	while (((FLASH -> ACR) & (0b1111 << 0)) != 3);
 	// Select PLLCLK.
 	RCC -> CFGR |= (0b10 << 0); // SW='10'.
 	// Wait for clock switch.

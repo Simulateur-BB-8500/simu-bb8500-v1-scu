@@ -20,12 +20,17 @@
  * @return:					None.
  */
 void SW2_Init(SW2_Context* sw2, const GPIO* sw2_gpio, unsigned char sw2_active_state, unsigned int sw2_debouncing_ms) {
-	sw2 -> gpio = sw2_gpio;
-	sw2 -> active_state = sw2_active_state;
-	sw2 -> internal_state = SW2_STATE_OFF;
-	sw2 -> state = SW2_OFF;
-	sw2 -> debouncing_ms = sw2_debouncing_ms;
-	sw2 -> confirm_start_time = 0;
+
+	/* Init context */
+	sw2 -> sw2_gpio = sw2_gpio;
+	sw2 -> sw2_active_state = sw2_active_state;
+	sw2 -> sw2_internal_state = SW2_STATE_OFF;
+	sw2 -> sw2_state = SW2_OFF;
+	sw2 -> sw2_debouncing_ms = sw2_debouncing_ms;
+	sw2 -> sw2_confirm_start_time = 0;
+
+	/* Init GPIO */
+	GPIO_Configure((sw2 -> sw2_gpio), GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
 }
 
 /* UPDATE THE STATE OF AN SW2 STRUCTURE.
@@ -33,40 +38,40 @@ void SW2_Init(SW2_Context* sw2, const GPIO* sw2_gpio, unsigned char sw2_active_s
  * @return:		None.
  */
 void SW2_UpdateState(SW2_Context* sw2) {
-	switch(sw2 -> internal_state) {
+	switch(sw2 -> sw2_internal_state) {
 	case SW2_STATE_OFF:
-		sw2 -> state = SW2_OFF; // Switch is off.
-		if (GPIO_Read(sw2 -> gpio) == (sw2 -> active_state)) {
-			sw2 -> internal_state = SW2_STATE_CONFIRM_ON;
+		sw2 -> sw2_state = SW2_OFF; // Switch is off.
+		if (GPIO_Read(sw2 -> sw2_gpio) == (sw2 -> sw2_active_state)) {
+			sw2 -> sw2_internal_state = SW2_STATE_CONFIRM_ON;
 			// Reset confirm start time.
-			sw2 -> confirm_start_time = TIM2_GetMs();
+			sw2 -> sw2_confirm_start_time = TIM2_GetMs();
 		}
 		break;
 	case SW2_STATE_CONFIRM_ON:
-		if (GPIO_Read(sw2 -> gpio) != (sw2 -> active_state)) {
-			sw2 -> internal_state = SW2_STATE_OFF;
+		if (GPIO_Read(sw2 -> sw2_gpio) != (sw2 -> sw2_active_state)) {
+			sw2 -> sw2_internal_state = SW2_STATE_OFF;
 		}
 		else {
-			if (TIM2_GetMs() > (sw2 -> confirm_start_time) + (sw2 -> debouncing_ms)) {
-				sw2 -> internal_state = SW2_STATE_ON;
+			if (TIM2_GetMs() > (sw2 -> sw2_confirm_start_time) + (sw2 -> sw2_debouncing_ms)) {
+				sw2 -> sw2_internal_state = SW2_STATE_ON;
 			}
 		}
 		break;
 	case SW2_STATE_ON:
-		sw2 -> state = SW2_ON; // Switch is on.
-		if (GPIO_Read(sw2 -> gpio) != (sw2 -> active_state)) {
-			sw2 -> internal_state = SW2_STATE_CONFIRM_OFF;
+		sw2 -> sw2_state = SW2_ON; // Switch is on.
+		if (GPIO_Read(sw2 -> sw2_gpio) != (sw2 -> sw2_active_state)) {
+			sw2 -> sw2_internal_state = SW2_STATE_CONFIRM_OFF;
 			// Reset confirm start time.
-			sw2 -> confirm_start_time = TIM2_GetMs();
+			sw2 -> sw2_confirm_start_time = TIM2_GetMs();
 		}
 		break;
 	case SW2_STATE_CONFIRM_OFF:
-		if (GPIO_Read(sw2 -> gpio) == (sw2 -> active_state)) {
-			sw2 -> internal_state = SW2_STATE_ON;
+		if (GPIO_Read(sw2 -> sw2_gpio) == (sw2 -> sw2_active_state)) {
+			sw2 -> sw2_internal_state = SW2_STATE_ON;
 		}
 		else {
-			if (TIM2_GetMs() > (sw2 -> confirm_start_time) + (sw2 -> debouncing_ms)) {
-				sw2 -> internal_state = SW2_STATE_OFF;
+			if (TIM2_GetMs() > (sw2 -> sw2_confirm_start_time) + (sw2 -> sw2_debouncing_ms)) {
+				sw2 -> sw2_internal_state = SW2_STATE_OFF;
 			}
 		}
 		break;

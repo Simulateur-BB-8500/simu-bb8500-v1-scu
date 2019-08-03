@@ -30,11 +30,8 @@ static ZPT_Context zpt_ctx;
  */
 void ZPT_Init(void) {
 
-	/* Configure analog GPIOs */
-	GPIO_Configure(&GPIO_ZPT, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
 	/* Init context */
-	SW4_Init(&zpt_ctx.zpt_sw4, 2000);
+	SW4_Init(&zpt_ctx.zpt_sw4, &GPIO_ZPT, 2000);
 	zpt_ctx.zpt_previous_state = SW4_P0;
 }
 
@@ -54,7 +51,7 @@ void ZPT_Task(void) {
 	// Update current state.
 	SW4_UpdateState(&zpt_ctx.zpt_sw4);
 	// Perform actions according to state.
-	switch (zpt_ctx.zpt_sw4.state) {
+	switch (zpt_ctx.zpt_sw4.sw4_state) {
 	case SW4_P0:
 		// TBD.
 		break;
@@ -72,5 +69,5 @@ void ZPT_Task(void) {
 		break;
 	}
 	// Update previous state.
-	zpt_ctx.zpt_previous_state = zpt_ctx.zpt_sw4.state;
+	zpt_ctx.zpt_previous_state = zpt_ctx.zpt_sw4.sw4_state;
 }
