@@ -9,6 +9,7 @@
 #include "bl.h"
 #include "kvb.h"
 #include "lssgkcu.h"
+#include "mano.h"
 #include "mapping.h"
 #include "mpinv.h"
 #include "tch.h"
@@ -19,6 +20,7 @@
 #include "rcc.h"
 #include "stepper.h"
 #include "tim.h"
+#include "usart.h"
 
 /*** Main structures ***/
 
@@ -38,10 +40,15 @@ int main(void) {
 
 	/* Init peripherals */
 	RCC_Init();
-	TIM2_Init();
 	GPIO_Init();
-	DAC_Init();
+	TIM2_Init(); // Time keeper.
+	TIM5_Init(); // Tachro.
+	TIM6_Init(); // KVB sweep.
+	TIM7_Init(); // Manometers.
+	TIM8_Init(); // LVAL PWM.
 	ADC1_Init();
+	DAC_Init();
+	USART2_Init();
 
 	/* Applicative layers */
 	BL_Init();
@@ -50,14 +57,15 @@ int main(void) {
 	MPINV_Init();
 	TCH_Init();
 	ZPT_Init();
+	MANO_Init(&mano_cp, &stepper_cp, &GPIO_MCP_1, &GPIO_MCP_2, 100, 3072, 20, 100);
+	MANO_Init(&mano_re, &stepper_re, &GPIO_MRE_1, &GPIO_MRE_2, 100, 3072, 20, 100);
+	MANO_Init(&mano_cg, &stepper_cg, &GPIO_MCG_1, &GPIO_MCG_2, 100, 3072, 20, 100);
+	MANO_Init(&mano_cf1, &stepper_cf1, &GPIO_MCF1_1, &GPIO_MCF1_2, 60, 3072, 20, 100);
+	MANO_Init(&mano_cf2, &stepper_cf2, &GPIO_MCF2_1, &GPIO_MCF2_2, 60, 3072, 20, 100);
+	MANOS_Init();
 
 	/* Init context */
 	lsmcu_ctx.bl_unlocked = 0;
-
-	// Stepper test.
-	STEPPER_Context cp;
-	STEPPER_Init(&cp, &GPIO_MCP_1, &GPIO_MCP_2);
-	unsigned int stepper_next_time_ms = 0;
 
 	/* LSMCU main loop */
 	while(1) {
@@ -72,13 +80,6 @@ int main(void) {
 		MPINV_Task();
 		TCH_Task();
 		ZPT_Task();
-
-		// Stepper test.
-		if (TIM2_GetMs() > stepper_next_time_ms) {
-			STEPPER_Up(&cp);
-			stepper_next_time_ms = TIM2_GetMs() + 100;
-			GPIO_Toggle(&GPIO_LED_BLUE);
-		}
 	}
 
 	return (0);

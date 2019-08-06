@@ -233,9 +233,7 @@ void KVB_Init(void) {
 	// LVAL is configured in TIM8_Init() function since it is linked to TIM8 channel 1.
 	GPIO_Configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 
-	/* Init timers */
-	TIM8_Init(); // LVAL PWM timer.
-	TIM6_Init(); // KVB sweep timer.
+	/* Start sweep timer */
 	TIM6_Start();
 }
 
@@ -297,7 +295,7 @@ void KVB_EnableBlinkLSSF(unsigned char blink_enabled) {
 	kvb_ctx.lssf_blink_enable = blink_enabled;
 }
 
-/* PROCESS KVB DISPLAY (CALLED BY TIM6 INTERRUPT HANDLER).
+/* PROCESS KVB DISPLAY (CALLED BY TIM6 INTERRUPT HANDLER EVERY 2ms).
  * @param:	None.
  * @return:	None.
  */

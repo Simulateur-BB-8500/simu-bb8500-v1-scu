@@ -16,7 +16,7 @@
  * @param sw2:				Switch structure to initialise.
  * @param pGpio:			GPIO reading the switch.
  * @param pActiveState:		GPIO state ('LOW' or 'HIGH') for which the switch is considered on.
- * @param pDebouncingMs:	Delay before validating ON/ODD state (in ms).
+ * @param pDebouncingMs:	Delay before validating ON/OFF state (in ms).
  * @return:					None.
  */
 void SW2_Init(SW2_Context* sw2, const GPIO* sw2_gpio, unsigned char sw2_active_state, unsigned int sw2_debouncing_ms) {

@@ -8,6 +8,7 @@
 #include "tim.h"
 
 #include "kvb.h"
+#include "mano.h"
 #include "mapping.h"
 #include "nvic.h"
 #include "rcc.h"
@@ -25,6 +26,21 @@ void TIM6_DAC_InterruptHandler(void) {
 	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Perform KVB display sweep.
 	KVB_Sweep();
+}
+
+/* TIM7 INTERRUPT HANDLER.
+ * @param: 	None.
+ * @return: None.
+ */
+void TIM7_InterruptHandler(void) {
+	// Clear flag.
+	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
+	// Perform manometers needle control.
+	MANO_NeedleTask(&mano_cp);
+	MANO_NeedleTask(&mano_re);
+	MANO_NeedleTask(&mano_cg);
+	MANO_NeedleTask(&mano_cf1);
+	MANO_NeedleTask(&mano_cf2);
 }
 
 /*** TIM functions ***/
@@ -161,7 +177,7 @@ void TIM6_Init(void) {
 	TIM6 -> EGR |= (0b1 << 0); // UG='1'.
 	// Enable interrupt.
 	TIM6 -> DIER |= (0b1 << 0); // UIE='1'.
-	NVIC_EnableInterrupt(IT_TIM6_DAC);
+	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
 }
 
 /* START TIM6.
@@ -171,6 +187,7 @@ void TIM6_Init(void) {
 void TIM6_Start(void) {
 	// Enable counter.
 	TIM6 -> CR1 |= (0b1 << 0); // CEN='1'.
+	NVIC_EnableInterrupt(IT_TIM6_DAC);
 }
 
 /* STOP TIM6.
@@ -181,6 +198,51 @@ void TIM6_Stop(void) {
 	// Disable and reset counter.
 	TIM6 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM6 -> CNT = 0;
+}
+
+/* CONFIGURE TIM7 FOR MANOMETERS.
+ * @param:	None.
+ * @return:	None.
+ */
+void TIM7_Init(void) {
+	/* Enable peripheral clock */
+	RCC -> APB1ENR |= (0b1 << 5); // TIM7EN='1'.
+
+	/* Configure peripheral */
+	// Disable and reset counter.
+	TIM7 -> CR1 &= ~(0b1 << 0); // CEN='0'.
+	TIM7 -> CNT = 0;
+	// Disable interrupt.
+	TIM7 -> DIER &= ~(0b1 << 0); // UIE='0'.
+	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
+	// Set PSC and ARR registers to reach 2 ms.
+	TIM7 -> PSC = ((2 * RCC_PCLK1_KHZ) / 1000) - 1; // TIM7 input clock = (2*PCLK1)/((((2*PCLK1)/1000)-1)+1) = 1MHz.
+	TIM7 -> ARR = 100; // 100 fronts @ 1MHz = 100µs.
+	// Generate event to update registers.
+	TIM7 -> EGR |= (0b1 << 0); // UG='1'.
+	// Enable interrupt.
+	TIM7 -> DIER |= (0b1 << 0); // UIE='1'.
+	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
+}
+
+/* START TIM7.
+ * @param:	None.
+ * @return: None.
+ */
+void TIM7_Start(void) {
+	// Enable counter.
+	TIM7 -> CR1 |= (0b1 << 0); // CEN='1'.
+	NVIC_EnableInterrupt(IT_TIM7);
+}
+
+/* STOP TIM6.
+ * @param: 	None.
+ * @return:	None.
+ */
+void TIM7_Stop(void) {
+	// Disable and reset counter.
+	TIM7 -> CR1 &= ~(0b1 << 0); // CEN='0'.
+	TIM7 -> CNT = 0;
 }
 
 /* CONFIGURE TIM8 IN PWM MODE FOR LVAL BLINKLING.
@@ -222,7 +284,7 @@ void TIM8_Init(void) {
  */
 void TIM8_SetDutyCycle(unsigned char duty_cycle) {
 	// Set channel 1 duty cycle.
-	TIM8 -> CCR1 = (((duty_cycle) % 101) * (TIM8 -> ARR)) / 100; // % 101 because dutyCycle ranges from 0 to 100 included.
+	TIM8 -> CCR1 = (((duty_cycle) % 101) * (TIM8 -> ARR)) / 100; // % 101 because duty cycle ranges from 0 to 100 included.
 }
 
 /* START TIM8.

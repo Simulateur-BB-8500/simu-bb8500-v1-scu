@@ -28,6 +28,11 @@ void TIM6_Init(void);
 void TIM6_Start(void);
 void TIM6_Stop(void);
 
+// Manometers.
+void TIM7_Init(void);
+void TIM7_Start(void);
+void TIM7_Stop(void);
+
 // LVAL PWM.
 void TIM8_Init(void);
 void TIM8_SetDutyCycle(unsigned char duty_cycle);

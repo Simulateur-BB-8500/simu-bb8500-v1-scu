@@ -150,9 +150,6 @@ void LSSGKCU_Init(void) {
 	for(i=0 ; i<LSSGKCU_RX_BUFFER_SIZE ; i++) lssgkcu_ctx.rx_buf[i] = 0;
 	lssgkcu_ctx.rx_write_idx = 0;
 	lssgkcu_ctx.rx_read_idx = 0;
-
-	/* Init USART peripheral */
-	USART2_Init();
 }
 
 /* FILL LSSGKCU BUFFER (CALLED BY USART2 INTERRUPT HANDLER).

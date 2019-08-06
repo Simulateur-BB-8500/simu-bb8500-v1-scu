@@ -178,7 +178,7 @@ g_pfnVectors:
 	.word	0 // 52 = UART4.
 	.word	0 // 53 = UART5.
 	.word	TIM6_DAC_InterruptHandler // 54 = TIM6_DAC.
-	.word	0 // 55 = TIM7.
+	.word	TIM7_InterruptHandler // 55 = TIM7.
 	.word	0 // 56 = DMA2_Stream0.
 	.word	0 // 57 = DMA2_Stream1.
 	.word	0 // 58 = DMA2_Stream2.
@@ -267,5 +267,8 @@ g_pfnVectors:
 
 	.weak	TIM6_DAC_InterruptHandler
 	.thumb_set TIM6_DAC_InterruptHandler,Default_Handler
+
+	.weak	TIM7_InterruptHandler
+	.thumb_set TIM7_InterruptHandler,Default_Handler
 
 /************************ (C) COPYRIGHT Ac6 *****END OF FILE****/
