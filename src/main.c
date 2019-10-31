@@ -48,7 +48,7 @@ int main(void) {
 	TIM8_Init(); // LVAL PWM.
 	ADC1_Init();
 	DAC_Init();
-	USART2_Init();
+	USART1_Init();
 
 	/* Applicative layers */
 	BL_Init();

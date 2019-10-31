@@ -20,7 +20,7 @@ typedef enum {
 
 /*** USART functions ***/
 
-void USART2_Init(void);
-void USART2_SendByte(unsigned char tx_byte, USART_Format format);
+void USART1_Init(void);
+void USART1_SendByte(unsigned char tx_byte, USART_Format format);
 
 #endif /* _USART_H */
