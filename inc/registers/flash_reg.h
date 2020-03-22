@@ -1,8 +1,8 @@
 /*
  * flash_reg.h
  *
- *  Created on: 14 july 2018
- *      Author: Ludovic
+ *  Created on: 14 jul. 2018
+ *      Author: Ludo
  */
 
 #ifndef FLASH_REG_H

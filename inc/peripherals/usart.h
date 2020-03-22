@@ -2,7 +2,7 @@
  * usart.h
  *
  *  Created on: 28 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef USART_H

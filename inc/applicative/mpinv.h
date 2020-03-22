@@ -1,8 +1,8 @@
 /*
  * mpinv.h
  *
- *  Created on: 8 avr. 2018
- *      Author: Ludovic
+ *  Created on: 8 apr. 2018
+ *      Author: Ludo
  */
 
 #ifndef MPINV_H

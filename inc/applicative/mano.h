@@ -1,8 +1,8 @@
 /*
  * mano.h
  *
- *  Created on: 3 aug 2019
- *      Author: Ludovic
+ *  Created on: 3 aug. 2019
+ *      Author: Ludo
  */
 
 #ifndef MANO_H
@@ -36,6 +36,9 @@ MANO_Context mano_cf2;
 /*** MANO functions ***/
 
 void MANOS_Init(void);
+void MANOS_Enable(void);
+void MANOS_Disable(void);
+
 void MANO_Init(MANO_Context* mano, STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2, unsigned int pressure_max_decibars, unsigned int pressure_max_steps, unsigned int needle_inertia_steps, unsigned int needle_speed_max);
 void MANO_SetTarget(MANO_Context* mano, unsigned int pressure_decibars);
 void MANO_StartNeedle(MANO_Context* mano);

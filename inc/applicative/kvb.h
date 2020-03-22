@@ -2,11 +2,13 @@
  * kvb.h
  *
  *  Created on: 26 dec. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef KVB_H
 #define KVB_H
+
+#include "common.h"
 
 /*** KVB macros ***/
 
@@ -22,6 +24,6 @@ void KVB_DisplayOff(void);
 void KVB_Sweep(void);
 void KVB_EnableBlinkLVAL(unsigned char blink_enabled);
 void KVB_EnableBlinkLSSF(unsigned char blink_enabled);
-void KVB_Task(unsigned char bl_unlocked);
+void KVB_Task(LSMCU_Context* lscmu_ctx);
 
 #endif /* KVB_H */

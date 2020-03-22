@@ -1,8 +1,8 @@
 /*
  * stepper.c
  *
- *  Created on: 2 aug 2019
- *      Author: Ludovic
+ *  Created on: 2 aug. 2019
+ *      Author: Ludo
  */
 
 #include "stepper.h"

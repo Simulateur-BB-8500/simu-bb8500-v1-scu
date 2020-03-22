@@ -2,7 +2,7 @@
  * rcc_reg.h
  *
  *  Created on: 9 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef RCC_REG_H

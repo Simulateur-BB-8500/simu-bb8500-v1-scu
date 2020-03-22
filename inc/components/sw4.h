@@ -2,7 +2,7 @@
  * sw4.h
  *
  *  Created on: 26 dec. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef SW4_H

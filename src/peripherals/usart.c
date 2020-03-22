@@ -2,7 +2,7 @@
  * usart.c
  *
  *  Created on: 28 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "usart.h"

@@ -2,11 +2,12 @@
  * kvb.c
  *
  *  Created on: 26 dec. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "kvb.h"
 
+#include "common.h"
 #include "gpio.h"
 #include "mapping.h"
 #include "tim.h"
@@ -319,26 +320,23 @@ void KVB_Sweep(void) {
 }
 
 /* MAIN ROUTINE OF KVB.
- * @param bl_unlocked:	Indicates if the BL is unlocked ('1') or not ('0').
+ * @param lsmcu_ctx:	Pointer to simulator context.
  * @return:				None.
  */
-void KVB_Task(unsigned char bl_unlocked) {
-
+void KVB_Task(LSMCU_Context* lsmcu_ctx) {
 	/* Perform state machine */
 	switch (kvb_ctx.kvb_state) {
-
 	case KVB_STATE_OFF:
 		KVB_DisplayOff();
-		if (bl_unlocked == 1) {
+		if ((lsmcu_ctx -> lsmcu_bl_unlocked) != 0) {
 			kvb_ctx.kvb_state = KVB_STATE_PA400;
 			kvb_ctx.switch_state_time = TIM2_GetMs();
 		}
 		break;
-
 	case KVB_STATE_PA400:
 		KVB_Display(KVB_PA400_TEXT);
 		KVB_BlinkLSSF();
-		if (bl_unlocked == 0) {
+		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -348,11 +346,10 @@ void KVB_Task(unsigned char bl_unlocked) {
 			}
 		}
 		break;
-
 	case KVB_STATE_PA400_OFF:
 		KVB_DisplayOff();
 		KVB_BlinkLSSF();
-		if (bl_unlocked == 0) {
+		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -362,11 +359,10 @@ void KVB_Task(unsigned char bl_unlocked) {
 			}
 		}
 		break;
-
 	case KVB_STATE_UC512:
 		KVB_Display(KVB_UC512_TEXT);
 		KVB_BlinkLSSF();
-		if (bl_unlocked == 0) {
+		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -380,12 +376,11 @@ void KVB_Task(unsigned char bl_unlocked) {
 			}
 		}
 		break;
-
 	case KVB_STATE_888888:
 		KVB_Display(KVB_888888_TEXT);
 		KVB_BlinkLVAL();
 		KVB_BlinkLSSF();
-		if (bl_unlocked == 0) {
+		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -395,39 +390,41 @@ void KVB_Task(unsigned char bl_unlocked) {
 			}
 		}
 		break;
-
 	case KVB_STATE_888888_OFF:
 		KVB_DisplayOff();
 		KVB_BlinkLVAL();
 		KVB_BlinkLSSF();
-		if (bl_unlocked == 0) {
+		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
 			kvb_ctx.kvb_state = KVB_STATE_SLAVE_MODE;
 		}
 		break;
-
 	case KVB_STATE_SLAVE_MODE:
-		// LVAL.
-		if (kvb_ctx.lval_blink_enable == 1) {
-			if (kvb_ctx.lval_blinking == 0) {
-				TIM8_Start();
-				kvb_ctx.lval_blinking = 1;
-			}
-			KVB_BlinkLVAL();
+		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
+			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
-			TIM8_Stop();
-			kvb_ctx.lval_blinking = 0;
+			// LVAL.
+			if (kvb_ctx.lval_blink_enable == 1) {
+				if (kvb_ctx.lval_blinking == 0) {
+					TIM8_Start();
+					kvb_ctx.lval_blinking = 1;
+				}
+				KVB_BlinkLVAL();
+			}
+			else {
+				TIM8_Stop();
+				kvb_ctx.lval_blinking = 0;
+			}
+			// LSSF
+			if (kvb_ctx.lssf_blink_enable == 1) {
+				KVB_BlinkLSSF();
+			}
+			// All other functions are directly called by the LSSGKCU manager.
 		}
-		// LSSF
-		if (kvb_ctx.lssf_blink_enable == 1) {
-			KVB_BlinkLSSF();
-		}
-		// All other functions are directly called by the AT manager.
 		break;
-
 	default:
 		// Unknown state.
 		break;

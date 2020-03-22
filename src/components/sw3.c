@@ -2,7 +2,7 @@
  * sw3.c
  *
  *  Created on: 25 dec. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "sw3.h"

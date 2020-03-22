@@ -2,7 +2,7 @@
  * nvic.c
  *
  *  Created on: 16 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "nvic.h"

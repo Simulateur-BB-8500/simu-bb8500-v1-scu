@@ -2,7 +2,7 @@
  * sw4.c
  *
  *  Created on: 26 dec. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "sw4.h"

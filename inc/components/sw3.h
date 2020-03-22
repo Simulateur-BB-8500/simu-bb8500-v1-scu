@@ -2,7 +2,7 @@
  * sw3.h
  *
  *  Created on: 25 dec. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef SW3_H

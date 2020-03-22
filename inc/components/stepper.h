@@ -1,8 +1,8 @@
 /*
  * stepper.h
  *
- *  Created on: 2 aug 2019
- *      Author: Ludovic
+ *  Created on: 2 aug. 2019
+ *      Author: Ludo
  */
 
 #ifndef STEPPER_H

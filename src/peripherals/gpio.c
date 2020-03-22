@@ -2,7 +2,7 @@
  * gpio.c
  *
  *  Created on: 12 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "gpio.h"
@@ -246,11 +246,11 @@ void GPIO_Init(void) {
 void GPIO_Write(const GPIO* gpio, unsigned char state) {
 	// Ensure GPIO exists.
 	if (((gpio -> gpio_num) >= 0) && ((gpio -> gpio_num) < GPIO_PER_PORT)) {
-		if (state) {
-			(gpio -> gpio_port_address) -> ODR |= (0b1 << (gpio -> gpio_num));
+		if (state == 0) {
+			(gpio -> gpio_port_address) -> ODR &= ~(0b1 << (gpio -> gpio_num));
 		}
 		else {
-			(gpio -> gpio_port_address) -> ODR &= ~(0b1 << (gpio -> gpio_num));
+			(gpio -> gpio_port_address) -> ODR |= (0b1 << (gpio -> gpio_num));
 		}
 	}
 }

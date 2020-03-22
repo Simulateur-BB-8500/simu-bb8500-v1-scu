@@ -1,8 +1,8 @@
 /*
  * mano.c
  *
- *  Created on: 3 aug 2019
- *      Author: Ludovic
+ *  Created on: 3 aug. 2019
+ *      Author: Ludo
  */
 
 #include "mano.h"
@@ -28,6 +28,22 @@ void MANOS_Init(void) {
 
 	/* Start timer */
 	TIM7_Start();
+}
+
+/* POWER MANOMETERS DRIVERS.
+ * @param:	None.
+ * @return:	None.
+ */
+void MANOS_Enable(void) {
+	GPIO_Write(&GPIO_ZMANOS, 1);
+}
+
+/* POWER MANOMETERS DRIVERS.
+ * @param:	None.
+ * @return:	None.
+ */
+void MANOS_Disable(void) {
+	GPIO_Write(&GPIO_ZMANOS, 0);
 }
 
 /* INIT MANOMETER.

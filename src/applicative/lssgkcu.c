@@ -1,8 +1,8 @@
 /*
  * lssgkcu.c
  *
- *  Crelssgkcued on: 1 oct. 2017
- *      Author: Ludovic
+ *  Created on: 1 oct. 2017
+ *      Author: Ludo
  */
 
 #include "lssgkcu.h"

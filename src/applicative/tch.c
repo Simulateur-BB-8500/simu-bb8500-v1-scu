@@ -1,8 +1,8 @@
 /*
  * tch.c
  *
- *  Created on: 15 july 2018
- *      Author: Ludovic
+ *  Created on: 15 jul. 2018
+ *      Author: Ludo
  */
 
 #include "tch.h"
@@ -73,8 +73,8 @@ void TCH_Init(void) {
 	GPIO_Configure(&GPIO_TCH_INH_B, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_TCH_INH_C, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init PWM outputs
-	GPIO_Configure(&GPIO_TCH_PWM_C, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_TCH_PWM_C, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_TCH_PWM_A, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_TCH_PWM_B, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_TCH_PWM_C, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 }
 
@@ -97,10 +97,8 @@ void TCH_SetSpeedKmh(unsigned char tch_speed_kmh) {
  * @return:	None.
  */
 void TCH_Task(void) {
-
 	/* Perform state machine */
 	switch (tch_ctx.tch_internal_state) {
-
 	case TCH_STATE_OFF:
 		// All outputs off.
 		GPIO_Write(&GPIO_TCH_INH_A, 0);
@@ -118,7 +116,6 @@ void TCH_Task(void) {
 			tch_ctx.tch_internal_state = TCH_STATE_STEP1;
 		}
 		break;
-
 	case TCH_STATE_STEP1:
 		// Toggle required outputs.
 		GPIO_Write(&GPIO_TCH_INH_A, 1);
@@ -142,7 +139,6 @@ void TCH_Task(void) {
 			}
 		}
 		break;
-
 	case TCH_STATE_STEP2:
 		// Toggle required outputs.
 		GPIO_Write(&GPIO_TCH_INH_B, 0);
@@ -163,7 +159,6 @@ void TCH_Task(void) {
 			}
 		}
 		break;
-
 	case TCH_STATE_STEP3:
 		// Toggle required outputs.
 		GPIO_Write(&GPIO_TCH_INH_A, 0);
@@ -186,7 +181,6 @@ void TCH_Task(void) {
 			}
 		}
 		break;
-
 	case TCH_STATE_STEP4:
 		// Toggle required outputs.
 		GPIO_Write(&GPIO_TCH_INH_A, 1);
@@ -207,7 +201,6 @@ void TCH_Task(void) {
 			}
 		}
 		break;
-
 	case TCH_STATE_STEP5:
 		// Toggle required outputs.
 		GPIO_Write(&GPIO_TCH_INH_B, 0);
@@ -230,7 +223,6 @@ void TCH_Task(void) {
 			}
 		}
 		break;
-
 	case TCH_STATE_STEP6:
 		// Toggle required outputs.
 		GPIO_Write(&GPIO_TCH_INH_A, 0);
@@ -251,7 +243,6 @@ void TCH_Task(void) {
 			}
 		}
 		break;
-
 	default:
 		// Unknown state.
 		break;

@@ -2,7 +2,7 @@
  * sw2.h
  *
  *  Created on: 1 oct. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef SW2_H

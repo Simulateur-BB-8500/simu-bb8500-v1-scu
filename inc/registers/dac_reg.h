@@ -2,7 +2,7 @@
  * dac_reg.h
  *
  *  Created on: 18 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef DAC_REG_H

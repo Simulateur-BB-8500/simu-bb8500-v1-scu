@@ -2,7 +2,7 @@
  * adc_reg.h
  *
  *  Created on: 19 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef ADC_REG_H

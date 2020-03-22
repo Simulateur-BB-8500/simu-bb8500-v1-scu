@@ -2,7 +2,7 @@
  * sw2.c
  *
  *  Created on: 1 oct. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "sw2.h"
@@ -15,7 +15,7 @@
 /* INITIALISE AN SW2 STRUCTURE.
  * @param sw2:				Switch structure to initialise.
  * @param pGpio:			GPIO reading the switch.
- * @param pActiveState:		GPIO state ('LOW' or 'HIGH') for which the switch is considered on.
+ * @param pActiveState:		GPIO state ('0' or '1') for which the switch is considered on.
  * @param pDebouncingMs:	Delay before validating ON/OFF state (in ms).
  * @return:					None.
  */
@@ -52,7 +52,7 @@ void SW2_UpdateState(SW2_Context* sw2) {
 			sw2 -> sw2_internal_state = SW2_STATE_OFF;
 		}
 		else {
-			if (TIM2_GetMs() > (sw2 -> sw2_confirm_start_time) + (sw2 -> sw2_debouncing_ms)) {
+			if (TIM2_GetMs() > ((sw2 -> sw2_confirm_start_time) + (sw2 -> sw2_debouncing_ms))) {
 				sw2 -> sw2_internal_state = SW2_STATE_ON;
 			}
 		}
@@ -70,7 +70,7 @@ void SW2_UpdateState(SW2_Context* sw2) {
 			sw2 -> sw2_internal_state = SW2_STATE_ON;
 		}
 		else {
-			if (TIM2_GetMs() > (sw2 -> sw2_confirm_start_time) + (sw2 -> sw2_debouncing_ms)) {
+			if (TIM2_GetMs() > ((sw2 -> sw2_confirm_start_time) + (sw2 -> sw2_debouncing_ms))) {
 				sw2 -> sw2_internal_state = SW2_STATE_OFF;
 			}
 		}

@@ -2,7 +2,7 @@
  * tim.h
  *
  *  Created on: 16 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef TIM_H

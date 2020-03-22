@@ -1,13 +1,14 @@
 /*
  * mpinv.c
  *
- *  Created on: 8 avr. 2018
- *      Author: Ludovic
+ *  Created on: 8 apr. 2018
+ *      Author: Ludo
  */
 
 #include "mpinv.h"
 
 #include "gpio.h"
+#include "lssgkcu.h"
 #include "mapping.h"
 #include "sw3.h"
 
@@ -31,7 +32,7 @@ static MPINV_Context mpinv_ctx;
 void MPINV_Init(void) {
 
 	/* Init context */
-	SW3_Init(&mpinv_ctx.mpinv_sw3, &GPIO_MPINV, 2000);
+	SW3_Init(&mpinv_ctx.mpinv_sw3, &GPIO_MPINV, 100);
 	mpinv_ctx.mpinv_previous_state = SW3_NEUTRAL;
 }
 
@@ -53,13 +54,22 @@ void MPINV_Task(void) {
 	// Perform actions according to state.
 	switch (mpinv_ctx.mpinv_sw3.sw3_state) {
 	case SW3_BACK:
-		// TBD.
+		if (mpinv_ctx.mpinv_previous_state != SW3_BACK) {
+			// Backward.
+			LSSGKCU_Send(LSSGKCU_IN_INV_BACKWARD);
+		}
 		break;
 	case SW3_NEUTRAL:
-		// TBD.
+		if (mpinv_ctx.mpinv_previous_state != SW3_NEUTRAL) {
+			// Forward.
+			LSSGKCU_Send(LSSGKCU_IN_INV_NEUTRAL);
+		}
 		break;
 	case SW3_FRONT:
-		// TBD.
+		if (mpinv_ctx.mpinv_previous_state != SW3_FRONT) {
+			// Forward.
+			LSSGKCU_Send(LSSGKCU_IN_INV_FORWARD);
+		}
 		break;
 	default:
 		// Unknown state.

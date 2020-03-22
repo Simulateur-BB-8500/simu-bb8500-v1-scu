@@ -2,7 +2,7 @@
  * gpio.h
  *
  *  Created on: 12 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef GPIO_H

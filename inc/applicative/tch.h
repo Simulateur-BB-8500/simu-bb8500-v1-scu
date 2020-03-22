@@ -1,8 +1,8 @@
 /*
  * tch.h
  *
- *  Created on: 15 july 2018
- *      Author: Ludovic
+ *  Created on: 15 jul. 2018
+ *      Author: Ludo
  */
 
 #ifndef TCH_H

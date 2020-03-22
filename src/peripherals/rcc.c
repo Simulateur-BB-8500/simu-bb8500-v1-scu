@@ -2,7 +2,7 @@
  * rcc.c
  *
  *  Created on: 9 sept. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "rcc.h"
