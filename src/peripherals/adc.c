@@ -130,10 +130,10 @@ void ADC1_Init(void) {
 }
 
 /* MAIN ROUTINE OF ADC.
- * @param lsmcu_ctx:	Pointer to simulator context.
- * @return:				None.
+ * @param:	None.
+ * @return:	None.
  */
-void ADC1_Task(LSMCU_Context* lsmcu_ctx) {
+void ADC1_Task(void) {
 	unsigned int adc_result_mv = 0;
 	switch (adc_state) {
 	case ADC_STATE_OFF:
@@ -145,7 +145,7 @@ void ADC1_Task(LSMCU_Context* lsmcu_ctx) {
 	case ADC_STATE_READ_ZPT:
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
-			if (((lsmcu_ctx -> lsmcu_zba_closed) != 0) && ((lsmcu_ctx -> lsmcu_bl_unlocked) != 0)) {
+			if ((lsmcu_ctx.lsmcu_zba_closed != 0) && (lsmcu_ctx.lsmcu_bl_unlocked != 0)) {
 				// Transmit voltage to ZPT module.
 				adc_result_mv = ADC1_GetVoltageMv();
 				ZPT_SetVoltageMv(adc_result_mv);
@@ -160,7 +160,7 @@ void ADC1_Task(LSMCU_Context* lsmcu_ctx) {
 	case ADC_STATE_READ_S:
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
-			if ((lsmcu_ctx -> lsmcu_zba_closed) != 0) {
+			if (lsmcu_ctx.lsmcu_zba_closed != 0) {
 				// Transmit voltage to S module.
 				adc_result_mv = ADC1_GetVoltageMv();
 				S_SetVoltageMv(adc_result_mv);
@@ -175,7 +175,7 @@ void ADC1_Task(LSMCU_Context* lsmcu_ctx) {
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// TBD
-			if ((lsmcu_ctx -> lsmcu_zba_closed) != 0) {
+			if (lsmcu_ctx.lsmcu_zba_closed != 0) {
 				adc_result_mv = ADC1_GetVoltageMv();
 			}
 			// Start next conversion.
@@ -187,7 +187,7 @@ void ADC1_Task(LSMCU_Context* lsmcu_ctx) {
 	case ADC_STATE_READ_MPINV:
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
-			if (((lsmcu_ctx -> lsmcu_zba_closed) != 0) && ((lsmcu_ctx -> lsmcu_bl_unlocked) != 0)) {
+			if ((lsmcu_ctx.lsmcu_zba_closed != 0) && (lsmcu_ctx.lsmcu_bl_unlocked != 0)) {
 				// Transmit voltage to MPINV module.
 				adc_result_mv = ADC1_GetVoltageMv();
 				MPINV_SetVoltageMv(adc_result_mv);
@@ -201,7 +201,7 @@ void ADC1_Task(LSMCU_Context* lsmcu_ctx) {
 	case ADC_STATE_READ_PBL2:
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
-			if (((lsmcu_ctx -> lsmcu_zba_closed) != 0) && ((lsmcu_ctx -> lsmcu_bl_unlocked) != 0)) {
+			if ((lsmcu_ctx.lsmcu_zba_closed) != 0 && (lsmcu_ctx.lsmcu_bl_unlocked != 0)) {
 				// Transmit voltage to MPINV module.
 				adc_result_mv = ADC1_GetVoltageMv();
 				PBL2_SetVoltageMv(adc_result_mv);
@@ -215,7 +215,7 @@ void ADC1_Task(LSMCU_Context* lsmcu_ctx) {
 	case ADC_STATE_READ_FPB:
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
-			if (((lsmcu_ctx -> lsmcu_zba_closed) != 0) && ((lsmcu_ctx -> lsmcu_bl_unlocked) != 0)) {
+			if ((lsmcu_ctx.lsmcu_zba_closed) != 0 && (lsmcu_ctx.lsmcu_bl_unlocked != 0)) {
 				// Transmit voltage to FPB module.
 				adc_result_mv = ADC1_GetVoltageMv();
 				FPB_SetVoltageMv(adc_result_mv);
@@ -229,7 +229,7 @@ void ADC1_Task(LSMCU_Context* lsmcu_ctx) {
 	case ADC_STATE_READ_FD:
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
-			if (((lsmcu_ctx -> lsmcu_zba_closed) != 0) && ((lsmcu_ctx -> lsmcu_bl_unlocked) != 0)) {
+			if ((lsmcu_ctx.lsmcu_zba_closed) != 0 && (lsmcu_ctx.lsmcu_bl_unlocked != 0)) {
 				// Transmit voltage to FD module.
 				adc_result_mv = ADC1_GetVoltageMv();
 				FD_SetVoltageMv(adc_result_mv);

@@ -31,8 +31,7 @@ static PBL2_Context pbl2_ctx;
  * @return:	None.
  */
 void PBL2_Init(void) {
-
-	/* Init context */
+	// Init GPIO.
 	SW4_Init(&pbl2_ctx.pbl2_sw4, &GPIO_PBL2, 500);
 	pbl2_ctx.pbl2_previous_state = SW4_P0;
 }
@@ -49,7 +48,7 @@ void PBL2_SetVoltageMv(unsigned int pbl2_voltage_mv) {
  * @param:	None.
  * @return:	None.
  */
-void PBL2_Task(LSMCU_Context* lsmcu_ctx) {
+void PBL2_Task(void) {
 	// Update current state.
 	SW4_UpdateState(&pbl2_ctx.pbl2_sw4);
 	// Perform actions according to state.
@@ -57,7 +56,7 @@ void PBL2_Task(LSMCU_Context* lsmcu_ctx) {
 	case SW4_P0:
 		// Retrait.
 		if (pbl2_ctx.pbl2_previous_state != SW4_P0) {
-			LSSGKCU_Send(LSSGKCU_IN_FPB_OFF);
+			LSSGKCU_Send(LSMCU_OUT_FPB_OFF);
 		}
 		break;
 	case SW4_P1:
@@ -66,7 +65,7 @@ void PBL2_Task(LSMCU_Context* lsmcu_ctx) {
 	case SW4_P2:
 		// Service.
 		if (pbl2_ctx.pbl2_previous_state != SW4_P2) {
-			LSSGKCU_Send(LSSGKCU_IN_FPB_ON);
+			LSSGKCU_Send(LSMCU_OUT_FPB_ON);
 		}
 		break;
 	case SW4_P3:

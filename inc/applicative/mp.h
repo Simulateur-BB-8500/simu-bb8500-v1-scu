@@ -8,9 +8,9 @@
 #ifndef MP_H
 #define MP_H
 
-#include "common.h"
+/*** MP functions ***/
 
 void MP_Init(void);
-void MP_Task(LSMCU_Context* lsmcu_ctx);
+void MP_Task(void);
 
 #endif /* MP_H */

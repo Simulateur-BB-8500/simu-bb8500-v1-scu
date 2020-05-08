@@ -30,8 +30,7 @@ static MPINV_Context mpinv_ctx;
  * @return:	None.
  */
 void MPINV_Init(void) {
-
-	/* Init context */
+	// Init GPIO.
 	SW3_Init(&mpinv_ctx.mpinv_sw3, &GPIO_MPINV, 100);
 	mpinv_ctx.mpinv_previous_state = SW3_NEUTRAL;
 }
@@ -56,19 +55,19 @@ void MPINV_Task(void) {
 	case SW3_BACK:
 		if (mpinv_ctx.mpinv_previous_state != SW3_BACK) {
 			// Backward.
-			LSSGKCU_Send(LSSGKCU_IN_INV_BACKWARD);
+			LSSGKCU_Send(LSMCU_OUT_INV_BACKWARD);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (mpinv_ctx.mpinv_previous_state != SW3_NEUTRAL) {
 			// Forward.
-			LSSGKCU_Send(LSSGKCU_IN_INV_NEUTRAL);
+			LSSGKCU_Send(LSMCU_OUT_INV_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (mpinv_ctx.mpinv_previous_state != SW3_FRONT) {
 			// Forward.
-			LSSGKCU_Send(LSSGKCU_IN_INV_FORWARD);
+			LSSGKCU_Send(LSMCU_OUT_INV_FORWARD);
 		}
 		break;
 	default:

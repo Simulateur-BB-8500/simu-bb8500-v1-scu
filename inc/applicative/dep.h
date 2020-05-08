@@ -8,11 +8,9 @@
 #ifndef DEP_H
 #define DEP_H
 
-#include "common.h"
-
 /*** DEP functions ***/
 
 void DEP_Init(void);
-void DEP_Task(LSMCU_Context* lsmcu_ctx);
+void DEP_Task(void);
 
 #endif /* APPLICATIVE_DEP_H_ */

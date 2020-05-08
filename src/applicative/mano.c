@@ -22,12 +22,8 @@
  * @return:	None.
  */
 void MANOS_Init(void) {
-
-	/* Init GPIOs */
+	// Init GPIOs.
 	GPIO_Configure(&GPIO_ZMANOS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Start timer */
-	TIM7_Start();
 }
 
 /* POWER MANOMETERS DRIVERS.
@@ -35,7 +31,10 @@ void MANOS_Init(void) {
  * @return:	None.
  */
 void MANOS_Enable(void) {
+	// Turn step motors on.
 	GPIO_Write(&GPIO_ZMANOS, 1);
+	// Start timer.
+	TIM7_Start();
 }
 
 /* POWER MANOMETERS DRIVERS.
@@ -43,7 +42,10 @@ void MANOS_Enable(void) {
  * @return:	None.
  */
 void MANOS_Disable(void) {
+	// Turn step motors on.
 	GPIO_Write(&GPIO_ZMANOS, 0);
+	// Stop timer.
+	TIM7_Stop();
 }
 
 /* INIT MANOMETER.
@@ -58,11 +60,9 @@ void MANOS_Disable(void) {
  * @return:							None.
  */
 void MANO_Init(MANO_Context* mano, STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2, unsigned int pressure_max_decibars, unsigned int pressure_max_steps, unsigned int needle_inertia_steps, unsigned int needle_speed_max) {
-
-	/* Init GPIOs */
+	// Init GPIOs.
 	STEPPER_Init(stepper, stepper_cmd1, stepper_cmd2);
-
-	/* Init context */
+	// Init context.
 	mano -> mano_pressure_max_decibars = pressure_max_decibars;
 	mano -> mano_pressure_max_steps = pressure_max_steps;
 	mano -> mano_needle_inertia_steps = needle_inertia_steps;
@@ -84,6 +84,15 @@ void MANO_SetTarget(MANO_Context* mano, unsigned int pressure_decibars) {
 	mano -> mano_target_step = ((mano -> mano_pressure_max_steps) * pressure_decibars) / (mano -> mano_pressure_max_decibars);
 }
 
+/* GET CURRENT MANOMETER PRESSURE.
+ * @param mano:					Manometer to analyse.
+ * @return pressure_decibars:	Current pressure displayed by the manometer in decibars.
+ */
+unsigned int MANO_GetPressure(MANO_Context* mano) {
+	unsigned int pressure_decibars = (((mano -> mano_stepper) -> stepper_current_step) * (mano -> mano_pressure_max_decibars)) / (mano -> mano_pressure_max_steps);
+	return pressure_decibars;
+}
+
 /* START NEEDLE MOVEMENT.
  * @param mano:	Manometer to control.
  * @return:		None.
@@ -100,11 +109,9 @@ void MANO_StartNeedle(MANO_Context* mano) {
  * @return:		None.
  */
 void MANO_StopNeedle(MANO_Context* mano) {
-
-	/* Disable movement */
+	// Disable movement.
 	mano -> mano_enable = 0;
-
-	/* Update target to perform inertia */
+	// Update target to perform inertia.
 	// Up direction.
 	if (((mano -> mano_stepper) -> stepper_current_step) < (mano -> mano_target_step)) {
 		// Current step < (max - inertia)
@@ -128,11 +135,10 @@ void MANO_StopNeedle(MANO_Context* mano) {
  * @return:	None.
  */
 void MANO_NeedleTask(MANO_Context* mano) {
-
-	/* Movement feedback loop */
+	// Movement feedback loop.
 	mano -> mano_step_it_count++;
 	unsigned int current_step = ((mano -> mano_stepper) -> stepper_current_step);
-	// Checl if the period was reached.
+	// ChecK if the period was reached.
 	if ((mano -> mano_step_it_count) >= (mano -> mano_step_it_period)) {
 		// Reset interrupt count.
 		mano -> mano_step_it_count = 0;
@@ -145,8 +151,7 @@ void MANO_NeedleTask(MANO_Context* mano) {
 			STEPPER_Down(mano -> mano_stepper);
 		}
 	}
-
-	/* Compute next period */
+	// Compute next period.
 	if (current_step != (mano -> mano_target_step)) {
 		// Get absolute distances between start, target and current steps.
 		unsigned int delta_start = 0;

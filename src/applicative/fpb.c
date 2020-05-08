@@ -30,8 +30,7 @@ static FPB_Context fpb_ctx;
  * @return:	None.
  */
 void FPB_Init(void) {
-
-	/* Init context */
+	// Init GPIO.
 	SW3_Init(&fpb_ctx.fpb_sw3, &GPIO_FPB, 100);
 	fpb_ctx.fpb_previous_state = SW3_NEUTRAL;
 }
@@ -56,19 +55,19 @@ void FPB_Task(void) {
 	case SW3_BACK:
 		if (fpb_ctx.fpb_previous_state != SW3_BACK) {
 			// Backward.
-			LSSGKCU_Send(LSSGKCU_IN_FPB_APPLY);
+			LSSGKCU_Send(LSMCU_OUT_FPB_APPLY);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (fpb_ctx.fpb_previous_state != SW3_NEUTRAL) {
 			// Forward.
-			LSSGKCU_Send(LSSGKCU_IN_FPB_NEUTRAL);
+			LSSGKCU_Send(LSMCU_OUT_FPB_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (fpb_ctx.fpb_previous_state != SW3_FRONT) {
 			// Forward.
-			LSSGKCU_Send(LSSGKCU_IN_FPB_RELEASE);
+			LSSGKCU_Send(LSMCU_OUT_FPB_RELEASE);
 		}
 		break;
 	default:

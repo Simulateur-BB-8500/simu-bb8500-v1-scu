@@ -50,25 +50,23 @@ static VACMA_Context vacma_ctx;
  * @return:	None.
  */
 void VACMA_Init(void) {
-
-	/* Init GPIOs */
+	// Init GPIOs.
 	SW2_Init(&vacma_ctx.vacma_bl_zva, &GPIO_BL_ZVA, 0, 100); // MP_0 active low.
 	SW2_Init(&vacma_ctx.vacma_mp_va, &GPIO_MP_VA, 0, 100); // MP_0 active low.
 	GPIO_Configure(&GPIO_VACMA_HOLD_ALARM, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_VACMA_RELEASED_ALARM, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
 	GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
-
-	/* Init context */
+	// Init context.
 	vacma_ctx.vacma_state = VACMA_STATE_OFF;
 	vacma_ctx.vacma_switch_state_time = 0;
 }
 
 /* MAIN ROUTINE OF VACMA MODULE.
- * @param lsmcu_ctx:	Pointer to simulator context.
- * @return:				None.
+ * @param:	None.
+ * @return:	None.
  */
-void VACMA_Task(LSMCU_Context* lsmcu_ctx) {
+void VACMA_Task(void) {
 	// Update inputs.
 	SW2_UpdateState(&vacma_ctx.vacma_bl_zva);
 	SW2_UpdateState(&vacma_ctx.vacma_mp_va);
@@ -76,7 +74,7 @@ void VACMA_Task(LSMCU_Context* lsmcu_ctx) {
 	switch (vacma_ctx.vacma_state) {
 	case VACMA_STATE_OFF:
 		// Check inputs.
-		if (((lsmcu_ctx -> lsmcu_speed_kmh) > 0) || (vacma_ctx.vacma_bl_zva.sw2_state == SW2_ON)) {
+		if ((lsmcu_ctx.lsmcu_speed_kmh > 0) || (vacma_ctx.vacma_bl_zva.sw2_state == SW2_ON)) {
 			// Enable VACMA.
 			if (vacma_ctx.vacma_mp_va.sw2_state == SW2_ON) {
 				vacma_ctx.vacma_state = VACMA_STATE_HOLD;
@@ -88,7 +86,7 @@ void VACMA_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case VACMA_STATE_HOLD:
-		if (((lsmcu_ctx -> lsmcu_speed_kmh) == 0) && (vacma_ctx.vacma_bl_zva.sw2_state == SW2_OFF)) {
+		if ((lsmcu_ctx.lsmcu_speed_kmh == 0) && (vacma_ctx.vacma_bl_zva.sw2_state == SW2_OFF)) {
 			// Disable VACMA.
 			GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
 			GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
@@ -110,7 +108,7 @@ void VACMA_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case VACMA_STATE_HOLD_ALARM:
-		if (((lsmcu_ctx -> lsmcu_speed_kmh) == 0) && (vacma_ctx.vacma_bl_zva.sw2_state == SW2_OFF)) {
+		if ((lsmcu_ctx.lsmcu_speed_kmh == 0) && (vacma_ctx.vacma_bl_zva.sw2_state == SW2_OFF)) {
 			// Disable VACMA.
 			GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
 			GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
@@ -134,7 +132,7 @@ void VACMA_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case VACMA_STATE_RELEASED:
-		if (((lsmcu_ctx -> lsmcu_speed_kmh) == 0) && (vacma_ctx.vacma_bl_zva.sw2_state == SW2_OFF)) {
+		if ((lsmcu_ctx.lsmcu_speed_kmh == 0) && (vacma_ctx.vacma_bl_zva.sw2_state == SW2_OFF)) {
 			// Disable VACMA.
 			GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
 			GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
@@ -156,7 +154,7 @@ void VACMA_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case VACMA_STATE_RELEASED_ALARM:
-		if (((lsmcu_ctx -> lsmcu_speed_kmh) == 0) && (vacma_ctx.vacma_bl_zva.sw2_state == SW2_OFF)) {
+		if ((lsmcu_ctx.lsmcu_speed_kmh == 0) && (vacma_ctx.vacma_bl_zva.sw2_state == SW2_OFF)) {
 			// Disable VACMA.
 			GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
 			GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);

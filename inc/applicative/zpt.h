@@ -8,12 +8,10 @@
 #ifndef ZPT_H
 #define ZPT_H
 
-#include "common.h"
-
 /*** ZPT functions ***/
 
 void ZPT_Init(void);
 void ZPT_SetVoltageMv(unsigned int zpt_voltage_mv);
-void ZPT_Task(LSMCU_Context* lscmu_ctx);
+void ZPT_Task(void);
 
 #endif /* ZPT_H */

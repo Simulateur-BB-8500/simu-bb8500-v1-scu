@@ -46,8 +46,7 @@ static MP_Context mp_ctx;
  * @return:	None.
  */
 void MP_Init(void) {
-
-	/* Init context */
+	// Init GPIOs.
 	SW2_Init(&mp_ctx.mp_0, &GPIO_MP_0, 1, 100); // MP_0 active high.
 	mp_ctx.mp_0_on = 1;
 	SW2_Init(&mp_ctx.mp_tp, &GPIO_MP_TP, 1, 100); // MP_TP active high.
@@ -70,9 +69,9 @@ void MP_Init(void) {
 }
 
 /* MAIN ROUTINE OF MP MODULE.
- * @param lsmcu_ctx:	Pointer to simulator context.
- * @return:				None.
+ * @param:	None.
+ * @return:	None.
  */
-void MP_Task(LSMCU_Context* lsmcu_ctx) {
+void MP_Task(void) {
 
 }

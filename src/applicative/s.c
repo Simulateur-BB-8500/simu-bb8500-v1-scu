@@ -30,8 +30,7 @@ static S_Context s_ctx;
  * @return:	None.
  */
 void S_Init(void) {
-
-	/* Init context */
+	// Init GPIO.
 	SW3_Init(&s_ctx.s_sw3, &GPIO_S, 100);
 	s_ctx.s_previous_state = SW3_NEUTRAL;
 }
@@ -56,19 +55,19 @@ void S_Task(void) {
 	case SW3_BACK:
 		if (s_ctx.s_previous_state != SW3_BACK) {
 			// Low tone.
-			LSSGKCU_Send(LSSGKCU_IN_S_LOW_TONE);
+			LSSGKCU_Send(LSMCU_OUT_S_LOW_TONE);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (s_ctx.s_previous_state != SW3_NEUTRAL) {
 			// Whistle off
-			LSSGKCU_Send(LSSGKCU_IN_S_NEUTRAL);
+			LSSGKCU_Send(LSMCU_OUT_S_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (s_ctx.s_previous_state != SW3_FRONT) {
 			// High tone.
-			LSSGKCU_Send(LSSGKCU_IN_S_HIGH_TONE);
+			LSSGKCU_Send(LSMCU_OUT_S_HIGH_TONE);
 		}
 		break;
 	default:

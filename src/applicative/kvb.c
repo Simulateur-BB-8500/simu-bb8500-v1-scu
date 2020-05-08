@@ -213,12 +213,16 @@ void KVB_BlinkLSSF(void) {
  * @return:	None.
  */
 void KVB_Init(void) {
-
-	/* Init context */
-	unsigned int i = 0;
-	for (i=0 ; i<KVB_NUMBER_OF_DISPLAYS ; i++) {
-		kvb_ctx.ascii_buf[i] = 0;
-		kvb_ctx.segment_buf[i] = 0;
+	// Init GPIOs.
+	unsigned int idx = 0;
+	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_Configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_Configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	// LVAL is configured in TIM8_Init() function since it is linked to TIM8 channel 1.
+	GPIO_Configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	// Init context.
+	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) {
+		kvb_ctx.ascii_buf[idx] = 0;
+		kvb_ctx.segment_buf[idx] = 0;
 	}
 	kvb_ctx.display_idx = 0;
 	kvb_ctx.segment_idx = 0;
@@ -227,14 +231,7 @@ void KVB_Init(void) {
 	kvb_ctx.lssf_blink_enable = 1;
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lval_blinking = 0;
-
-	/* Init GPIOs */
-	for (i=0 ; i<KVB_NUMBER_OF_SEGMENTS ; i++) GPIO_Configure(segment_gpio_buf[i], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	for (i=0 ; i<KVB_NUMBER_OF_DISPLAYS ; i++) GPIO_Configure(display_gpio_buf[i], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	// LVAL is configured in TIM8_Init() function since it is linked to TIM8 channel 1.
-	GPIO_Configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Start sweep timer */
+	// Start sweep timer.
 	TIM6_Start();
 }
 
@@ -320,15 +317,15 @@ void KVB_Sweep(void) {
 }
 
 /* MAIN ROUTINE OF KVB.
- * @param lsmcu_ctx:	Pointer to simulator context.
- * @return:				None.
+ * @param:	None.
+ * @return:	None.
  */
-void KVB_Task(LSMCU_Context* lsmcu_ctx) {
-	/* Perform state machine */
+void KVB_Task(void) {
+	// Perform state machine.
 	switch (kvb_ctx.kvb_state) {
 	case KVB_STATE_OFF:
 		KVB_DisplayOff();
-		if ((lsmcu_ctx -> lsmcu_bl_unlocked) != 0) {
+		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
 			kvb_ctx.kvb_state = KVB_STATE_PA400;
 			kvb_ctx.switch_state_time = TIM2_GetMs();
 		}
@@ -336,7 +333,7 @@ void KVB_Task(LSMCU_Context* lsmcu_ctx) {
 	case KVB_STATE_PA400:
 		KVB_Display(KVB_PA400_TEXT);
 		KVB_BlinkLSSF();
-		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
+		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -349,7 +346,7 @@ void KVB_Task(LSMCU_Context* lsmcu_ctx) {
 	case KVB_STATE_PA400_OFF:
 		KVB_DisplayOff();
 		KVB_BlinkLSSF();
-		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
+		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -362,7 +359,7 @@ void KVB_Task(LSMCU_Context* lsmcu_ctx) {
 	case KVB_STATE_UC512:
 		KVB_Display(KVB_UC512_TEXT);
 		KVB_BlinkLSSF();
-		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
+		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -380,7 +377,7 @@ void KVB_Task(LSMCU_Context* lsmcu_ctx) {
 		KVB_Display(KVB_888888_TEXT);
 		KVB_BlinkLVAL();
 		KVB_BlinkLSSF();
-		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
+		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -394,7 +391,7 @@ void KVB_Task(LSMCU_Context* lsmcu_ctx) {
 		KVB_DisplayOff();
 		KVB_BlinkLVAL();
 		KVB_BlinkLSSF();
-		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
+		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {
@@ -402,7 +399,7 @@ void KVB_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case KVB_STATE_SLAVE_MODE:
-		if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
+		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
 			kvb_ctx.kvb_state = KVB_STATE_OFF;
 		}
 		else {

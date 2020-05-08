@@ -8,11 +8,9 @@
 #ifndef ADC_H
 #define ADC_H
 
-#include "common.h"
-
 /*** ADC functions ***/
 
 void ADC1_Init(void);
-void ADC1_Task(LSMCU_Context* lsmcu_ctx);
+void ADC1_Task(void);
 
 #endif /* ADC_H */

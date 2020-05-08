@@ -7,6 +7,7 @@
 
 #include "lssgkcu.h"
 
+#include "common.h"
 #include "kvb.h"
 #include "gpio.h"
 #include "mapping.h"
@@ -23,11 +24,11 @@ typedef struct {
 	unsigned char rx_buf[LSSGKCU_RX_BUFFER_SIZE];
 	unsigned int rx_write_idx;
 	unsigned int rx_read_idx;
-} LSSGKCU_OUT_Context;
+} LSSGKCU_Context;
 
 /*** LSSGKCU local global variables ***/
 
-static LSSGKCU_OUT_Context lssgkcu_ctx;
+static LSSGKCU_Context lssgkcu_ctx;
 
 /*** LSSGKCU local functions ***/
 
@@ -38,97 +39,97 @@ static LSSGKCU_OUT_Context lssgkcu_ctx;
 void LSSGKCU_Decode(void) {
 	unsigned char lssgkcu_command = lssgkcu_ctx.rx_buf[lssgkcu_ctx.rx_read_idx];
 	if (lssgkcu_command <= TCH_SPEED_MAX_KMH) {
-		// Transmit speed to Tachro and VACMA modules.
-		TCH_SetSpeedKmh(lssgkcu_command);
+		// Save speed in main context.
+		lsmcu_ctx.lsmcu_speed_kmh = lssgkcu_command;
 	}
 	else {
 		// Decode LSSGKCU command.
 		switch(lssgkcu_command) {
-		case LSSGKCU_OUT_KVB_LVAL_BLINK:
+		case LSMCU_IN_KVB_LVAL_BLINK:
 			GPIO_Write(&GPIO_KVB_LVAL, 0);
 			KVB_EnableBlinkLVAL(1);
 			break;
-		case LSSGKCU_OUT_KVB_LVAL_ON:
+		case LSMCU_IN_KVB_LVAL_ON:
 			KVB_EnableBlinkLVAL(0);
 			GPIO_Write(&GPIO_KVB_LVAL, 1);
 			break;
-		case LSSGKCU_OUT_KVB_LVAL_OFF:
+		case LSMCU_IN_KVB_LVAL_OFF:
 			KVB_EnableBlinkLVAL(0);
 			GPIO_Write(&GPIO_KVB_LVAL, 0);
 			break;
-		case LSSGKCU_OUT_KVB_LMV_ON:
+		case LSMCU_IN_KVB_LMV_ON:
 			GPIO_Write(&GPIO_KVB_LMV, 1);
 			break;
-		case LSSGKCU_OUT_KVB_LMV_OFF:
+		case LSMCU_IN_KVB_LMV_OFF:
 			GPIO_Write(&GPIO_KVB_LMV, 0);
 			break;
-		case LSSGKCU_OUT_KVB_LFC_ON:
+		case LSMCU_IN_KVB_LFC_ON:
 			GPIO_Write(&GPIO_KVB_LFC, 1);
 			break;
-		case LSSGKCU_OUT_KVB_LFC_OFF:
+		case LSMCU_IN_KVB_LFC_OFF:
 			GPIO_Write(&GPIO_KVB_LFC, 0);
 			break;
-		case LSSGKCU_OUT_KVB_LV_ON:
+		case LSMCU_IN_KVB_LV_ON:
 			GPIO_Write(&GPIO_KVB_LV, 1);
 			break;
-		case LSSGKCU_OUT_KVB_LV_OFF:
+		case LSMCU_IN_KVB_LV_OFF:
 			GPIO_Write(&GPIO_KVB_LV, 0);
 			break;
-		case LSSGKCU_OUT_KVB_LFU_ON:
+		case LSMCU_IN_KVB_LFU_ON:
 			GPIO_Write(&GPIO_KVB_LFU, 1);
 			break;
-		case LSSGKCU_OUT_KVB_LFU_OFF:
+		case LSMCU_IN_KVB_LFU_OFF:
 			GPIO_Write(&GPIO_KVB_LFU, 0);
 			break;
-		case LSSGKCU_OUT_KVB_LPS_ON:
+		case LSMCU_IN_KVB_LPS_ON:
 			GPIO_Write(&GPIO_KVB_LPS, 1);
 			break;
-		case LSSGKCU_OUT_KVB_LPS_OFF:
+		case LSMCU_IN_KVB_LPS_OFF:
 			GPIO_Write(&GPIO_KVB_LPS, 0);
 			break;
-		case LSSGKCU_OUT_KVB_LSSF_BLINK:
+		case LSMCU_IN_KVB_LSSF_BLINK:
 			GPIO_Write(&GPIO_KVB_LSSF, 0);
 			KVB_EnableBlinkLSSF(1);
 			break;
-		case LSSGKCU_OUT_KVB_LSSF_ON:
+		case LSMCU_IN_KVB_LSSF_ON:
 			KVB_EnableBlinkLSSF(0);
 			GPIO_Write(&GPIO_KVB_LSSF, 1);
 			break;
-		case LSSGKCU_OUT_KVB_LSSF_OFF:
+		case LSMCU_IN_KVB_LSSF_OFF:
 			KVB_EnableBlinkLSSF(0);
 			GPIO_Write(&GPIO_KVB_LSSF, 0);
 			break;
-		case LSSGKCU_OUT_KVB_YG_OFF:
+		case LSMCU_IN_KVB_YG_OFF:
 			KVB_DisplayOff();
 			break;
-		case LSSGKCU_OUT_KVB_YG_PA400:
+		case LSMCU_IN_KVB_YG_PA400:
 			KVB_Display(KVB_PA400_TEXT);
 			break;
-		case LSSGKCU_OUT_KVB_YG_UC512:
+		case LSMCU_IN_KVB_YG_UC512:
 			break;
-		case LSSGKCU_OUT_KVB_YG_888:
+		case LSMCU_IN_KVB_YG_888:
 			break;
-		case LSSGKCU_OUT_KVB_YG_DASH:
+		case LSMCU_IN_KVB_YG_DASH:
 			break;
-		case LSSGKCU_OUT_KVB_G_B:
+		case LSMCU_IN_KVB_G_B:
 			break;
-		case LSSGKCU_OUT_KVB_Y_B:
+		case LSMCU_IN_KVB_Y_B:
 			break;
-		case LSSGKCU_OUT_KVB_G_P:
+		case LSMCU_IN_KVB_G_P:
 			break;
-		case LSSGKCU_OUT_KVB_Y_P:
+		case LSMCU_IN_KVB_Y_P:
 			break;
-		case LSSGKCU_OUT_KVB_G_L:
+		case LSMCU_IN_KVB_G_L:
 			break;
-		case LSSGKCU_OUT_KVB_Y_L:
+		case LSMCU_IN_KVB_Y_L:
 			break;
-		case LSSGKCU_OUT_KVB_G_00:
+		case LSMCU_IN_KVB_G_00:
 			break;
-		case LSSGKCU_OUT_KVB_Y_00:
+		case LSMCU_IN_KVB_Y_00:
 			break;
-		case LSSGKCU_OUT_KVB_G_000:
+		case LSMCU_IN_KVB_G_000:
 			break;
-		case LSSGKCU_OUT_KVB_Y_000:
+		case LSMCU_IN_KVB_Y_000:
 			break;
 		default:
 			// Unknown command.
@@ -144,8 +145,7 @@ void LSSGKCU_Decode(void) {
  * @return:	None.
  */
 void LSSGKCU_Init(void) {
-
-	/* Init context */
+	// Init context.
 	unsigned int i = 0;
 	for(i=0 ; i<LSSGKCU_RX_BUFFER_SIZE ; i++) lssgkcu_ctx.rx_buf[i] = 0;
 	lssgkcu_ctx.rx_write_idx = 0;

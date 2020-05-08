@@ -8,11 +8,9 @@
 #ifndef BL_H
 #define BL_H
 
-#include "common.h"
-
 /*** BL functions ***/
 
 void BL_Init(void);
-void BL_Task(LSMCU_Context* lsmcu_ctx);
+void BL_Task(void);
 
 #endif /* BL_H */

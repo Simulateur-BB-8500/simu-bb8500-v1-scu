@@ -7,6 +7,7 @@
 
 #include "tim.h"
 
+#include "common.h"
 #include "kvb.h"
 #include "mano.h"
 #include "mapping.h"
@@ -36,11 +37,11 @@ void TIM7_InterruptHandler(void) {
 	// Clear flag.
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Perform manometers needle control.
-	MANO_NeedleTask(&mano_cp);
-	MANO_NeedleTask(&mano_re);
-	MANO_NeedleTask(&mano_cg);
-	MANO_NeedleTask(&mano_cf1);
-	MANO_NeedleTask(&mano_cf2);
+	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_cp));
+	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_re));
+	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_cg));
+	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_cf1));
+	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_cf2));
 }
 
 /*** TIM functions ***/
@@ -170,7 +171,7 @@ void TIM6_Init(void) {
 	// Disable interrupt.
 	TIM6 -> DIER &= ~(0b1 << 0); // UIE='0'.
 	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
-	// Set PSC and ARR registers to reach 2 ms.
+	// Set PSC and ARR registers to reach 2ms.
 	TIM6 -> PSC = ((2 * RCC_PCLK1_KHZ) / 50) - 1; // TIM6 input clock = (2*PCLK1)/((((2*PCLK1)/50)-1)+1) = 50kHz.
 	TIM6 -> ARR = 100; // 100 fronts @ 50kHz = 2ms.
 	// Generate event to update registers.
@@ -215,7 +216,7 @@ void TIM7_Init(void) {
 	// Disable interrupt.
 	TIM7 -> DIER &= ~(0b1 << 0); // UIE='0'.
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
-	// Set PSC and ARR registers to reach 2 ms.
+	// Set PSC and ARR registers to reach 1ms.
 	TIM7 -> PSC = ((2 * RCC_PCLK1_KHZ) / 1000) - 1; // TIM7 input clock = (2*PCLK1)/((((2*PCLK1)/1000)-1)+1) = 1MHz.
 	TIM7 -> ARR = 100; // 100 fronts @ 1MHz = 100µs.
 	// Generate event to update registers.
@@ -243,6 +244,7 @@ void TIM7_Stop(void) {
 	// Disable and reset counter.
 	TIM7 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM7 -> CNT = 0;
+	NVIC_DisableInterrupt(IT_TIM7);
 }
 
 /* CONFIGURE TIM8 IN PWM MODE FOR LVAL BLINKLING.

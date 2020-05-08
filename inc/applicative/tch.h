@@ -16,7 +16,6 @@
 /*** TACHRO functions ***/
 
 void TCH_Init(void);
-void TCH_SetSpeedKmh(unsigned char tch_speed_kmh);
 void TCH_Task(void);
 
 #endif /* TCH_H */

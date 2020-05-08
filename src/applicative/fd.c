@@ -30,8 +30,7 @@ static FD_Context fd_ctx;
  * @return:	None.
  */
 void FD_Init(void) {
-
-	/* Init context */
+	// Init GPIO.
 	SW3_Init(&fd_ctx.fd_sw3, &GPIO_FD, 100);
 	fd_ctx.fd_previous_state = SW3_NEUTRAL;
 }
@@ -56,19 +55,19 @@ void FD_Task(void) {
 	case SW3_BACK:
 		if (fd_ctx.fd_previous_state != SW3_BACK) {
 			// Backward.
-			LSSGKCU_Send(LSSGKCU_IN_FD_APPLY);
+			LSSGKCU_Send(LSMCU_OUT_FD_APPLY);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (fd_ctx.fd_previous_state != SW3_NEUTRAL) {
 			// Forward.
-			LSSGKCU_Send(LSSGKCU_IN_FD_NEUTRAL);
+			LSSGKCU_Send(LSMCU_OUT_FD_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (fd_ctx.fd_previous_state != SW3_FRONT) {
 			// Forward.
-			LSSGKCU_Send(LSSGKCU_IN_FD_RELEASE);
+			LSSGKCU_Send(LSMCU_OUT_FD_RELEASE);
 		}
 		break;
 	default:

@@ -12,16 +12,9 @@
 #include "mapping.h"
 #include "sw2.h"
 
-/*** ZBA local structures ***/
-
-typedef struct {
-	SW2_Context zba;
-	unsigned char zba_closed;
-} ZBA_Context;
-
 /*** ZBA local global variables ***/
 
-static ZBA_Context zba_ctx;
+static SW2_Context zba;
 
 /*** ZBA functions ***/
 
@@ -30,33 +23,29 @@ static ZBA_Context zba_ctx;
  * @return:	None.
  */
 void ZBA_Init(void) {
-
-	/* Init context */
-	SW2_Init(&zba_ctx.zba, &GPIO_ZBA, 1, 100); // ZBA active high (+3.3V supply present).
-	zba_ctx.zba_closed = 0;
+	// Init context.
+	SW2_Init(&zba, &GPIO_ZBA, 1, 100); // ZBA active high (+3.3V supply present).
 }
 
 /* MAIN TASK OF ZBA MODULE.
- * @param lsmcu_ctx:	Pointer to simulator context.
- * @return:				None.
+ * @param:	None.
+ * @return:	None.
  */
-void ZBA_Task(LSMCU_Context* lsmcu_ctx) {
-
-	/* Update ZBA state */
-	SW2_UpdateState(&zba_ctx.zba);
-	if (zba_ctx.zba.sw2_state == SW2_ON) {
+void ZBA_Task(void) {
+	// Update ZBA state.
+	SW2_UpdateState(&zba);
+	if (zba.sw2_state == SW2_ON) {
 		// Send command on change.
-		if (zba_ctx.zba_closed == 0) {
-			LSSGKCU_Send(LSSGKCU_IN_ZBA_ON);
+		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
+			LSSGKCU_Send(LSMCU_OUT_ZBA_ON);
 		}
-		zba_ctx.zba_closed = 1;
+		lsmcu_ctx.lsmcu_zba_closed = 1;
 	}
 	else {
 		// Send command on change.
-		if (zba_ctx.zba_closed != 0) {
-			LSSGKCU_Send(LSSGKCU_IN_ZBA_OFF);
+		if (lsmcu_ctx.lsmcu_zba_closed != 0) {
+			LSSGKCU_Send(LSMCU_OUT_ZBA_OFF);
 		}
-		zba_ctx.zba_closed = 0;
+		lsmcu_ctx.lsmcu_zba_closed = 0;
 	}
-	(lsmcu_ctx -> lsmcu_zba_closed) = zba_ctx.zba_closed;
 }

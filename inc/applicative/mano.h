@@ -25,14 +25,6 @@ typedef struct {
 	unsigned int mano_step_it_period_min; // Determines the maximum speed of the stepper.
 } MANO_Context;
 
-/*** MANO global variables ***/
-
-MANO_Context mano_cp;
-MANO_Context mano_re;
-MANO_Context mano_cg;
-MANO_Context mano_cf1;
-MANO_Context mano_cf2;
-
 /*** MANO functions ***/
 
 void MANOS_Init(void);
@@ -41,6 +33,7 @@ void MANOS_Disable(void);
 
 void MANO_Init(MANO_Context* mano, STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2, unsigned int pressure_max_decibars, unsigned int pressure_max_steps, unsigned int needle_inertia_steps, unsigned int needle_speed_max);
 void MANO_SetTarget(MANO_Context* mano, unsigned int pressure_decibars);
+unsigned int MANO_GetPressure(MANO_Context* mano);
 void MANO_StartNeedle(MANO_Context* mano);
 void MANO_StopNeedle(MANO_Context* mano);
 void MANO_NeedleTask(MANO_Context* mano);

@@ -15,10 +15,16 @@
 
 /*** ZPT local structures ***/
 
+typedef enum {
+	ZPT_STATE_0,
+	ZPT_STATE_AR,
+	ZPT_STATE_ARAV,
+	ZPT_STATE_AV
+} ZPT_State;
+
 typedef struct {
 	SW4_Context zpt_sw4;
-	SW4_State zpt_previous_state;
-	unsigned char zpt_enable;
+	ZPT_State zpt_state;
 } ZPT_Context;
 
 /*** ZPT local global variables ***/
@@ -32,11 +38,9 @@ static ZPT_Context zpt_ctx;
  * @return:	None.
  */
 void ZPT_Init(void) {
-
-	/* Init context */
+	// Init context.
 	SW4_Init(&zpt_ctx.zpt_sw4, &GPIO_ZPT, 500);
-	zpt_ctx.zpt_previous_state = SW4_P0;
-	zpt_ctx.zpt_enable = 0;
+	zpt_ctx.zpt_state = ZPT_STATE_0;
 	GPIO_Configure(&GPIO_VLG, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Write(&GPIO_VLG, 1);
 }
@@ -53,62 +57,160 @@ void ZPT_SetVoltageMv(unsigned int zpt_voltage_mv) {
  * @param:	None.
  * @return:	None.
  */
-void ZPT_Task(LSMCU_Context* lsmcu_ctx) {
-	// Check BL.
-	if (lsmcu_ctx -> lsmcu_bl_unlocked != 0) {
-		zpt_ctx.zpt_enable = 1;
-		// Update current state.
-		SW4_UpdateState(&zpt_ctx.zpt_sw4);
-		// Perform actions according to state.
-		switch (zpt_ctx.zpt_sw4.sw4_state) {
-		case SW4_P0:
-			if (zpt_ctx.zpt_previous_state != SW4_P0) {
-				LSSGKCU_Send(LSSGKCU_IN_ZPT_BACK_DOWN);
-				LSSGKCU_Send(LSSGKCU_IN_ZPT_FRONT_DOWN);
+void ZPT_Task(void) {
+	// Update selector state.
+	SW4_UpdateState(&zpt_ctx.zpt_sw4);
+	// Perform state machine.
+	switch (zpt_ctx.zpt_state) {
+	case ZPT_STATE_0:
+		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
+			switch (zpt_ctx.zpt_sw4.sw4_state) {
+			case SW4_P0:
+				// Nothing to do.
+				break;
+			case SW4_P1:
+				// Rise back pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_UP);
+				zpt_ctx.zpt_state = ZPT_STATE_AR;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
+				GPIO_Write(&GPIO_VLG, 0);
+				break;
+			case SW4_P2:
+				// Rise both pantographs.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_UP);
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_UP);
+				zpt_ctx.zpt_state = ZPT_STATE_ARAV;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
+				GPIO_Write(&GPIO_VLG, 0);
+				break;
+			case SW4_P3:
+				// Rise front pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_UP);
+				zpt_ctx.zpt_state = ZPT_STATE_AV;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
+				GPIO_Write(&GPIO_VLG, 0);
+				break;
+			default:
+				break;
+			}
+		}
+		break;
+	case ZPT_STATE_AR:
+		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
+			switch (zpt_ctx.zpt_sw4.sw4_state) {
+			case SW4_P0:
+				// Lower back pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_DOWN);
+				zpt_ctx.zpt_state = ZPT_STATE_0;
+				lsmcu_ctx.lsmcu_zpt_raised = 0;
 				GPIO_Write(&GPIO_VLG, 1);
-			}
-			(lsmcu_ctx -> lsmcu_zpt_raised) = 0;
-			break;
-		case SW4_P1:
-			if (zpt_ctx.zpt_previous_state != SW4_P1) {
-				LSSGKCU_Send(LSSGKCU_IN_ZPT_BACK_UP);
-				LSSGKCU_Send(LSSGKCU_IN_ZPT_FRONT_DOWN);
+				break;
+			case SW4_P1:
+				// Nothing to do.
+				break;
+			case SW4_P2:
+				// Rise front pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_UP);
+				zpt_ctx.zpt_state = ZPT_STATE_ARAV;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
 				GPIO_Write(&GPIO_VLG, 0);
-			}
-			(lsmcu_ctx -> lsmcu_zpt_raised) = 1;
-			break;
-		case SW4_P2:
-			if (zpt_ctx.zpt_previous_state != SW4_P2) {
-				LSSGKCU_Send(LSSGKCU_IN_ZPT_BACK_UP);
-				LSSGKCU_Send(LSSGKCU_IN_ZPT_FRONT_UP);
+				break;
+			case SW4_P3:
+				// Lower back and raise front pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_DOWN);
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_UP);
+				zpt_ctx.zpt_state = ZPT_STATE_AV;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
 				GPIO_Write(&GPIO_VLG, 0);
+				break;
 			}
-			(lsmcu_ctx -> lsmcu_zpt_raised) = 1;
-			break;
-		case SW4_P3:
-			if (zpt_ctx.zpt_previous_state != SW4_P3) {
-				LSSGKCU_Send(LSSGKCU_IN_ZPT_BACK_DOWN);
-				LSSGKCU_Send(LSSGKCU_IN_ZPT_FRONT_UP);
-				GPIO_Write(&GPIO_VLG, 0);
-			}
-			(lsmcu_ctx -> lsmcu_zpt_raised) = 1;
-			break;
-		default:
-			// Unknown state.
-			break;
 		}
-		// Update previous state.
-		zpt_ctx.zpt_previous_state = zpt_ctx.zpt_sw4.sw4_state;
-	}
-	else {
-		// Disable ZPT.
-		if (zpt_ctx.zpt_enable != 0) {
-			LSSGKCU_Send(LSSGKCU_IN_ZPT_BACK_DOWN);
-			LSSGKCU_Send(LSSGKCU_IN_ZPT_FRONT_DOWN);
+		else {
+			// Disable ZPT.
+			LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_DOWN);
+			zpt_ctx.zpt_state = ZPT_STATE_0;
+			lsmcu_ctx.lsmcu_zpt_raised = 0;
 			GPIO_Write(&GPIO_VLG, 1);
-			zpt_ctx.zpt_previous_state = SW4_P0;
-			(lsmcu_ctx -> lsmcu_zpt_raised) = 0;
 		}
-		zpt_ctx.zpt_enable = 0;
+		break;
+	case ZPT_STATE_ARAV:
+		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
+			switch (zpt_ctx.zpt_sw4.sw4_state) {
+			case SW4_P0:
+				// Lower both pantographs.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_DOWN);
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_DOWN);
+				zpt_ctx.zpt_state = ZPT_STATE_0;
+				lsmcu_ctx.lsmcu_zpt_raised = 0;
+				GPIO_Write(&GPIO_VLG, 0);
+				break;
+			case SW4_P1:
+				// Lower back and raise front pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_DOWN);
+				zpt_ctx.zpt_state = ZPT_STATE_AR;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
+				GPIO_Write(&GPIO_VLG, 0);
+				break;
+			case SW4_P2:
+				// Nothing to do.
+				break;
+			case SW4_P3:
+				// Lower back pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_DOWN);
+				zpt_ctx.zpt_state = ZPT_STATE_AV;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
+				GPIO_Write(&GPIO_VLG, 0);
+				break;
+			}
+		}
+		else {
+			// Disable ZPT.
+			LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_DOWN);
+			LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_DOWN);
+			zpt_ctx.zpt_state = ZPT_STATE_0;
+			lsmcu_ctx.lsmcu_zpt_raised = 0;
+			GPIO_Write(&GPIO_VLG, 1);
+		}
+		break;
+	case ZPT_STATE_AV:
+		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
+			switch (zpt_ctx.zpt_sw4.sw4_state) {
+			case SW4_P0:
+				// Lower front pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_DOWN);
+				zpt_ctx.zpt_state = ZPT_STATE_0;
+				lsmcu_ctx.lsmcu_zpt_raised = 0;
+				GPIO_Write(&GPIO_VLG, 1);
+				break;
+			case SW4_P1:
+				// Rise back and lower front pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_UP);
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_DOWN);
+				zpt_ctx.zpt_state = ZPT_STATE_AR;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
+				GPIO_Write(&GPIO_VLG, 0);
+				break;
+			case SW4_P2:
+				// Rise front pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_UP);
+				zpt_ctx.zpt_state = ZPT_STATE_ARAV;
+				lsmcu_ctx.lsmcu_zpt_raised = 1;
+				GPIO_Write(&GPIO_VLG, 0);
+				break;
+			case SW4_P3:
+				// Nothing to do.
+				break;
+			}
+		}
+		else {
+			// Disable ZPT.
+			LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_DOWN);
+			zpt_ctx.zpt_state = ZPT_STATE_0;
+			lsmcu_ctx.lsmcu_zpt_raised = 0;
+			GPIO_Write(&GPIO_VLG, 1);
+		}
+		break;
+	default:
+		break;
 	}
 }

@@ -17,8 +17,7 @@
  * @return:	None.
  */
 void ZLFR_Init(void) {
-
-	/* Init GPIO */
+	// Init GPIO.
 	GPIO_Configure(&GPIO_ZLFR, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 }
 

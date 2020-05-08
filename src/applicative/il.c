@@ -68,6 +68,7 @@ static IL_Context il_ctx;
  * @return:					None.
  */
 void IL_SetState(unsigned int il_state_mask) {
+	// Set all lights state.
 	GPIO_Write(&GPIO_LSDJ, (il_state_mask & (0b1 << IL_LSGR_BIT_INDEX)));
 	GPIO_Write(&GPIO_LSGR, (il_state_mask & (0b1 << IL_LSDJ_BIT_INDEX)));
 	GPIO_Write(&GPIO_LSS, (il_state_mask & (0b1 << IL_LSS_BIT_INDEX)));
@@ -86,11 +87,7 @@ void IL_SetState(unsigned int il_state_mask) {
  * @return:	None.
  */
 void IL_Init(void) {
-
-	/* Init context */
-	il_ctx.il_state = IL_STATE_OFF;
-
-	/* Init GPIOs */
+	// Init GPIOs.
 	GPIO_Configure(&GPIO_LSDJ, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_LSGR, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_LSS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
@@ -101,19 +98,20 @@ void IL_Init(void) {
 	GPIO_Configure(&GPIO_LSPI, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_LSRH, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	IL_SetState(0);
+	// Init context.
+	il_ctx.il_state = IL_STATE_OFF;
 }
 
 /* MAIN TASK OF IL MODULE.
- * @param lsmcu_ctx:	Pointer to simulator context.
- * @return:				None.
+ * @param:	None.
+ * @return:	None.
  */
-void IL_Task(LSMCU_Context* lsmcu_ctx) {
-
-	/* Perform state machine */
+void IL_Task(void) {
+	// Perform state machine.
 	switch (il_ctx.il_state) {
 	case IL_STATE_OFF:
 		// Check ZBA.
-		if ((lsmcu_ctx -> lsmcu_zba_closed) != 0) {
+		if (lsmcu_ctx.lsmcu_zba_closed != 0) {
 			// Turn LSDJ on.
 			IL_SetState(0b000000001);
 			// Compute next state.
@@ -122,7 +120,7 @@ void IL_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case IL_STATE_ZBA_CLOSED_TRANSITION1:
-		if ((lsmcu_ctx -> lsmcu_zba_closed) == 0) {
+		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
 			// Turn all lights off.
 			IL_SetState(0);
 			il_ctx.il_state = IL_STATE_OFF;
@@ -138,7 +136,7 @@ void IL_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case IL_STATE_ZBA_CLOSED_TRANSITION2:
-		if ((lsmcu_ctx -> lsmcu_zba_closed) == 0) {
+		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
 			// Turn all lights off.
 			IL_SetState(0);
 			il_ctx.il_state = IL_STATE_OFF;
@@ -153,13 +151,13 @@ void IL_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case IL_STATE_ZBA_CLOSED:
-		if ((lsmcu_ctx -> lsmcu_zba_closed) == 0) {
+		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
 			// Turn all lights off.
 			IL_SetState(0);
 			il_ctx.il_state = IL_STATE_OFF;
 		}
 		else {
-			if ((lsmcu_ctx -> lsmcu_bl_unlocked) != 0) {
+			if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
 				// Turn all missing lights on.
 				IL_SetState(0b111111111);
 				// Compute next state.
@@ -168,20 +166,20 @@ void IL_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case IL_STATE_BL_UNLOCKED:
-		if ((lsmcu_ctx -> lsmcu_zba_closed) == 0) {
+		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
 			// Turn all lights off.
 			IL_SetState(0);
 			il_ctx.il_state = IL_STATE_OFF;
 		}
 		else {
-			if ((lsmcu_ctx -> lsmcu_bl_unlocked) == 0) {
+			if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
 				// Turn all new lights off.
 				IL_SetState(0b000000011);
 				// Come back to previous state.
 				il_ctx.il_state = IL_STATE_ZBA_CLOSED;
 			}
 			else {
-				if ((lsmcu_ctx -> lsmcu_dj_closed) != 0) {
+				if (lsmcu_ctx.lsmcu_dj_closed != 0) {
 					// Turn LSS, LSP, LSPAT, LSBA, LSPI and LSRH off.
 					IL_SetState(0b000101011);
 					// Compute next state.
@@ -191,20 +189,20 @@ void IL_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case IL_STATE_DJ_CLOSED:
-		if ((lsmcu_ctx -> lsmcu_zba_closed) == 0) {
+		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
 			// Turn all lights off.
 			IL_SetState(0);
 			il_ctx.il_state = IL_STATE_OFF;
 		}
 		else {
-			if ((lsmcu_ctx -> lsmcu_dj_closed) == 0) {
+			if (lsmcu_ctx.lsmcu_dj_closed == 0) {
 				// Come back to previous state.
 				IL_SetState(0b111111111);
 				// Compute next state.
 				il_ctx.il_state = IL_STATE_BL_UNLOCKED;
 			}
 			else {
-				if ((lsmcu_ctx -> lsmcu_dj_locked) != 0) {
+				if (lsmcu_ctx.lsmcu_dj_locked != 0) {
 					// Compute next state.
 					il_ctx.il_switch_state_time = TIM2_GetMs();
 					il_ctx.il_state = IL_STATE_DJ_LOCKED_TRANSITION1;
@@ -232,13 +230,13 @@ void IL_Task(LSMCU_Context* lsmcu_ctx) {
 		}
 		break;
 	case IL_STATE_DJ_LOCKED:
-		if ((lsmcu_ctx -> lsmcu_zba_closed) == 0) {
+		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
 			// Turn all lights off.
 			IL_SetState(0);
 			il_ctx.il_state = IL_STATE_OFF;
 		}
 		else {
-			if ((lsmcu_ctx -> lsmcu_dj_closed) == 0) {
+			if (lsmcu_ctx.lsmcu_dj_closed == 0) {
 				// Come back to previous state.
 				IL_SetState(0b111111111);
 				// Compute next state.
