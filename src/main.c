@@ -12,8 +12,6 @@
 #include "rcc.h"
 #include "tim.h"
 #include "usart.h"
-// Components.
-#include "stepper.h"
 // Applicative.
 #include "bl.h"
 #include "common.h"

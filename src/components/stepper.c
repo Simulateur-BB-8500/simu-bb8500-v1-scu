@@ -50,16 +50,13 @@ void STEPPER_SingleStep(STEPPER_Context* stepper) {
  * @return:				None.
  */
 void STEPPER_Init(STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2) {
-
-	/* Init context */
+	// Init GPIOs.
+	GPIO_Configure((stepper -> stepper_cmd1), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure((stepper -> stepper_cmd2), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	// Init context.
 	stepper -> stepper_cmd1 = stepper_cmd1;
 	stepper -> stepper_cmd2 = stepper_cmd2;
 	stepper -> stepper_current_step = 0;
-
-	/* Init GPIOs */
-	GPIO_Configure((stepper -> stepper_cmd1), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure((stepper -> stepper_cmd2), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
 }
 
 /* PERFORM A MOTOR STEP UP.
@@ -67,11 +64,8 @@ void STEPPER_Init(STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO
  * @return:	None.
  */
 void STEPPER_Up(STEPPER_Context* stepper) {
-
-	/* Update step */
+	// Update and perform step.
 	stepper -> stepper_current_step++;
-
-	/* Perform step */
 	STEPPER_SingleStep(stepper);
 }
 
@@ -80,12 +74,9 @@ void STEPPER_Up(STEPPER_Context* stepper) {
  * @return:	None.
  */
 void STEPPER_Down(STEPPER_Context* stepper) {
-
-	/* Update step */
+	// Update and perform step.
 	if ((stepper -> stepper_current_step) > 0) {
 		stepper -> stepper_current_step--;
 	}
-
-	/* Perform step */
 	STEPPER_SingleStep(stepper);
 }

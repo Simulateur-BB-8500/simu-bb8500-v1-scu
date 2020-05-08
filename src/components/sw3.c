@@ -67,16 +67,14 @@ unsigned char SW3_VoltageIsFront(SW3_Context* sw3) {
  * @return:					None;
  */
 void SW3_Init(SW3_Context* sw3, const GPIO* sw3_gpio, unsigned int sw3_sw3_debouncing_ms) {
-
-	/* Init context */
+	// Init GPIO.
+	GPIO_Configure(sw3_gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	// Init context.
 	sw3 -> sw3_voltage = VCC_MV/2; // Neutral = Vcc/2.
 	sw3 -> sw3_internal_state = SW3_STATE_NEUTRAL;
 	sw3 -> sw3_state = SW3_NEUTRAL;
 	sw3 -> sw3_debouncing_ms = sw3_sw3_debouncing_ms;
 	sw3 -> sw3_confirm_start_time = 0;
-
-	/* Init GPIO */
-	GPIO_Configure(sw3_gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 }
 
 /* SET THE CURRENT VOLTAGE OF A 3-POLES SWITCH.

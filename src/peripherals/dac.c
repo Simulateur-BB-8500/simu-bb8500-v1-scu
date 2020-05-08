@@ -24,17 +24,13 @@
  * @return: None.
  */
 void DAC_Init(void) {
-
-	/* Configure analog GPIOs */
+	// Configure analog GPIOs.
 	GPIO_Configure(&GPIO_AM, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Enable peripheral clock */
+	// Enable peripheral clock.
 	RCC -> APB1ENR |= (0b1 << 29); // DACEN='1'.
-
-	/* Configure peripheral */
+	// Configure peripheral.
 	DAC -> CR |= (0b1 << 0); // EN1='1'.
 	DAC -> CR &= ~(0b1 << 16); // EN2='0'.
-	// Configure output buffer.
 	DAC -> CR &= ~(0b1 << 1); // BOFF1='0'.
 	DAC -> CR |= (0b1 << 17); // BOFF2='1'.
 }
@@ -56,6 +52,7 @@ void DAC_SetVoltageMv(unsigned int voltage_mv) {
 }
 
 /* GET DAC CURRENT OUTPUT VOLTAGE.
+ * @param:			None.
  * @return voltage:	Current output voltage expressed in mV (between 0 and VCC_MV).
  */
 unsigned int DAC_GetVoltageMv(void) {

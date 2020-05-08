@@ -12,7 +12,6 @@
 
 // If defined, output clocks on MCO1 and MCO2 pins.
 //#define RCC_OUTPUT_CLOCK
-
 // System clocks frequency in kHz.
 #define RCC_SYSCLK_KHZ	100000
 #define RCC_PCLK1_KHZ	25000

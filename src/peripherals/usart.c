@@ -42,8 +42,7 @@ static USART_Context usart1_ctx;
  * @return:	None.
  */
 void USART1_InterruptHandler(void) {
-
-	/* TX */
+	// TX.
 	if (((USART1 -> ISR) & (0b1 << 7)) != 0) { // TXE='1'.
 		if ((usart1_ctx.tx_read_idx) != (usart1_ctx.tx_write_idx)) {
 			// Send byte.
@@ -59,8 +58,7 @@ void USART1_InterruptHandler(void) {
 			USART1 -> CR1 &= ~(0b1 << 7); // TXEIE = '0'.
 		}
 	}
-
-	/* RX */
+	// RX.
 	if (((USART1 -> ISR) & (0b1 << 5)) != 0) { // RXNE='1'.
 		// Get and store new byte into RX buffer.
 		unsigned char rx_byte = USART1 -> RDR;
@@ -98,21 +96,17 @@ unsigned char CharToASCII(unsigned char n) {
  * @return: None.
  */
 void USART1_Init(void) {
-
-	/* Init context */
+	// Init context.
 	unsigned int i = 0;
 	for (i=0 ; i<USART_TX_BUFFER_SIZE ; i++) (usart1_ctx.tx_buf)[i] = 0;
 	usart1_ctx.tx_read_idx = 0;
 	usart1_ctx.tx_write_idx = 0;
-
-	/* Enable peripheral clock */
+	// Enable peripheral clock.
 	RCC -> APB2ENR |= (0b1 << 4);
-
-	/* Configure TX and RX GPIOs */
+	// Configure GPIOs.
 	GPIO_Configure(&GPIO_USART1_TX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_USART1_RX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Configure peripheral */
+	// Configure peripheral.
 	// 1 stop bit, 8 data bits, oversampling by 16.
 	USART1 -> CR1 = 0; // M='00' and OVER8='0'.
 	USART1 -> CR2 = 0;
@@ -122,8 +116,7 @@ void USART1_Init(void) {
 	// Enable transmitter and receiver.
 	USART1 -> CR1 |= (0b1 << 3); // TE='1'.
 	USART1 -> CR1 |= (0b1 << 2); // RE='1'.
-	// Enable interrupts.
-	USART1 -> CR1 |= (0b1 << 5); // RXNEIE='1'.
+	USART1 -> CR1 |= (0b1 << 5); // // Enable RX interrupt (RXNEIE='1').
 	// Enable peripheral.
 	USART1 -> CR1 |= (0b1 << 0); // UE='1'.
 	NVIC_EnableInterrupt(IT_USART1);
@@ -167,6 +160,9 @@ void USART1_SendByte(unsigned char tx_byte, USART_Format format) {
 	case USART_FORMAT_ASCII:
 		// Raw byte.
 		USART1_FillTxBuffer(tx_byte);
+		break;
+	default:
+		// Unknown format.
 		break;
 	}
 	USART1 -> CR1 |= (0b1 << 7); // TXEIE = '1'.

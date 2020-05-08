@@ -84,9 +84,11 @@ void BL_Task(void) {
 			lsmcu_ctx.lsmcu_dj_closed = 1;
 		}
 		else {
-			// Send command on change.
+			// Send command on change (only if DJ is locked).
 			if (lsmcu_ctx.lsmcu_dj_closed != 0) {
-				LSSGKCU_Send(LSMCU_OUT_ZDJ_OFF);
+				if (lsmcu_ctx.lsmcu_dj_locked != 0) {
+					LSSGKCU_Send(LSMCU_OUT_ZDJ_OFF);
+				}
 				lsmcu_ctx.lsmcu_dj_locked = 0;
 			}
 			lsmcu_ctx.lsmcu_dj_closed = 0;

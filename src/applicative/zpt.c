@@ -211,6 +211,8 @@ void ZPT_Task(void) {
 		}
 		break;
 	default:
+		// Unknown state.
+		zpt_ctx.zpt_state = ZPT_STATE_0;
 		break;
 	}
 }

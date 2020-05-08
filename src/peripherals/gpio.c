@@ -219,23 +219,19 @@ void GPIO_Configure(const GPIO* gpio, GPIO_Mode mode, GPIO_OutputType output_typ
  * @return: None.
  */
 void GPIO_Init(void) {
-
-	/* Enable all GPIOx clocks */
+	// Enable all GPIOx clocks.
 	RCC -> AHB1ENR |= 0x000007FF; // GPIOxEN='1'.
-
-	/* Configure standalone GPIOs */
+	// Configure standalone GPIOs.
 	GPIO_Configure(&GPIO_LED_BLUE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_LED_RED, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_LED_GREEN, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
 #ifdef RCC_OUTPUT_CLOCK
 	// MCO1 configured as AF0 to output HSI clock.
 	GPIO_Configure(&MCO1_GPIO, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_VERY_HIGH, GPIO_PULL_NONE);
 	// MCO2 configured as AF0 to output SYSCLK clock.
 	GPIO_Configure(&MCO2_GPIO, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_VERY_HIGH, GPIO_PULL_NONE);
 #endif
-
-	/* Others GPIOs are configured in their corresponding peripheral or applicative file */
+	// Others GPIOs are configured in their corresponding peripheral or applicative file.
 }
 
 /* SET THE STATE OF A GPIO.

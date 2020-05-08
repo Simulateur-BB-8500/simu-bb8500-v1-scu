@@ -51,16 +51,12 @@ void TIM7_InterruptHandler(void) {
  * @return:	None.
  */
 void TIM2_Init(void) {
-
-	/* Enable peripheral clock */
+	// Enable peripheral clock.
 	RCC -> APB1ENR |= (0b1 << 0); // TIM2EN='1'.
-
-	/* Configure peripheral */
-	// Disable and reset counter.
+	// Configure peripheral.
 	TIM2 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM2 -> CNT = 0;
-	// Disable interrupt.
-	TIM2 -> DIER &= ~(0b1 << 0); // UIE='0'.
+	TIM2 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM2 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 1 ms.
 	TIM2 -> PSC = (2 * RCC_PCLK1_KHZ) - 1; // TIM2 input clock = (2*PCLK1)/((2*PLCK1-1)+1) = 1kHz.
@@ -93,16 +89,12 @@ void TIM2_DelayMs(unsigned int ms_to_wait) {
  * @return:	None.
  */
 void TIM5_Init(void) {
-
-	/* Enable peripheral clock */
+	// Enable peripheral clock */
 	RCC -> APB1ENR |= (0b1 << 3); // TIM5EN='1'.
-
-	/* Configure peripheral */
-	// Disable and reset counter.
+	// Configure peripheral.
 	TIM5 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM5 -> CNT = 0;
-	// Disable interrupt.
-	TIM5 -> DIER &= ~(0b1 << 0); // UIE='0'.
+	TIM5 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM5 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 2 ms.
 	TIM5 -> PSC = ((2 * RCC_PCLK1_KHZ) / 1000) - 1; // TIM5 input clock = (2*PCLK1)/((((2*PCLK1)/1000)-1)+1) = 1MHz.
@@ -160,16 +152,12 @@ void TIM5_ClearUifFlag(void) {
  * @return:	None.
  */
 void TIM6_Init(void) {
-
-	/* Enable peripheral clock */
+	// Enable peripheral clock.
 	RCC -> APB1ENR |= (0b1 << 4); // TIM6EN='1'.
-
-	/* Configure peripheral */
-	// Disable and reset counter.
+	// Configure peripheral.
 	TIM6 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM6 -> CNT = 0;
-	// Disable interrupt.
-	TIM6 -> DIER &= ~(0b1 << 0); // UIE='0'.
+	TIM6 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 2ms.
 	TIM6 -> PSC = ((2 * RCC_PCLK1_KHZ) / 50) - 1; // TIM6 input clock = (2*PCLK1)/((((2*PCLK1)/50)-1)+1) = 50kHz.
@@ -206,15 +194,12 @@ void TIM6_Stop(void) {
  * @return:	None.
  */
 void TIM7_Init(void) {
-	/* Enable peripheral clock */
+	// Enable peripheral clock.
 	RCC -> APB1ENR |= (0b1 << 5); // TIM7EN='1'.
-
-	/* Configure peripheral */
-	// Disable and reset counter.
+	// Configure peripheral.
 	TIM7 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM7 -> CNT = 0;
-	// Disable interrupt.
-	TIM7 -> DIER &= ~(0b1 << 0); // UIE='0'.
+	TIM7 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 1ms.
 	TIM7 -> PSC = ((2 * RCC_PCLK1_KHZ) / 1000) - 1; // TIM7 input clock = (2*PCLK1)/((((2*PCLK1)/1000)-1)+1) = 1MHz.
@@ -252,19 +237,14 @@ void TIM7_Stop(void) {
  * @return: None.
  */
 void TIM8_Init(void) {
-
-	/* Configure GPIOs */
+	// Configure GPIO.
 	GPIO_Configure(&GPIO_KVB_LVAL, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Enable peripheral clock */
+	// Enable peripheral clock.
 	RCC -> APB2ENR |= (0b1 << 1); // TIM8EN='1'.
-
-	/* Configure peripheral */
-	// Disable and reset counter.
+	// Configure peripheral.
 	TIM8 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM8 -> CNT = 0;
-	// Disable interrupt.
-	TIM8 -> DIER &= ~(0b1 << 0); // UIE='0'.
+	TIM8 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM8 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to set PWM frequency to 2kHz.
 	TIM8 -> PSC = ((2 * RCC_PCLK2_KHZ) / 1000) - 1;; // TIM8 input clock = (2*PCLK2)/((((2*PCLK2)/1000)-1)+1) = 1MHz.
@@ -272,8 +252,7 @@ void TIM8_Init(void) {
 	// Configure channel 1 in PWM mode 1.
 	TIM8 -> CCMR1 &= 0xFFFFFF00; // Reset bits 0-7 and output mode (CC1S='00').
 	TIM8 -> CCMR1 |= (0b001101000 << 0); // 0C1M='0110' and OC1PE='1'.
-	// Enable channel 1.
-	TIM8 -> CCER |= (0b1 << 0); // CC1E='1'.
+	TIM8 -> CCER |= (0b1 << 0); // // Enable channel 1 (CC1E='1').
 	// Generate event to update registers.
 	TIM8 -> EGR |= (0b1 << 0); // UG='1'.
 	// Enable output.

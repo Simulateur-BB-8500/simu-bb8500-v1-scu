@@ -13,8 +13,7 @@
 /*** LSSGKCU structures ***/
 
 typedef enum {
-	// Bytes 0 to 100 are reserved for coding CP pressure*10 in bars.
-	LSMCU_OUT_ZBA_ON = 101,
+	LSMCU_OUT_ZBA_ON = 0,
 	LSMCU_OUT_ZBA_OFF,
 	LSMCU_OUT_RSEC_ON,
 	LSMCU_OUT_RSEC_OFF,
