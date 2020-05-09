@@ -237,8 +237,6 @@ void TIM7_Stop(void) {
  * @return: None.
  */
 void TIM8_Init(void) {
-	// Configure GPIO.
-	GPIO_Configure(&GPIO_KVB_LVAL, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Enable peripheral clock.
 	RCC -> APB2ENR |= (0b1 << 1); // TIM8EN='1'.
 	// Configure peripheral.
@@ -273,6 +271,8 @@ void TIM8_SetDutyCycle(unsigned char duty_cycle) {
  * @return: None.
  */
 void TIM8_Start(void) {
+	// Link GPIO to timer.
+	GPIO_Configure(&GPIO_KVB_LVAL, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Enable counter.
 	TIM8 -> CR1 |= (0b1 << 0); // CEN='1'.
 }
@@ -282,6 +282,8 @@ void TIM8_Start(void) {
  * @return:	None.
  */
 void TIM8_Stop(void) {
+	// Configure GPIO as output.
+	GPIO_Configure(&GPIO_KVB_LVAL, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Disable and reset counter.
 	TIM8 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM8 -> CNT = 0;

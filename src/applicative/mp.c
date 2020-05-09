@@ -9,8 +9,13 @@
 
 #include "common.h"
 #include "gpio.h"
+#include "lssgkcu.h"
 #include "mapping.h"
 #include "sw2.h"
+
+/*** MP local macros ***/
+
+#define MP_GEAR_PERIOD_MS	350
 
 /*** MP local structures ***/
 
@@ -33,6 +38,7 @@ typedef struct {
 	unsigned char mp_fr_on;
 	SW2_Context mp_tr;
 	unsigned char mp_tr_on;
+	unsigned char mp_gear_count;
 } MP_Context;
 
 /*** MP local global variables ***/
@@ -66,6 +72,8 @@ void MP_Init(void) {
 	SW2_Init(&mp_ctx.mp_tr, &GPIO_MP_TR, 0, 100); // MP_TR active low.
 	mp_ctx.mp_tr_on = 0;
 	GPIO_Configure(&GPIO_MP_SH_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	// Init context.
+	mp_ctx.mp_gear_count = 0;
 }
 
 /* MAIN ROUTINE OF MP MODULE.
@@ -73,5 +81,40 @@ void MP_Init(void) {
  * @return:	None.
  */
 void MP_Task(void) {
-
+	// MP_0.
+	SW2_UpdateState(&mp_ctx.mp_0);
+	if (mp_ctx.mp_0.sw2_state == SW2_ON) {
+		if (mp_ctx.mp_0_on == 0) {
+			// Send command on change.
+			LSSGKCU_Send(LSMCU_OUT_MP_0);
+			mp_ctx.mp_0_on = 1;
+		}
+	}
+	else {
+		mp_ctx.mp_0_on = 0;
+	}
+	// MP_TP.
+	SW2_UpdateState(&mp_ctx.mp_tp);
+	if (mp_ctx.mp_tp.sw2_state == SW2_ON) {
+		if (mp_ctx.mp_tp_on == 0) {
+			// Send command on change.
+			LSSGKCU_Send(LSMCU_OUT_MP_T_MORE);
+			mp_ctx.mp_tp_on = 1;
+		}
+	}
+	else {
+		mp_ctx.mp_tp_on = 0;
+	}
+	// MP_TM.
+	SW2_UpdateState(&mp_ctx.mp_tm);
+	if (mp_ctx.mp_tm.sw2_state == SW2_ON) {
+		if (mp_ctx.mp_tm_on == 0) {
+			// Send command on change.
+			LSSGKCU_Send(LSMCU_OUT_MP_T_LESS);
+			mp_ctx.mp_tm_on = 1;
+		}
+	}
+	else {
+		mp_ctx.mp_tm_on = 0;
+	}
 }

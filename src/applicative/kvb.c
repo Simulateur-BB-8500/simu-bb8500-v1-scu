@@ -18,28 +18,12 @@
 #define KVB_NUMBER_OF_SEGMENTS 		8 		// 7 segments + dot.
 #define KVB_NUMBER_OF_DISPLAYS 		6 		// KVB has 6 displays (3 yellow and 3 green).
 #define KVB_DISPLAY_SWEEP_MS		2 		// Display sweep period in ms.
-// Display durations in ms.
-#define KVB_PA400_DURATION_MS		2000
-#define KVB_PA400_OFF_DURATION_MS	2000
-#define KVB_UC512_DURATION_MS		2000
-#define KVB_888888_DURATION_MS		3000
 // LVAL.
 #define KVB_LVAL_BLINK_PERIOD_MS	900		// Period of LVAL blinking (in ms).
 // LSSF.
 #define KVB_LSSF_BLINK_PERIOD_MS	333		// Period of LSSF blinking (in ms).
 
 /*** KVB local structures ***/
-
-// Internal state machine.
-typedef enum {
-	KVB_STATE_OFF,
-	KVB_STATE_PA400,
-	KVB_STATE_PA400_OFF,
-	KVB_STATE_UC512,
-	KVB_STATE_888888,
-	KVB_STATE_888888_OFF,
-	KVB_STATE_SLAVE_MODE
-} KVB_State;
 
 // KVB context.
 typedef struct KVB_Context {
@@ -53,9 +37,6 @@ typedef struct KVB_Context {
 	unsigned char lval_blink_enable;
 	unsigned char lval_blinking;
 	unsigned char lssf_blink_enable;
-	// State machine.
-	KVB_State kvb_state;
-	unsigned int switch_state_time; // In ms.
 } KVB_Context;
 
 /*** KVB local global variables ***/
@@ -226,8 +207,6 @@ void KVB_Init(void) {
 	}
 	kvb_ctx.display_idx = 0;
 	kvb_ctx.segment_idx = 0;
-	kvb_ctx.kvb_state = KVB_STATE_OFF;
-	kvb_ctx.switch_state_time = 0;
 	kvb_ctx.lssf_blink_enable = 1;
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lval_blinking = 0;
@@ -321,109 +300,20 @@ void KVB_Sweep(void) {
  * @return:	None.
  */
 void KVB_Task(void) {
-	// Perform state machine.
-	switch (kvb_ctx.kvb_state) {
-	case KVB_STATE_OFF:
-		KVB_DisplayOff();
-		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
-			kvb_ctx.kvb_state = KVB_STATE_PA400;
-			kvb_ctx.switch_state_time = TIM2_GetMs();
+	// LVAL.
+	if (kvb_ctx.lval_blink_enable != 0) {
+		if (kvb_ctx.lval_blinking == 0) {
+			TIM8_Start();
+			kvb_ctx.lval_blinking = 1;
 		}
-		break;
-	case KVB_STATE_PA400:
-		KVB_Display(KVB_PA400_TEXT);
-		KVB_BlinkLSSF();
-		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
-			kvb_ctx.kvb_state = KVB_STATE_OFF;
-		}
-		else {
-			if (TIM2_GetMs() > (kvb_ctx.switch_state_time + KVB_PA400_DURATION_MS)) {
-				kvb_ctx.kvb_state = KVB_STATE_PA400_OFF;
-				kvb_ctx.switch_state_time = TIM2_GetMs();
-			}
-		}
-		break;
-	case KVB_STATE_PA400_OFF:
-		KVB_DisplayOff();
-		KVB_BlinkLSSF();
-		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
-			kvb_ctx.kvb_state = KVB_STATE_OFF;
-		}
-		else {
-			if (TIM2_GetMs() > (kvb_ctx.switch_state_time + KVB_PA400_OFF_DURATION_MS)) {
-				kvb_ctx.kvb_state = KVB_STATE_UC512;
-				kvb_ctx.switch_state_time = TIM2_GetMs();
-			}
-		}
-		break;
-	case KVB_STATE_UC512:
-		KVB_Display(KVB_UC512_TEXT);
-		KVB_BlinkLSSF();
-		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
-			kvb_ctx.kvb_state = KVB_STATE_OFF;
-		}
-		else {
-			if (TIM2_GetMs() > (kvb_ctx.switch_state_time + KVB_UC512_DURATION_MS)) {
-				kvb_ctx.kvb_state = KVB_STATE_888888;
-				kvb_ctx.switch_state_time = TIM2_GetMs();
-				// Init LVAL PWM before calling blink function.
-				TIM8_Start();
-				kvb_ctx.lval_blink_enable = 1;
-				kvb_ctx.lval_blinking = 1;
-			}
-		}
-		break;
-	case KVB_STATE_888888:
-		KVB_Display(KVB_888888_TEXT);
 		KVB_BlinkLVAL();
+	}
+	else {
+		TIM8_Stop();
+		kvb_ctx.lval_blinking = 0;
+	}
+	// LSSF
+	if (kvb_ctx.lssf_blink_enable != 0) {
 		KVB_BlinkLSSF();
-		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
-			kvb_ctx.kvb_state = KVB_STATE_OFF;
-		}
-		else {
-			if (TIM2_GetMs() > (kvb_ctx.switch_state_time + KVB_888888_DURATION_MS)) {
-				kvb_ctx.kvb_state = KVB_STATE_888888_OFF;
-				kvb_ctx.switch_state_time = TIM2_GetMs();
-			}
-		}
-		break;
-	case KVB_STATE_888888_OFF:
-		KVB_DisplayOff();
-		KVB_BlinkLVAL();
-		KVB_BlinkLSSF();
-		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
-			kvb_ctx.kvb_state = KVB_STATE_OFF;
-		}
-		else {
-			kvb_ctx.kvb_state = KVB_STATE_SLAVE_MODE;
-		}
-		break;
-	case KVB_STATE_SLAVE_MODE:
-		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
-			kvb_ctx.kvb_state = KVB_STATE_OFF;
-		}
-		else {
-			// LVAL.
-			if (kvb_ctx.lval_blink_enable == 1) {
-				if (kvb_ctx.lval_blinking == 0) {
-					TIM8_Start();
-					kvb_ctx.lval_blinking = 1;
-				}
-				KVB_BlinkLVAL();
-			}
-			else {
-				TIM8_Stop();
-				kvb_ctx.lval_blinking = 0;
-			}
-			// LSSF
-			if (kvb_ctx.lssf_blink_enable == 1) {
-				KVB_BlinkLSSF();
-			}
-			// All other functions are directly called by the LSSGKCU manager.
-		}
-		break;
-	default:
-		// Unknown state.
-		break;
 	}
 }

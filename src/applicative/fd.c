@@ -55,7 +55,7 @@ void FD_Task(void) {
 	case SW3_BACK:
 		if (fd_ctx.fd_previous_state != SW3_BACK) {
 			// Backward.
-			LSSGKCU_Send(LSMCU_OUT_FD_APPLY);
+			LSSGKCU_Send(LSMCU_OUT_FD_RELEASE);
 		}
 		break;
 	case SW3_NEUTRAL:
@@ -67,7 +67,7 @@ void FD_Task(void) {
 	case SW3_FRONT:
 		if (fd_ctx.fd_previous_state != SW3_FRONT) {
 			// Forward.
-			LSSGKCU_Send(LSMCU_OUT_FD_RELEASE);
+			LSSGKCU_Send(LSMCU_OUT_FD_APPLY);
 		}
 		break;
 	default:

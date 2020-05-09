@@ -10,9 +10,20 @@
 
 /*** KVB macros ***/
 
-#define KVB_PA400_TEXT		((unsigned char*) "PA 400")
-#define KVB_UC512_TEXT		((unsigned char*) "UC 512")
-#define KVB_888888_TEXT		((unsigned char*) "888888")
+#define KVB_YG_PA400		((unsigned char*) "PA 400")
+#define KVB_YG_UC512		((unsigned char*) "UC 512")
+#define KVB_YG_888			((unsigned char*) "888888")
+#define KVB_YG_DASH			((unsigned char*) "------")
+#define KVB_G_B				((unsigned char*) "    b ")
+#define KVB_Y_B				((unsigned char*) " b    ")
+#define KVB_G_P				((unsigned char*) "    P ")
+#define KVB_Y_P				((unsigned char*) " P    ")
+#define KVB_G_L				((unsigned char*) "    L ")
+#define KVB_Y_L				((unsigned char*) " L    ")
+#define KVB_G_00			((unsigned char*) "    00")
+#define KVB_Y_00			((unsigned char*) " 00   ")
+#define KVB_G_000			((unsigned char*) "   000")
+#define KVB_Y_000			((unsigned char*) "000   ")
 
 /*** KVB functions ***/
 

@@ -103,33 +103,46 @@ void LSSGKCU_Decode(void) {
 			KVB_DisplayOff();
 			break;
 		case LSMCU_IN_KVB_YG_PA400:
-			KVB_Display(KVB_PA400_TEXT);
+			KVB_Display(KVB_YG_PA400);
 			break;
 		case LSMCU_IN_KVB_YG_UC512:
+			KVB_Display(KVB_YG_UC512);
 			break;
 		case LSMCU_IN_KVB_YG_888:
+			KVB_Display(KVB_YG_888);
 			break;
 		case LSMCU_IN_KVB_YG_DASH:
+			KVB_Display(KVB_YG_DASH);
 			break;
 		case LSMCU_IN_KVB_G_B:
+			KVB_Display(KVB_G_B);
 			break;
 		case LSMCU_IN_KVB_Y_B:
+			KVB_Display(KVB_Y_B);
 			break;
 		case LSMCU_IN_KVB_G_P:
+			KVB_Display(KVB_G_P);
 			break;
 		case LSMCU_IN_KVB_Y_P:
+			KVB_Display(KVB_Y_P);
 			break;
 		case LSMCU_IN_KVB_G_L:
+			KVB_Display(KVB_G_L);
 			break;
 		case LSMCU_IN_KVB_Y_L:
+			KVB_Display(KVB_Y_L);
 			break;
 		case LSMCU_IN_KVB_G_00:
+			KVB_Display(KVB_G_00);
 			break;
 		case LSMCU_IN_KVB_Y_00:
+			KVB_Display(KVB_Y_00);
 			break;
 		case LSMCU_IN_KVB_G_000:
+			KVB_Display(KVB_G_000);
 			break;
 		case LSMCU_IN_KVB_Y_000:
+			KVB_Display(KVB_Y_000);
 			break;
 		default:
 			// Unknown command.

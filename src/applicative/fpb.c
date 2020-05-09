@@ -55,7 +55,7 @@ void FPB_Task(void) {
 	case SW3_BACK:
 		if (fpb_ctx.fpb_previous_state != SW3_BACK) {
 			// Backward.
-			LSSGKCU_Send(LSMCU_OUT_FPB_APPLY);
+			LSSGKCU_Send(LSMCU_OUT_FPB_RELEASE);
 		}
 		break;
 	case SW3_NEUTRAL:
@@ -67,7 +67,7 @@ void FPB_Task(void) {
 	case SW3_FRONT:
 		if (fpb_ctx.fpb_previous_state != SW3_FRONT) {
 			// Forward.
-			LSSGKCU_Send(LSMCU_OUT_FPB_RELEASE);
+			LSSGKCU_Send(LSMCU_OUT_FPB_APPLY);
 		}
 		break;
 	default:
