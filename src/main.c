@@ -85,6 +85,7 @@ int main(void) {
 	lsmcu_ctx.lsmcu_dj_locked = 0;
 	lsmcu_ctx.lsmcu_compressor_on = 0;
 	lsmcu_ctx.lsmcu_speed_kmh = 0;
+	lsmcu_ctx.lsmcu_urgency = 0;
 	// Main loop.
 	while (1) {
 		// Peripherals tasks.

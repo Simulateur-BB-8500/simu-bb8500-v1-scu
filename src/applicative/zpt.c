@@ -191,8 +191,8 @@ void ZPT_Task(void) {
 				GPIO_Write(&GPIO_VLG, 0);
 				break;
 			case SW4_P2:
-				// Rise front pantograph.
-				LSSGKCU_Send(LSMCU_OUT_ZPT_FRONT_UP);
+				// Rise back pantograph.
+				LSSGKCU_Send(LSMCU_OUT_ZPT_BACK_UP);
 				zpt_ctx.zpt_state = ZPT_STATE_ARAV;
 				lsmcu_ctx.lsmcu_zpt_raised = 1;
 				GPIO_Write(&GPIO_VLG, 0);

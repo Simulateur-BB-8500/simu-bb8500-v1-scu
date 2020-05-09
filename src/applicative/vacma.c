@@ -119,6 +119,7 @@ void VACMA_Task(void) {
 				// Trigger urgency brake.
 				GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
 				GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+				lsmcu_ctx.lsmcu_urgency = 1;
 				vacma_ctx.vacma_state = VACMA_STATE_URGENCY;
 			}
 			else {
@@ -165,6 +166,7 @@ void VACMA_Task(void) {
 				// Trigger urgency brake.
 				GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
 				GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+				lsmcu_ctx.lsmcu_urgency = 1;
 				vacma_ctx.vacma_state = VACMA_STATE_URGENCY;
 			}
 			else {
@@ -178,9 +180,14 @@ void VACMA_Task(void) {
 		}
 		break;
 	case VACMA_STATE_URGENCY:
-		// TBD.
+		// Stay in this state while urgency flag is set.
+		if (lsmcu_ctx.lsmcu_urgency == 0) {
+			vacma_ctx.vacma_state = VACMA_STATE_OFF;
+		}
 		break;
 	default:
+		// Unknown state.
+		vacma_ctx.vacma_state = VACMA_STATE_OFF;
 		break;
 	}
 }

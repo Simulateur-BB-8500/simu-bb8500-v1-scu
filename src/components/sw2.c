@@ -21,7 +21,7 @@
  */
 void SW2_Init(SW2_Context* sw2, const GPIO* sw2_gpio, unsigned char sw2_active_state, unsigned int sw2_debouncing_ms) {
 	// Init GPIO.
-	GPIO_Configure((sw2 -> sw2_gpio), GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
+	GPIO_Configure(sw2_gpio, GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
 	// Init context.
 	sw2 -> sw2_gpio = sw2_gpio;
 	sw2 -> sw2_active_state = sw2_active_state;
