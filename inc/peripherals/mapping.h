@@ -13,8 +13,6 @@
 
 /*** MCU pins mapping ***/
 
-#ifdef HW1_1
-
 // Serial link to LSSGKCU.
 static const GPIO GPIO_USART1_TX =				(GPIO) {GPIOA, 0, 9, 7};	// AF7 = USART1 TX.
 static const GPIO GPIO_USART1_RX =				(GPIO) {GPIOA, 0, 10, 7}; 	// AF7 = USART1 RX.
@@ -158,11 +156,5 @@ static const GPIO GPIO_RSEC =					(GPIO) {GPIOC, 2, 13, 0};
 static const GPIO GPIO_LED_RED =				(GPIO) {GPIOB, 1, 14, 0};
 static const GPIO GPIO_LED_GREEN = 				(GPIO) {GPIOB, 1, 0, 0};
 static const GPIO GPIO_LED_BLUE =				(GPIO) {GPIOB, 1, 7, 0};
-
-#endif /* HW1_1 */
-
-#ifdef HW2_0
-
-#endif
 
 #endif /* MAPPING_H */

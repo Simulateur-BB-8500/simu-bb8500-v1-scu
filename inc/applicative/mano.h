@@ -28,8 +28,7 @@ typedef struct {
 /*** MANO functions ***/
 
 void MANOS_Init(void);
-void MANOS_Enable(void);
-void MANOS_Disable(void);
+void MANOS_ManagePower(void);
 
 void MANO_Init(MANO_Context* mano, STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2, unsigned int pressure_max_decibars, unsigned int pressure_max_steps, unsigned int needle_inertia_steps, unsigned int needle_speed_max);
 void MANO_SetTarget(MANO_Context* mano, unsigned int pressure_decibars);

@@ -67,6 +67,8 @@ void TCH_Init(void) {
 	GPIO_Configure(&GPIO_TCH_PWM_C, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
 	tch_state = TCH_STATE_OFF;
+	// Init global context.
+	lsmcu_ctx.lsmcu_speed_kmh = 0;
 }
 
 /* MAIN ROUTINE OF TCH CONTROL INTERFACE.

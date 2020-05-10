@@ -23,8 +23,10 @@ static SW2_Context zba;
  * @return:	None.
  */
 void ZBA_Init(void) {
-	// Init context.
+	// Init GPIO.
 	SW2_Init(&zba, &GPIO_ZBA, 1, 100); // ZBA active high (+3.3V supply present).
+	// Init global context.
+	lsmcu_ctx.lsmcu_zba_closed = 0;
 }
 
 /* MAIN TASK OF ZBA MODULE.

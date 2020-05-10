@@ -51,8 +51,8 @@ void STEPPER_SingleStep(STEPPER_Context* stepper) {
  */
 void STEPPER_Init(STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2) {
 	// Init GPIOs.
-	GPIO_Configure((stepper -> stepper_cmd1), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure((stepper -> stepper_cmd2), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(stepper_cmd1, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(stepper_cmd2, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
 	stepper -> stepper_cmd1 = stepper_cmd1;
 	stepper -> stepper_cmd2 = stepper_cmd2;

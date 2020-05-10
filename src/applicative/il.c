@@ -20,13 +20,14 @@
 #define IL_DJ_LOCKED_LSDJ_DELAY_MS				200
 #define IL_ZDJ_LOCKING_DURATION_MS				1000
 #define IL_ZDJ_LOCKING_LSDJ_DELAY_MS			200
+#define IL_LSRH_BLINK_DURATION_MS				200
 
 /*** IL local structures ***/
 
 // IL bit index.
 typedef enum {
-	IL_LSGR_BIT_INDEX = 0,
-	IL_LSDJ_BIT_INDEX,
+	IL_LSDJ_BIT_INDEX = 0,
+	IL_LSGR_BIT_INDEX,
 	IL_LSS_BIT_INDEX,
 	IL_LSCB_BIT_INDEX,
 	IL_LSP_BIT_INDEX,
@@ -46,15 +47,13 @@ typedef enum {
 	IL_STATE_DJ_CLOSED,
 	IL_STATE_DJ_LOCKED_TRANSITION1,
 	IL_STATE_DJ_LOCKED_TRANSITION2,
-	IL_STATE_DJ_LOCKED,
-	IL_STATE_SERIES_TRACTION,
-	IL_STATE_PARALLEL_TRACTION,
-	IL_STATE_GRADUATEUR
+	IL_STATE_DJ_LOCKED
 } IL_State;
 
 typedef struct {
 	IL_State il_state;
-	unsigned int il_switch_state_time; // In ms.
+	unsigned long il_switch_state_time; // In ms.
+	unsigned long il_lsrh_blink_start_time; // In ms.
 } IL_Context;
 
 /*** IL local global variables ***/
@@ -69,8 +68,8 @@ static IL_Context il_ctx;
  */
 void IL_SetState(unsigned int il_state_mask) {
 	// Set all lights state.
-	GPIO_Write(&GPIO_LSDJ, (il_state_mask & (0b1 << IL_LSGR_BIT_INDEX)));
-	GPIO_Write(&GPIO_LSGR, (il_state_mask & (0b1 << IL_LSDJ_BIT_INDEX)));
+	GPIO_Write(&GPIO_LSDJ, (il_state_mask & (0b1 << IL_LSDJ_BIT_INDEX)));
+	GPIO_Write(&GPIO_LSGR, (il_state_mask & (0b1 << IL_LSGR_BIT_INDEX)));
 	GPIO_Write(&GPIO_LSS, (il_state_mask & (0b1 << IL_LSS_BIT_INDEX)));
 	GPIO_Write(&GPIO_LSCB, (il_state_mask & (0b1 << IL_LSCB_BIT_INDEX)));
 	GPIO_Write(&GPIO_LSP, (il_state_mask & (0b1 << IL_LSP_BIT_INDEX)));
@@ -100,6 +99,8 @@ void IL_Init(void) {
 	IL_SetState(0);
 	// Init context.
 	il_ctx.il_state = IL_STATE_OFF;
+	// Init global context.
+	lsmcu_ctx.lsmcu_lsrh_blink_request = 0;
 }
 
 /* MAIN TASK OF IL MODULE.
@@ -230,12 +231,36 @@ void IL_Task(void) {
 		}
 		break;
 	case IL_STATE_DJ_LOCKED:
+		// Manage LSGR, LSS and LSP.
+		GPIO_Write(&GPIO_LSGR, (lsmcu_ctx.lsmcu_rheostat_0 != 0));
+		GPIO_Write(&GPIO_LSS, ((lsmcu_ctx.lsmcu_rheostat_0 == 0) && (lsmcu_ctx.lsmcu_series_traction != 0)));
+		GPIO_Write(&GPIO_LSP, ((lsmcu_ctx.lsmcu_rheostat_0 == 0) && (lsmcu_ctx.lsmcu_series_traction == 0)));
+		// Manage LSRH.
+		if (lsmcu_ctx.lsmcu_rheostat_0 == 0) {
+			if ((lsmcu_ctx.lsmcu_lsrh_blink_request != 0) && (GPIO_Read(&GPIO_LSRH) != 0)) {
+				GPIO_Write(&GPIO_LSRH, 0);
+				il_ctx.il_lsrh_blink_start_time = TIM2_GetMs();
+			}
+			else {
+				if (TIM2_GetMs() > (il_ctx.il_lsrh_blink_start_time + IL_LSRH_BLINK_DURATION_MS)) {
+					// End blink.
+					GPIO_Write(&GPIO_LSRH, 1);
+					// Reset flag.
+					lsmcu_ctx.lsmcu_lsrh_blink_request = 0;
+				}
+			}
+		}
+		else {
+			GPIO_Write(&GPIO_LSRH, 0);
+		}
+		// Check ZBA.
 		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
 			// Turn all lights off.
 			IL_SetState(0);
 			il_ctx.il_state = IL_STATE_OFF;
 		}
 		else {
+			// Check DJ.
 			if (lsmcu_ctx.lsmcu_dj_closed == 0) {
 				// Come back to previous state.
 				IL_SetState(0b111111111);

@@ -62,12 +62,12 @@ int main(void) {
 	FPB_Init();
 	IL_Init();
 	KVB_Init();
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cp), &stepper_cp, &GPIO_MCP_1, &GPIO_MCP_2, 100, 3072, 20, 100);
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_re), &stepper_re, &GPIO_MRE_1, &GPIO_MRE_2, 100, 3072, 20, 100);
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cg), &stepper_cg, &GPIO_MCG_1, &GPIO_MCG_2, 100, 3072, 20, 100);
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cf1), &stepper_cf1, &GPIO_MCF1_1, &GPIO_MCF1_2, 60, 3072, 20, 100);
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cf2), &stepper_cf2, &GPIO_MCF2_1, &GPIO_MCF2_2, 60, 3072, 20, 100);
 	MANOS_Init();
+	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cp), &(lsmcu_ctx.lsmcu_stepper_cp), &GPIO_MCP_1, &GPIO_MCP_2, 100, 3072, 20, 100);
+	MANO_Init(&(lsmcu_ctx.lsmcu_mano_re), &(lsmcu_ctx.lsmcu_stepper_re), &GPIO_MRE_1, &GPIO_MRE_2, 100, 3072, 20, 100);
+	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cg), &(lsmcu_ctx.lsmcu_stepper_cg), &GPIO_MCG_1, &GPIO_MCG_2, 100, 3072, 20, 100);
+	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cf1), &(lsmcu_ctx.lsmcu_stepper_cf1), &GPIO_MCF1_1, &GPIO_MCF1_2, 60, 3072, 20, 100);
+	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cf2), &(lsmcu_ctx.lsmcu_stepper_cf2), &GPIO_MCF2_1, &GPIO_MCF2_2, 60, 3072, 20, 100);
 	MP_Init();
 	MPINV_Init();
 	PBL2_Init();
@@ -77,15 +77,6 @@ int main(void) {
 	ZBA_Init();
 	ZLFR_Init();
 	ZPT_Init();
-	// Init global context.
-	lsmcu_ctx.lsmcu_zba_closed = 0;
-	lsmcu_ctx.lsmcu_bl_unlocked = 0;
-	lsmcu_ctx.lsmcu_zpt_raised = 0;
-	lsmcu_ctx.lsmcu_dj_closed = 0;
-	lsmcu_ctx.lsmcu_dj_locked = 0;
-	lsmcu_ctx.lsmcu_compressor_on = 0;
-	lsmcu_ctx.lsmcu_speed_kmh = 0;
-	lsmcu_ctx.lsmcu_urgency = 0;
 	// Main loop.
 	while (1) {
 		// Peripherals tasks.
@@ -100,6 +91,7 @@ int main(void) {
 		FPB_Task();
 		IL_Task();
 		KVB_Task();
+		MANOS_ManagePower();
 		MP_Task();
 		MPINV_Task();
 		PBL2_Task();

@@ -210,8 +210,26 @@ void KVB_Init(void) {
 	kvb_ctx.lssf_blink_enable = 1;
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lval_blinking = 0;
+	// Init global context.
+	lsmcu_ctx.lsmcu_urgency = 0;
+}
+
+/* ENABLE KVB DISPLAY SWEEP TIMER.
+ * @param:	None.
+ * @return:	None.
+ */
+void KVB_StartSweepTimer(void) {
 	// Start sweep timer.
 	TIM6_Start();
+}
+
+/* DISABLE KVB DISPLAY SWEEP TIMER.
+ * @param:	None.
+ * @return:	None.
+ */
+void KVB_StopSweepTimer(void) {
+	// Stop sweep timer.
+	TIM6_Stop();
 }
 
 /* FILL KVB ASCII BUFFER FOR FUTURE DISPLAYING.

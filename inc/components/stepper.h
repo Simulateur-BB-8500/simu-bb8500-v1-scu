@@ -18,14 +18,6 @@ typedef struct {
 	volatile unsigned int stepper_current_step;
 } STEPPER_Context;
 
-/*** STEPPER global variables ***/
-
-STEPPER_Context stepper_cp;
-STEPPER_Context stepper_re;
-STEPPER_Context stepper_cg;
-STEPPER_Context stepper_cf1;
-STEPPER_Context stepper_cf2;
-
 /*** STEPPER functions ***/
 
 void STEPPER_Init(STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2);

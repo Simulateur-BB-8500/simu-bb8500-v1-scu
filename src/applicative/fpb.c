@@ -7,6 +7,7 @@
 
 #include "fpb.h"
 
+#include "common.h"
 #include "gpio.h"
 #include "lssgkcu.h"
 #include "mapping.h"
@@ -50,31 +51,34 @@ void FPB_SetVoltageMv(unsigned int fpb_voltage_mv) {
 void FPB_Task(void) {
 	// Update current state.
 	SW3_UpdateState(&fpb_ctx.fpb_sw3);
-	// Perform actions according to state.
-	switch (fpb_ctx.fpb_sw3.sw3_state) {
-	case SW3_BACK:
-		if (fpb_ctx.fpb_previous_state != SW3_BACK) {
-			// Backward.
-			LSSGKCU_Send(LSMCU_OUT_FPB_RELEASE);
+	// Check PBL2.
+	if (lsmcu_ctx.lsmcu_pbl2_on != 0) {
+		switch (fpb_ctx.fpb_sw3.sw3_state) {
+		case SW3_BACK:
+			if (fpb_ctx.fpb_previous_state != SW3_BACK) {
+				// Backward.
+				LSSGKCU_Send(LSMCU_OUT_FPB_RELEASE);
+			}
+			break;
+		case SW3_NEUTRAL:
+			if (fpb_ctx.fpb_previous_state != SW3_NEUTRAL) {
+				// Forward.
+				LSSGKCU_Send(LSMCU_OUT_FPB_NEUTRAL);
+			}
+			break;
+		case SW3_FRONT:
+			if (fpb_ctx.fpb_previous_state != SW3_FRONT) {
+				// Forward.
+				LSSGKCU_Send(LSMCU_OUT_FPB_APPLY);
+			}
+			break;
+		default:
+			// Unknown state.
+			break;
 		}
-		break;
-	case SW3_NEUTRAL:
-		if (fpb_ctx.fpb_previous_state != SW3_NEUTRAL) {
-			// Forward.
-			LSSGKCU_Send(LSMCU_OUT_FPB_NEUTRAL);
-		}
-		break;
-	case SW3_FRONT:
-		if (fpb_ctx.fpb_previous_state != SW3_FRONT) {
-			// Forward.
-			LSSGKCU_Send(LSMCU_OUT_FPB_APPLY);
-		}
-		break;
-	default:
-		// Unknown state.
-		break;
 	}
 	// Update previous state.
 	fpb_ctx.fpb_previous_state = fpb_ctx.fpb_sw3.sw3_state;
+
 }
 

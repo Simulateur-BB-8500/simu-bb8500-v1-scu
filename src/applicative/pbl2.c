@@ -13,16 +13,15 @@
 #include "mapping.h"
 #include "sw4.h"
 
-/*** PBL2 local structures ***/
+/*** PBL2 local macros ***/
 
-typedef struct {
-	SW4_Context pbl2_sw4;
-	SW4_State pbl2_previous_state;
-} PBL2_Context;
+#define PBL2_MIN_CP_PRESSURE_DECIBARS	50
+#define PBL2_ON_CG_PRESSURE_DECIBARS	35
+#define PBL2_ON_RE_PRESSURE_DECIBARS	35
 
 /*** PBL2 local global variables ***/
 
-static PBL2_Context pbl2_ctx;
+SW4_Context pbl2_sw4;
 
 /*** PBL2 functions ***/
 
@@ -32,8 +31,9 @@ static PBL2_Context pbl2_ctx;
  */
 void PBL2_Init(void) {
 	// Init GPIO.
-	SW4_Init(&pbl2_ctx.pbl2_sw4, &GPIO_PBL2, 500);
-	pbl2_ctx.pbl2_previous_state = SW4_P0;
+	SW4_Init(&pbl2_sw4, &GPIO_PBL2, 500);
+	// Init global context.
+	lsmcu_ctx.lsmcu_pbl2_on = 0;
 }
 
 /* UPDATE THE VOLTAGE READ ON PBL2 SELECTOR (CALLED BY ADC ROUTINE).
@@ -41,7 +41,7 @@ void PBL2_Init(void) {
  * @return:				None.
  */
 void PBL2_SetVoltageMv(unsigned int pbl2_voltage_mv) {
-	SW4_SetVoltageMv(&pbl2_ctx.pbl2_sw4, pbl2_voltage_mv);
+	SW4_SetVoltageMv(&pbl2_sw4, pbl2_voltage_mv);
 }
 
 /* MAIN ROUTINE OF PBL2 MODULE.
@@ -50,13 +50,21 @@ void PBL2_SetVoltageMv(unsigned int pbl2_voltage_mv) {
  */
 void PBL2_Task(void) {
 	// Update current state.
-	SW4_UpdateState(&pbl2_ctx.pbl2_sw4);
+	SW4_UpdateState(&pbl2_sw4);
 	// Perform actions according to state.
-	switch (pbl2_ctx.pbl2_sw4.sw4_state) {
+	switch (pbl2_sw4.sw4_state) {
 	case SW4_P0:
 		// Retrait.
-		if (pbl2_ctx.pbl2_previous_state != SW4_P0) {
+		if (lsmcu_ctx.lsmcu_pbl2_on != 0) {
+			// Send command on change.
 			LSSGKCU_Send(LSMCU_OUT_FPB_OFF);
+			// Empty CG and RE.
+			MANO_SetTarget(&lsmcu_ctx.lsmcu_mano_cg, 0);
+			MANO_StartNeedle(&lsmcu_ctx.lsmcu_mano_cg);
+			MANO_SetTarget(&lsmcu_ctx.lsmcu_mano_re, 0);
+			MANO_StartNeedle(&lsmcu_ctx.lsmcu_mano_re);
+			// Update global context.
+			lsmcu_ctx.lsmcu_pbl2_on = 0;
 		}
 		break;
 	case SW4_P1:
@@ -64,8 +72,16 @@ void PBL2_Task(void) {
 		break;
 	case SW4_P2:
 		// Service.
-		if (pbl2_ctx.pbl2_previous_state != SW4_P2) {
+		if ((lsmcu_ctx.lsmcu_pbl2_on == 0) && (MANO_GetPressure(&lsmcu_ctx.lsmcu_mano_cp) > PBL2_MIN_CP_PRESSURE_DECIBARS)) {
+			// Send command on change.
 			LSSGKCU_Send(LSMCU_OUT_FPB_ON);
+			// Start CG and RE manometers.
+			MANO_SetTarget(&lsmcu_ctx.lsmcu_mano_cg, PBL2_ON_CG_PRESSURE_DECIBARS);
+			MANO_StartNeedle(&lsmcu_ctx.lsmcu_mano_cg);
+			MANO_SetTarget(&lsmcu_ctx.lsmcu_mano_re, PBL2_ON_CG_PRESSURE_DECIBARS);
+			MANO_StartNeedle(&lsmcu_ctx.lsmcu_mano_re);
+			// Update global context.
+			lsmcu_ctx.lsmcu_pbl2_on = 1;
 		}
 		break;
 	case SW4_P3:
@@ -75,7 +91,5 @@ void PBL2_Task(void) {
 		// Unknown state.
 		break;
 	}
-	// Update previous state.
-	pbl2_ctx.pbl2_previous_state = pbl2_ctx.pbl2_sw4.sw4_state;
 }
 

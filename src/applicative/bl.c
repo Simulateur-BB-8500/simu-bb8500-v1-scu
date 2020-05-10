@@ -9,6 +9,7 @@
 
 #include "common.h"
 #include "gpio.h"
+#include "kvb.h"
 #include "lssgkcu.h"
 #include "mapping.h"
 #include "sw2.h"
@@ -41,7 +42,7 @@ static BL_Context bl_ctx;
  * @return:	None.
  */
 void BL_Init(void) {
-	// Init context.
+	// Init GPIOs.
 	SW2_Init(&bl_ctx.bl_zdv, &GPIO_BL_ZDV, 0, 100); // ZDV active low.
 	SW2_Init(&bl_ctx.bl_zdj, &GPIO_BL_ZDJ, 1, 100); // ZDJ active high.
 	SW2_Init(&bl_ctx.bl_zen, &GPIO_BL_ZEN, 1, 100); // ZEN active high.
@@ -54,6 +55,10 @@ void BL_Init(void) {
 	bl_ctx.bl_zfd_on = 0;
 	SW2_Init(&bl_ctx.bl_zpr, &GPIO_BL_ZPR, 0, 100); // ZFD active low.
 	bl_ctx.bl_zpr_on = 0;
+	// Init global context.
+	lsmcu_ctx.lsmcu_bl_unlocked = 0;
+	lsmcu_ctx.lsmcu_dj_closed = 0;
+	lsmcu_ctx.lsmcu_dj_locked = 0;
 }
 
 /* MAIN ROUTINE OF BL MODULE.
@@ -67,6 +72,7 @@ void BL_Task(void) {
 		// Send command on change.
 		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
 			LSSGKCU_Send(LSMCU_OUT_ZDV_ON);
+			KVB_StartSweepTimer();
 		}
 		lsmcu_ctx.lsmcu_bl_unlocked = 1;
 	}
@@ -74,6 +80,7 @@ void BL_Task(void) {
 		// Send command on change.
 		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
 			LSSGKCU_Send(LSMCU_OUT_ZDV_OFF);
+			KVB_StopSweepTimer();
 		}
 		lsmcu_ctx.lsmcu_bl_unlocked = 0;
 	}

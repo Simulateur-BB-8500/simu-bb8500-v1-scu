@@ -7,6 +7,7 @@
 
 #include "mano.h"
 
+#include "common.h"
 #include "mapping.h"
 #include "stepper.h"
 #include "tim.h"
@@ -14,6 +15,44 @@
 /*** MANO local macros ***/
 
 #define MANO_STEP_IT_PERIOD_MAX		1000	// 1000 * 100µs = 100ms.
+
+/*** MANO local functions ***/
+
+/* POWER MANOMETERS DRIVERS.
+ * @param:	None.
+ * @return:	None.
+ */
+void MANOS_PowerOn(void) {
+	// Turn step motors on.
+	GPIO_Write(&GPIO_ZMANOS, 1);
+	GPIO_Write(&GPIO_LED_RED, 1);
+	// Start timer.
+	TIM7_Start();
+}
+
+/* POWER MANOMETERS DRIVERS.
+ * @param:	None.
+ * @return:	None.
+ */
+void MANOS_PowerOff(void) {
+	// Turn step motors on.
+	GPIO_Write(&GPIO_ZMANOS, 0);
+	GPIO_Write(&GPIO_LED_RED, 0);
+	// Stop timer.
+	TIM7_Stop();
+}
+
+/* CHECK IF A GIVEN NEEDLE IS MOVING.
+ * @param:			None.
+ * @eturn moving:	'1' if the manometers needle is currently moving (target not reached), '0' otherwise.
+ */
+unsigned char MANO_NeedleIsMoving(MANO_Context* mano) {
+	unsigned char moving = 0;
+	if (((mano -> mano_stepper) -> stepper_current_step) != (mano -> mano_target_step)) {
+		moving = 1;
+	}
+	return moving;
+}
 
 /*** MANO functions ***/
 
@@ -26,26 +65,24 @@ void MANOS_Init(void) {
 	GPIO_Configure(&GPIO_ZMANOS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 }
 
-/* POWER MANOMETERS DRIVERS.
+/* CONTROL ZMANOS SIGNAL.
  * @param:	None.
  * @return:	None.
  */
-void MANOS_Enable(void) {
-	// Turn step motors on.
-	GPIO_Write(&GPIO_ZMANOS, 1);
-	// Start timer.
-	TIM7_Start();
-}
-
-/* POWER MANOMETERS DRIVERS.
- * @param:	None.
- * @return:	None.
- */
-void MANOS_Disable(void) {
-	// Turn step motors on.
-	GPIO_Write(&GPIO_ZMANOS, 0);
-	// Stop timer.
-	TIM7_Stop();
+void MANOS_ManagePower(void) {
+	// Check all manometers.
+	if ((MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_cp) == 0) &&
+		(MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_re) == 0) &&
+		(MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_cg) == 0) &&
+		(MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_cf1) == 0) &&
+		(MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_cf2) == 0)) {
+		// Turn manometers off.
+		MANOS_PowerOff();
+	}
+	else {
+		// Turn manometers on.
+		MANOS_PowerOn();
+	}
 }
 
 /* INIT MANOMETER.

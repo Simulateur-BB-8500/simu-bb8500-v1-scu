@@ -38,11 +38,13 @@ static ZPT_Context zpt_ctx;
  * @return:	None.
  */
 void ZPT_Init(void) {
-	// Init context.
+	// Init GPIOs.
 	SW4_Init(&zpt_ctx.zpt_sw4, &GPIO_ZPT, 500);
 	zpt_ctx.zpt_state = ZPT_STATE_0;
 	GPIO_Configure(&GPIO_VLG, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Write(&GPIO_VLG, 1);
+	// Init global context.
+	lsmcu_ctx.lsmcu_zpt_raised = 0;
 }
 
 /* UPDATE THE VOLTAGE READ ON ZPT SELECTOR (CALLED BY ADC ROUTINE).

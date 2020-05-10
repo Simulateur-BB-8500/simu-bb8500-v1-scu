@@ -28,6 +28,8 @@
 /*** KVB functions ***/
 
 void KVB_Init(void);
+void KVB_StartSweepTimer(void);
+void KVB_StopSweepTimer(void);
 void KVB_Display(unsigned char* display);
 void KVB_DisplayOff(void);
 void KVB_Sweep(void);

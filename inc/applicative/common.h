@@ -20,7 +20,16 @@ typedef struct {
 	unsigned char lsmcu_dj_locked;
 	unsigned char lsmcu_compressor_on;
 	unsigned char lsmcu_speed_kmh;
+	unsigned char lsmcu_rheostat_0;
+	unsigned char lsmcu_lsrh_blink_request;
+	unsigned char lsmcu_series_traction;
+	unsigned char lsmcu_pbl2_on;
 	unsigned char lsmcu_urgency;
+	STEPPER_Context lsmcu_stepper_cp;
+	STEPPER_Context lsmcu_stepper_re;
+	STEPPER_Context lsmcu_stepper_cg;
+	STEPPER_Context lsmcu_stepper_cf1;
+	STEPPER_Context lsmcu_stepper_cf2;
 	MANO_Context lsmcu_mano_cp;
 	MANO_Context lsmcu_mano_re;
 	MANO_Context lsmcu_mano_cg;
