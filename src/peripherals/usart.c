@@ -41,7 +41,7 @@ static USART_Context usart1_ctx;
  * @param:	None.
  * @return:	None.
  */
-void USART1_InterruptHandler(void) {
+void USART1_IRQHandler(void) {
 	// TX.
 	if (((USART1 -> ISR) & (0b1 << 7)) != 0) { // TXE='1'.
 		if ((usart1_ctx.tx_read_idx) != (usart1_ctx.tx_write_idx)) {

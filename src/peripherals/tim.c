@@ -22,7 +22,7 @@
  * @param: 	None.
  * @return: None.
  */
-void TIM6_DAC_InterruptHandler(void) {
+void TIM6_DAC_IRQHandler(void) {
 	// Clear flag.
 	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Perform KVB display sweep.
@@ -33,7 +33,7 @@ void TIM6_DAC_InterruptHandler(void) {
  * @param: 	None.
  * @return: None.
  */
-void TIM7_InterruptHandler(void) {
+void TIM7_IRQHandler(void) {
 	// Clear flag.
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Perform manometers needle control.
@@ -128,7 +128,7 @@ void TIM5_Stop(void) {
  * @return:				None.
  */
 void TIM5_SetDelayUs(unsigned int delay_us) {
-	TIM5 -> ARR = delay_us; // <delay_us> fronts @ 1MHz = <delay_us> µs.
+	TIM5 -> ARR = delay_us; // <delay_us> fronts @ 1MHz = <delay_us> ï¿½s.
 }
 
 /* GET TIM5 UPDATE EVENT FLAG.
@@ -203,7 +203,7 @@ void TIM7_Init(void) {
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 1ms.
 	TIM7 -> PSC = ((2 * RCC_PCLK1_KHZ) / 1000) - 1; // TIM7 input clock = (2*PCLK1)/((((2*PCLK1)/1000)-1)+1) = 1MHz.
-	TIM7 -> ARR = 100; // 100 fronts @ 1MHz = 100µs.
+	TIM7 -> ARR = 100; // 100 fronts @ 1MHz = 100ï¿½s.
 	// Generate event to update registers.
 	TIM7 -> EGR |= (0b1 << 0); // UG='1'.
 	// Enable interrupt.
