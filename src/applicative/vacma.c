@@ -7,8 +7,8 @@
 
 #include "vacma.h"
 
-#include "common.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
@@ -38,6 +38,10 @@ typedef struct {
 	VACMA_State vacma_state;
 	unsigned int vacma_switch_state_time; // In ms.
 } VACMA_Context;
+
+/*** VACMA external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** VACMA local global variables ***/
 

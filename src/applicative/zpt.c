@@ -7,8 +7,8 @@
 
 #include "zpt.h"
 
-#include "common.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "lssgkcu.h"
 #include "mapping.h"
 #include "sw4.h"
@@ -26,6 +26,10 @@ typedef struct {
 	SW4_Context zpt_sw4;
 	ZPT_State zpt_state;
 } ZPT_Context;
+
+/*** ZPT external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** ZPT local global variables ***/
 

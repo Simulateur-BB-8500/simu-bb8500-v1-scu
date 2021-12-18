@@ -8,6 +8,15 @@
 #include "stepper.h"
 
 #include "gpio.h"
+#include "mapping.h"
+
+/*** STEPPER local global variables ***/
+
+STEPPER_Context stepper_cp = {&GPIO_MCP_1, &GPIO_MCP_2, 0};
+STEPPER_Context stepper_re = {&GPIO_MRE_1, &GPIO_MRE_2, 0};
+STEPPER_Context stepper_cg = {&GPIO_MCG_1, &GPIO_MCG_2, 0};
+STEPPER_Context stepper_cf1 = {&GPIO_MCF1_1, &GPIO_MCF1_2, 0};
+STEPPER_Context stepper_cf2 = {&GPIO_MCF2_1, &GPIO_MCF2_2, 0};
 
 /*** STEPPER local functions ***/
 
@@ -44,18 +53,14 @@ void STEPPER_SingleStep(STEPPER_Context* stepper) {
 /*** STEPPER functions ***/
 
 /* INIT STEP MOTOR.
- * @param stepper:		Step motor to control.
- * @param stepper_cmd1:	GPIO attached to the motor pin 1.
- * @param stepper_cmd2:	GPIO attached to the motor pin 2.
- * @return:				None.
+ * @param stepper:	Step motor to init.
+ * @return:			None.
  */
-void STEPPER_Init(STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2) {
+void STEPPER_Init(STEPPER_Context* stepper) {
 	// Init GPIOs.
-	GPIO_Configure(stepper_cmd1, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(stepper_cmd2, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure((stepper -> stepper_cmd1), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure((stepper -> stepper_cmd2), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
-	stepper -> stepper_cmd1 = stepper_cmd1;
-	stepper -> stepper_cmd2 = stepper_cmd2;
 	stepper -> stepper_current_step = 0;
 }
 

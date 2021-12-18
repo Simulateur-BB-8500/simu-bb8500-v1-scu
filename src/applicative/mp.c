@@ -7,8 +7,8 @@
 
 #include "mp.h"
 
-#include "common.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "lssgkcu.h"
 #include "mapping.h"
 #include "sw2.h"
@@ -45,6 +45,10 @@ typedef struct {
 	unsigned char mp_gear_count;
 	unsigned long mp_gear_switch_next_time;
 } MP_Context;
+
+/*** MP external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** MP local global variables ***/
 

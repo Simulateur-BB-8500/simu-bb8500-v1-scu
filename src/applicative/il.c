@@ -7,8 +7,8 @@
 
 #include "il.h"
 
-#include "common.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "mapping.h"
 #include "tim.h"
 
@@ -55,6 +55,10 @@ typedef struct {
 	unsigned long il_switch_state_time; // In ms.
 	unsigned long il_lsrh_blink_start_time; // In ms.
 } IL_Context;
+
+/*** IL external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** IL local global variables ***/
 

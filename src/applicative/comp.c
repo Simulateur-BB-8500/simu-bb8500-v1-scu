@@ -7,7 +7,7 @@
 
 #include "comp.h"
 
-#include "common.h"
+#include "lsmcu.h"
 #include "lssgkcu.h"
 #include "mano.h"
 #include "mapping.h"
@@ -37,6 +37,10 @@ typedef struct {
 	COMP_State comp_state;
 	unsigned char comp_sound_auto_off; // Set when off command is not required.
 } COMP_Context;
+
+/*** COMP external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** COMP local global variables ***/
 
@@ -80,8 +84,8 @@ void COMP_Task(void) {
 			if (comp_ctx.comp_zcd.sw2_state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSSGKCU_Send(LSMCU_OUT_COMP_DIRECT_ON);
-				MANO_SetTarget(&(lsmcu_ctx.lsmcu_mano_cp), COMP_CP_MAXIMUM_VALUE_DECIBARS);
-				MANO_StartNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+				MANO_SetTarget(lsmcu_ctx.lsmcu_mano_cp, COMP_CP_MAXIMUM_VALUE_DECIBARS);
+				MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_cp);
 				// Compute next state.
 				comp_ctx.comp_state = COMP_STATE_DIRECT;
 
@@ -89,9 +93,9 @@ void COMP_Task(void) {
 			else {
 				if (comp_ctx.comp_zca.sw2_state == SW2_ON) {
 					// Check CP value.
-					if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) < COMP_CP_HYSTERESIS_LOW_DECIBARS) {
+					if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) < COMP_CP_HYSTERESIS_LOW_DECIBARS) {
 						// Play accurate sound.
-						if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) > (COMP_CP_HYSTERESIS_LOW_DECIBARS - COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
+						if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) > (COMP_CP_HYSTERESIS_LOW_DECIBARS - COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
 							// Play minimum regulation sound.
 							LSSGKCU_Send(LSMCU_OUT_COMP_AUTO_REG_MIN_ON);
 							comp_ctx.comp_sound_auto_off = 1;
@@ -99,7 +103,7 @@ void COMP_Task(void) {
 						else {
 							// Play maximum regulation sound.
 							LSSGKCU_Send(LSMCU_OUT_COMP_AUTO_REG_MAX_ON);
-							if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) < COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
+							if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) < COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
 								comp_ctx.comp_sound_auto_off = 1;
 							}
 							else {
@@ -107,14 +111,14 @@ void COMP_Task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANO_SetTarget(&(lsmcu_ctx.lsmcu_mano_cp), COMP_CP_MAXIMUM_VALUE_DECIBARS);
-						MANO_StartNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+						MANO_SetTarget(lsmcu_ctx.lsmcu_mano_cp, COMP_CP_MAXIMUM_VALUE_DECIBARS);
+						MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_cp);
 						// Compute next state.
 						comp_ctx.comp_state = COMP_STATE_AUTO_ON;
 					}
 					else {
 						// Auto mode in off zone.
-						MANO_StopNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+						MANO_StopNeedle(lsmcu_ctx.lsmcu_mano_cp);
 						// Compute next state.
 						comp_ctx.comp_state = COMP_STATE_AUTO_OFF;
 					}
@@ -129,7 +133,7 @@ void COMP_Task(void) {
 		if (lsmcu_ctx.lsmcu_dj_locked == 0) {
 			// Stop compressor.
 			LSSGKCU_Send(LSMCU_OUT_COMP_OFF);
-			MANO_StopNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+			MANO_StopNeedle(lsmcu_ctx.lsmcu_mano_cp);
 			// Compute next state.
 			comp_ctx.comp_state = COMP_STATE_OFF;
 		}
@@ -138,8 +142,8 @@ void COMP_Task(void) {
 			if (comp_ctx.comp_zcd.sw2_state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSSGKCU_Send(LSMCU_OUT_COMP_DIRECT_ON);
-				MANO_SetTarget(&(lsmcu_ctx.lsmcu_mano_cp), COMP_CP_MAXIMUM_VALUE_DECIBARS);
-				MANO_StartNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+				MANO_SetTarget(lsmcu_ctx.lsmcu_mano_cp, COMP_CP_MAXIMUM_VALUE_DECIBARS);
+				MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_cp);
 				// Compute next state.
 				comp_ctx.comp_state = COMP_STATE_DIRECT;
 
@@ -147,12 +151,12 @@ void COMP_Task(void) {
 			else {
 				if (comp_ctx.comp_zca.sw2_state == SW2_ON) {
 					// Perform hysterersis.
-					if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) > COMP_CP_HYSTERESIS_HIGH_DECIBARS) {
+					if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) > COMP_CP_HYSTERESIS_HIGH_DECIBARS) {
 						// Stop regulation.
 						if (comp_ctx.comp_sound_auto_off == 0) {
 							LSSGKCU_Send(LSMCU_OUT_COMP_OFF);
 						}
-						MANO_StopNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+						MANO_StopNeedle(lsmcu_ctx.lsmcu_mano_cp);
 						// Compute next state.
 						comp_ctx.comp_state = COMP_STATE_AUTO_OFF;
 					}
@@ -160,7 +164,7 @@ void COMP_Task(void) {
 				else {
 					// Compressor off.
 					LSSGKCU_Send(LSMCU_OUT_COMP_OFF);
-					MANO_StopNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+					MANO_StopNeedle(lsmcu_ctx.lsmcu_mano_cp);
 					// Compute next state.
 					comp_ctx.comp_state = COMP_STATE_OFF;
 				}
@@ -180,8 +184,8 @@ void COMP_Task(void) {
 			if (comp_ctx.comp_zcd.sw2_state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSSGKCU_Send(LSMCU_OUT_COMP_DIRECT_ON);
-				MANO_SetTarget(&(lsmcu_ctx.lsmcu_mano_cp), COMP_CP_MAXIMUM_VALUE_DECIBARS);
-				MANO_StartNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+				MANO_SetTarget(lsmcu_ctx.lsmcu_mano_cp, COMP_CP_MAXIMUM_VALUE_DECIBARS);
+				MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_cp);
 				// Compute next state.
 				comp_ctx.comp_state = COMP_STATE_DIRECT;
 
@@ -189,9 +193,9 @@ void COMP_Task(void) {
 			else {
 				if (comp_ctx.comp_zca.sw2_state == SW2_ON) {
 					// Check CP value.
-					if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) < COMP_CP_HYSTERESIS_LOW_DECIBARS) {
+					if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) < COMP_CP_HYSTERESIS_LOW_DECIBARS) {
 						// Play accurate sound.
-						if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) > (COMP_CP_HYSTERESIS_LOW_DECIBARS - COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
+						if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) > (COMP_CP_HYSTERESIS_LOW_DECIBARS - COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
 							// Play minimum regulation sound.
 							LSSGKCU_Send(LSMCU_OUT_COMP_AUTO_REG_MIN_ON);
 							comp_ctx.comp_sound_auto_off = 1;
@@ -199,7 +203,7 @@ void COMP_Task(void) {
 						else {
 							// Play maximum regulation sound.
 							LSSGKCU_Send(LSMCU_OUT_COMP_AUTO_REG_MAX_ON);
-							if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) < COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
+							if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) < COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
 								comp_ctx.comp_sound_auto_off = 1;
 							}
 							else {
@@ -207,8 +211,8 @@ void COMP_Task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANO_SetTarget(&(lsmcu_ctx.lsmcu_mano_cp), COMP_CP_MAXIMUM_VALUE_DECIBARS);
-						MANO_StartNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+						MANO_SetTarget(lsmcu_ctx.lsmcu_mano_cp, COMP_CP_MAXIMUM_VALUE_DECIBARS);
+						MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_cp);
 						// Compute next state.
 						comp_ctx.comp_state = COMP_STATE_AUTO_ON;
 					}
@@ -227,7 +231,7 @@ void COMP_Task(void) {
 		if (lsmcu_ctx.lsmcu_dj_locked == 0) {
 			// Stop compressor.
 			LSSGKCU_Send(LSMCU_OUT_COMP_OFF);
-			MANO_StopNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+			MANO_StopNeedle(lsmcu_ctx.lsmcu_mano_cp);
 			// Compute next state.
 			comp_ctx.comp_state = COMP_STATE_OFF;
 		}
@@ -237,9 +241,9 @@ void COMP_Task(void) {
 				// Check ZCA.
 				if (comp_ctx.comp_zca.sw2_state == SW2_ON) {
 					// Check CP value.
-					if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) < COMP_CP_HYSTERESIS_LOW_DECIBARS) {
+					if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) < COMP_CP_HYSTERESIS_LOW_DECIBARS) {
 						// Play accurate sound.
-						if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) > (COMP_CP_HYSTERESIS_LOW_DECIBARS - COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
+						if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) > (COMP_CP_HYSTERESIS_LOW_DECIBARS - COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
 							// Play minimum regulation sound.
 							LSSGKCU_Send(LSMCU_OUT_COMP_AUTO_REG_MIN_ON);
 							comp_ctx.comp_sound_auto_off = 1;
@@ -247,7 +251,7 @@ void COMP_Task(void) {
 						else {
 							// Play maximum regulation sound.
 							LSSGKCU_Send(LSMCU_OUT_COMP_AUTO_REG_MAX_ON);
-							if (MANO_GetPressure(&(lsmcu_ctx.lsmcu_mano_cp)) < COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
+							if (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) < COMP_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
 								comp_ctx.comp_sound_auto_off = 1;
 							}
 							else {
@@ -255,14 +259,14 @@ void COMP_Task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANO_SetTarget(&(lsmcu_ctx.lsmcu_mano_cp), COMP_CP_MAXIMUM_VALUE_DECIBARS);
-						MANO_StartNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+						MANO_SetTarget(lsmcu_ctx.lsmcu_mano_cp, COMP_CP_MAXIMUM_VALUE_DECIBARS);
+						MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_cp);
 						// Compute next state.
 						comp_ctx.comp_state = COMP_STATE_AUTO_ON;
 					}
 					else {
 						// Auto mode in off zone.
-						MANO_StopNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+						MANO_StopNeedle(lsmcu_ctx.lsmcu_mano_cp);
 						// Compute next state.
 						comp_ctx.comp_state = COMP_STATE_AUTO_OFF;
 					}
@@ -270,7 +274,7 @@ void COMP_Task(void) {
 				else {
 					// Stop compressor.
 					LSSGKCU_Send(LSMCU_OUT_COMP_OFF);
-					MANO_StopNeedle(&(lsmcu_ctx.lsmcu_mano_cp));
+					MANO_StopNeedle(lsmcu_ctx.lsmcu_mano_cp);
 					// Compute next state.
 					comp_ctx.comp_state = COMP_STATE_OFF;
 				}

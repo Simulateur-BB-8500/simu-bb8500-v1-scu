@@ -7,8 +7,8 @@
 
 #include "fpb.h"
 
-#include "common.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "lssgkcu.h"
 #include "mapping.h"
 #include "sw3.h"
@@ -19,6 +19,10 @@ typedef struct {
 	SW3_Context fpb_sw3;
 	SW3_State fpb_previous_state;
 } FPB_Context;
+
+/*** FPB external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** FPB local global variables ***/
 

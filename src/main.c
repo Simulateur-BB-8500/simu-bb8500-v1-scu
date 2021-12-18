@@ -6,6 +6,7 @@
  */
 
 // Peripherals.
+#include <lsmcu.h>
 #include "adc.h"
 #include "dac.h"
 #include "gpio.h"
@@ -14,7 +15,6 @@
 #include "usart.h"
 // Applicative.
 #include "bl.h"
-#include "common.h"
 #include "comp.h"
 #include "dep.h"
 #include "fpb.h"
@@ -34,7 +34,11 @@
 #include "zlfr.h"
 #include "zpt.h"
 
-/*** Main global variables ***/
+/*** MAIN global variables ***/
+
+LSMCU_Context lsmcu_ctx;
+
+/*** MAIN functions ***/
 
 /* MAIN FUNCTION.
  * @param: 	None.
@@ -63,11 +67,6 @@ int main(void) {
 	IL_Init();
 	KVB_Init();
 	MANOS_Init();
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cp), &(lsmcu_ctx.lsmcu_stepper_cp), &GPIO_MCP_1, &GPIO_MCP_2, 100, 3072, 20, 100);
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_re), &(lsmcu_ctx.lsmcu_stepper_re), &GPIO_MRE_1, &GPIO_MRE_2, 100, 3072, 20, 100);
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cg), &(lsmcu_ctx.lsmcu_stepper_cg), &GPIO_MCG_1, &GPIO_MCG_2, 100, 3072, 20, 100);
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cf1), &(lsmcu_ctx.lsmcu_stepper_cf1), &GPIO_MCF1_1, &GPIO_MCF1_2, 60, 3072, 20, 100);
-	MANO_Init(&(lsmcu_ctx.lsmcu_mano_cf2), &(lsmcu_ctx.lsmcu_stepper_cf2), &GPIO_MCF2_1, &GPIO_MCF2_2, 60, 3072, 20, 100);
 	MP_Init();
 	MPINV_Init();
 	PBL2_Init();

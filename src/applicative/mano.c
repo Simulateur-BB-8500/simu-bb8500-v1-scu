@@ -7,7 +7,7 @@
 
 #include "mano.h"
 
-#include "common.h"
+#include "lsmcu.h"
 #include "mapping.h"
 #include "stepper.h"
 #include "tim.h"
@@ -16,13 +16,30 @@
 
 #define MANO_STEP_IT_PERIOD_MAX		1000	// 1000 * 100µs = 100ms.
 
+/*** MANO external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
+extern STEPPER_Context stepper_cp;
+extern STEPPER_Context stepper_re;
+extern STEPPER_Context stepper_cg;
+extern STEPPER_Context stepper_cf1;
+extern STEPPER_Context stepper_cf2;
+
+/*** MANO local global variables ***/
+
+MANO_Context mano_cp = {&stepper_cp, 100, 3072, 20, 100, 0, 0, 0, 0, 0};
+MANO_Context mano_re = {&stepper_re, 100, 3072, 20, 100, 0, 0, 0, 0, 0};
+MANO_Context mano_cg = {&stepper_cg, 100, 3072, 20, 100, 0, 0, 0, 0, 0};
+MANO_Context mano_cf1 = {&stepper_cf1, 60, 3072, 20, 100, 0, 0, 0, 0, 0};
+MANO_Context mano_cf2 = {&stepper_cf2, 60, 3072, 20, 100, 0, 0, 0, 0, 0};
+
 /*** MANO local functions ***/
 
 /* POWER MANOMETERS DRIVERS.
  * @param:	None.
  * @return:	None.
  */
-void MANOS_PowerOn(void) {
+static void MANOS_PowerOn(void) {
 	// Turn step motors on.
 	GPIO_Write(&GPIO_ZMANOS, 1);
 	GPIO_Write(&GPIO_LED_RED, 1);
@@ -34,7 +51,7 @@ void MANOS_PowerOn(void) {
  * @param:	None.
  * @return:	None.
  */
-void MANOS_PowerOff(void) {
+static void MANOS_PowerOff(void) {
 	// Turn step motors on.
 	GPIO_Write(&GPIO_ZMANOS, 0);
 	GPIO_Write(&GPIO_LED_RED, 0);
@@ -46,7 +63,7 @@ void MANOS_PowerOff(void) {
  * @param:			None.
  * @eturn moving:	'1' if the manometers needle is currently moving (target not reached), '0' otherwise.
  */
-unsigned char MANO_NeedleIsMoving(MANO_Context* mano) {
+static unsigned char MANO_NeedleIsMoving(MANO_Context* mano) {
 	unsigned char moving = 0;
 	if (((mano -> mano_stepper) -> stepper_current_step) != (mano -> mano_target_step)) {
 		moving = 1;
@@ -63,6 +80,18 @@ unsigned char MANO_NeedleIsMoving(MANO_Context* mano) {
 void MANOS_Init(void) {
 	// Init GPIOs.
 	GPIO_Configure(&GPIO_ZMANOS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	// Init step motors.
+	STEPPER_Init(mano_cp.mano_stepper);
+	STEPPER_Init(mano_cg.mano_stepper);
+	STEPPER_Init(mano_re.mano_stepper);
+	STEPPER_Init(mano_cf1.mano_stepper);
+	STEPPER_Init(mano_cf2.mano_stepper);
+	// Link to global context.
+	lsmcu_ctx.lsmcu_mano_cp = &mano_cp;
+	lsmcu_ctx.lsmcu_mano_re = &mano_re;
+	lsmcu_ctx.lsmcu_mano_cg = &mano_cg;
+	lsmcu_ctx.lsmcu_mano_cf1 = &mano_cf1;
+	lsmcu_ctx.lsmcu_mano_cf2 = &mano_cf1;
 }
 
 /* CONTROL ZMANOS SIGNAL.
@@ -71,11 +100,11 @@ void MANOS_Init(void) {
  */
 void MANOS_ManagePower(void) {
 	// Check all manometers.
-	if ((MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_cp) == 0) &&
-		(MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_re) == 0) &&
-		(MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_cg) == 0) &&
-		(MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_cf1) == 0) &&
-		(MANO_NeedleIsMoving(&lsmcu_ctx.lsmcu_mano_cf2) == 0)) {
+	if ((MANO_NeedleIsMoving(&mano_cp) == 0) &&
+		(MANO_NeedleIsMoving(&mano_re) == 0) &&
+		(MANO_NeedleIsMoving(&mano_cg) == 0) &&
+		(MANO_NeedleIsMoving(&mano_cf1) == 0) &&
+		(MANO_NeedleIsMoving(&mano_cf2) == 0)) {
 		// Turn manometers off.
 		MANOS_PowerOff();
 	}
@@ -83,33 +112,6 @@ void MANOS_ManagePower(void) {
 		// Turn manometers on.
 		MANOS_PowerOn();
 	}
-}
-
-/* INIT MANOMETER.
- * @param mano:						Manometer to configure.
- * @param stepper:					Step motor attached to the needle.
- * @param stepper_cmd1:				Step motor GPIO1.
- * @param stepper_cmd2:				Step motor GPIO2.
- * @param pressure_max_decibars:	Maximum pressure displayed on the manometers (in decibars).
- * @param pressure_max_steps:		Number of motor steps required to reach the maximum pressure.
- * @param needle_inertia_steps:		Number of steps used to perform needle inertia.
- * @param needle_speed_max:			Minimum step IT period (expressed in hundreds of µs).
- * @return:							None.
- */
-void MANO_Init(MANO_Context* mano, STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2, unsigned int pressure_max_decibars, unsigned int pressure_max_steps, unsigned int needle_inertia_steps, unsigned int needle_speed_max) {
-	// Init GPIOs.
-	STEPPER_Init(stepper, stepper_cmd1, stepper_cmd2);
-	// Init context.
-	mano -> mano_pressure_max_decibars = pressure_max_decibars;
-	mano -> mano_pressure_max_steps = pressure_max_steps;
-	mano -> mano_needle_inertia_steps = needle_inertia_steps;
-	mano -> mano_enable = 0;
-	mano -> mano_stepper = stepper;
-	mano -> mano_start_step = 0;
-	mano -> mano_target_step = 0;
-	mano -> mano_step_it_count = 0;
-	mano -> mano_step_it_period = 0;
-	mano -> mano_step_it_period_min = needle_speed_max;
 }
 
 /* UPDATE PRESSURE TARGET.

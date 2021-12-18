@@ -7,9 +7,9 @@
 
 #include "bl.h"
 
-#include "common.h"
 #include "gpio.h"
 #include "kvb.h"
+#include "lsmcu.h"
 #include "lssgkcu.h"
 #include "mapping.h"
 #include "sw2.h"
@@ -30,6 +30,10 @@ typedef struct {
 	SW2_Context bl_zpr;
 	unsigned char bl_zpr_on;
 } BL_Context;
+
+/*** BL external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** BL local global variables ***/
 

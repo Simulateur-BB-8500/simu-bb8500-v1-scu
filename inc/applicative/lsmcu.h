@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef LSMCU_H
+#define LSMCU_H
 
 #include "mano.h"
 
-/*** COMMON structures ***/
+/*** LSMCU structure ***/
 
 typedef struct {
 	unsigned char lsmcu_zba_closed;
@@ -25,20 +25,11 @@ typedef struct {
 	unsigned char lsmcu_series_traction;
 	unsigned char lsmcu_pbl2_on;
 	unsigned char lsmcu_urgency;
-	STEPPER_Context lsmcu_stepper_cp;
-	STEPPER_Context lsmcu_stepper_re;
-	STEPPER_Context lsmcu_stepper_cg;
-	STEPPER_Context lsmcu_stepper_cf1;
-	STEPPER_Context lsmcu_stepper_cf2;
-	MANO_Context lsmcu_mano_cp;
-	MANO_Context lsmcu_mano_re;
-	MANO_Context lsmcu_mano_cg;
-	MANO_Context lsmcu_mano_cf1;
-	MANO_Context lsmcu_mano_cf2;
+	MANO_Context* lsmcu_mano_cp;
+	MANO_Context* lsmcu_mano_re;
+	MANO_Context* lsmcu_mano_cg;
+	MANO_Context* lsmcu_mano_cf1;
+	MANO_Context* lsmcu_mano_cf2;
 } LSMCU_Context;
 
-/*** COMMMON global variables ***/
-
-LSMCU_Context lsmcu_ctx;
-
-#endif /* COMMON_H */
+#endif /* LSMCU_H */

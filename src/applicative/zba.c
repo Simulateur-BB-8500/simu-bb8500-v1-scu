@@ -7,10 +7,14 @@
 
 #include "zba.h"
 
-#include "common.h"
+#include "lsmcu.h"
 #include "lssgkcu.h"
 #include "mapping.h"
 #include "sw2.h"
+
+/*** ZBA external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** ZBA local global variables ***/
 

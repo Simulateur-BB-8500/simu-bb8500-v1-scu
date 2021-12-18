@@ -5,9 +5,9 @@
  *      Author: Ludo
  */
 
+#include <lsmcu.h>
 #include "tim.h"
 
-#include "common.h"
 #include "kvb.h"
 #include "mano.h"
 #include "mapping.h"
@@ -15,6 +15,10 @@
 #include "rcc.h"
 #include "rcc_reg.h"
 #include "tim_reg.h"
+
+/*** TIM external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** TIM local functions ***/
 
@@ -37,11 +41,11 @@ void TIM7_IRQHandler(void) {
 	// Clear flag.
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Perform manometers needle control.
-	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_cp));
-	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_re));
-	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_cg));
-	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_cf1));
-	MANO_NeedleTask(&(lsmcu_ctx.lsmcu_mano_cf2));
+	MANO_NeedleTask(lsmcu_ctx.lsmcu_mano_cp);
+	MANO_NeedleTask(lsmcu_ctx.lsmcu_mano_re);
+	MANO_NeedleTask(lsmcu_ctx.lsmcu_mano_cg);
+	MANO_NeedleTask(lsmcu_ctx.lsmcu_mano_cf1);
+	MANO_NeedleTask(lsmcu_ctx.lsmcu_mano_cf2);
 }
 
 /*** TIM functions ***/

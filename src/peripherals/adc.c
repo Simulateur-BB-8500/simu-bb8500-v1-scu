@@ -8,10 +8,10 @@
 #include "adc.h"
 
 #include "adc_reg.h"
-#include "common.h"
 #include "fpb.h"
 #include "fd.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "mapping.h"
 #include "mpinv.h"
 #include "pbl2.h"
@@ -48,6 +48,10 @@ typedef enum {
 	ADC_STATE_READ_FD,
 	ADC_STATE_READ_AM
 } ADC_State;
+
+/*** ADC external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** ADC local global variables ***/
 

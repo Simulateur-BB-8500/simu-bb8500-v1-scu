@@ -7,9 +7,9 @@
 
 #include "lssgkcu.h"
 
-#include "common.h"
 #include "kvb.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "mapping.h"
 #include "tch.h"
 #include "usart.h"
@@ -25,6 +25,10 @@ typedef struct {
 	unsigned int rx_write_idx;
 	unsigned int rx_read_idx;
 } LSSGKCU_Context;
+
+/*** LSSGKCU external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** LSSGKCU local global variables ***/
 

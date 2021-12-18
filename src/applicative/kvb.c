@@ -7,8 +7,8 @@
 
 #include "kvb.h"
 
-#include "common.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "mapping.h"
 #include "tim.h"
 
@@ -38,6 +38,10 @@ typedef struct KVB_Context {
 	unsigned char lval_blinking;
 	unsigned char lssf_blink_enable;
 } KVB_Context;
+
+/*** KVB external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** KVB local global variables ***/
 

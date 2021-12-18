@@ -7,8 +7,8 @@
 
 #include "dep.h"
 
-#include "common.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
@@ -34,6 +34,10 @@ typedef struct {
 	DEP_State dep_state;
 	unsigned int dep_switch_state_time; // In ms.
 } DEP_Context;
+
+/*** DEP external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** DEP local global variables ***/
 

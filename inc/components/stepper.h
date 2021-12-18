@@ -20,7 +20,7 @@ typedef struct {
 
 /*** STEPPER functions ***/
 
-void STEPPER_Init(STEPPER_Context* stepper, const GPIO* stepper_cmd1, const GPIO* stepper_cmd2);
+void STEPPER_Init(STEPPER_Context* stepper);
 void STEPPER_Up(STEPPER_Context* stepper);
 void STEPPER_Down(STEPPER_Context* stepper);
 

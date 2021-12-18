@@ -7,7 +7,7 @@
 
 #include "tch.h"
 
-#include "common.h"
+#include "lsmcu.h"
 #include "mapping.h"
 #include "tim.h"
 
@@ -28,6 +28,10 @@ typedef enum {
 	TCH_STATE_STEP5,
 	TCH_STATE_STEP6,
 } TCH_State;
+
+/*** TCH external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** TCH local global variables ***/
 

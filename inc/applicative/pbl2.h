@@ -8,8 +8,6 @@
 #ifndef PBL2_H
 #define PBL2_H
 
-#include "common.h"
-
 /*** PBL2 functions ***/
 
 void PBL2_Init(void);
