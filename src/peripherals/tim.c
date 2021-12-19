@@ -41,11 +41,11 @@ void TIM7_IRQHandler(void) {
 	// Clear flag.
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Perform manometers needle control.
-	MANOMETER_NeedleTask(lsmcu_ctx.lsmcu_manometer_cp);
-	MANOMETER_NeedleTask(lsmcu_ctx.lsmcu_manometer_re);
-	MANOMETER_NeedleTask(lsmcu_ctx.lsmcu_manometer_cg);
-	MANOMETER_NeedleTask(lsmcu_ctx.lsmcu_manometer_cf1);
-	MANOMETER_NeedleTask(lsmcu_ctx.lsmcu_manometer_cf2);
+	MANOMETER_NeedleTask(lsmcu_ctx.manometer_cp);
+	MANOMETER_NeedleTask(lsmcu_ctx.manometer_re);
+	MANOMETER_NeedleTask(lsmcu_ctx.manometer_cg);
+	MANOMETER_NeedleTask(lsmcu_ctx.manometer_cf1);
+	MANOMETER_NeedleTask(lsmcu_ctx.manometer_cf2);
 }
 
 /*** TIM functions ***/

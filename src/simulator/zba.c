@@ -30,7 +30,7 @@ void ZBA_Init(void) {
 	// Init GPIO.
 	SW2_Init(&zba, &GPIO_ZBA, 1, 100); // ZBA active high (+3.3V supply present).
 	// Init global context.
-	lsmcu_ctx.lsmcu_zba_closed = 0;
+	lsmcu_ctx.zba_closed = 0;
 }
 
 /* MAIN TASK OF ZBA MODULE.
@@ -40,18 +40,18 @@ void ZBA_Init(void) {
 void ZBA_Task(void) {
 	// Update ZBA state.
 	SW2_UpdateState(&zba);
-	if (zba.sw2_state == SW2_ON) {
+	if (zba.state == SW2_ON) {
 		// Send command on change.
-		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
+		if (lsmcu_ctx.zba_closed == 0) {
 			LSSGIU_Send(LSMCU_OUT_ZBA_ON);
 		}
-		lsmcu_ctx.lsmcu_zba_closed = 1;
+		lsmcu_ctx.zba_closed = 1;
 	}
 	else {
 		// Send command on change.
-		if (lsmcu_ctx.lsmcu_zba_closed != 0) {
+		if (lsmcu_ctx.zba_closed != 0) {
 			LSSGIU_Send(LSMCU_OUT_ZBA_OFF);
 		}
-		lsmcu_ctx.lsmcu_zba_closed = 0;
+		lsmcu_ctx.zba_closed = 0;
 	}
 }

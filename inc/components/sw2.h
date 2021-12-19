@@ -28,17 +28,17 @@ typedef enum {
 
 // SW2 structure.
 typedef struct {
-	const GPIO* sw2_gpio;
-	unsigned char sw2_active_state; // Depends on switch wiring.
-	SW2_InternalState sw2_internal_state; // Current state in SW2 state machine.
-	SW2_State sw2_state; // State after anti-bouncing (used in higher levels).
-	unsigned int sw2_debouncing_ms; // Delay before validating ON/OFF state (in ms).
-	unsigned int sw2_confirm_start_time;
+	const GPIO* gpio;
+	unsigned char active_state; // Depends on switch wiring.
+	SW2_InternalState internal_state; // Current state in SW2 state machine.
+	SW2_State state; // State after anti-bouncing (used in higher levels).
+	unsigned int debouncing_ms; // Delay before validating ON/OFF state (in ms).
+	unsigned int confirm_start_time;
 } SW2_Context;
 
 /*** 2-poles switch functions ***/
 
-void SW2_Init(SW2_Context* sw2, const GPIO* sw2_gpio, unsigned char sw2_active_state, unsigned int sw2_debouncing_ms);
+void SW2_Init(SW2_Context* sw2, const GPIO* gpio, unsigned char active_state, unsigned int debouncing_ms);
 void SW2_UpdateState(SW2_Context* sw2);
 
 #endif /* SW2_H */

@@ -135,7 +135,7 @@ void ADC1_Task(void) {
 	switch (adc_state) {
 	case ADC_STATE_OFF:
 		// Check ZBA.
-		if (lsmcu_ctx.lsmcu_zba_closed != 0) {
+		if (lsmcu_ctx.zba_closed != 0) {
 			// Start first conversion.
 			ADC1_SetChannel(ADC_CHANNEL_ZPT);
 			ADC1_StartConversion();

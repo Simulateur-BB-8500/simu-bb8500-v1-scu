@@ -215,7 +215,7 @@ void KVB_Init(void) {
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lval_blinking = 0;
 	// Init global context.
-	lsmcu_ctx.lsmcu_urgency = 0;
+	lsmcu_ctx.urgency = 0;
 }
 
 /* ENABLE KVB DISPLAY SWEEP TIMER.

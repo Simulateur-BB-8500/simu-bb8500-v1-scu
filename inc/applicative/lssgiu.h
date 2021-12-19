@@ -125,8 +125,8 @@ typedef enum {
 /*** LSSGIU functions ***/
 
 void LSSGIU_Init(void);
-void LSSGIU_FillRxBuffer(unsigned char at_cmd);
-void LSSGIU_Send(unsigned char at_cmd);
+void LSSGIU_FillRxBuffer(unsigned char ls_cmd);
+void LSSGIU_Send(unsigned char ls_cmd);
 void LSSGIU_Task(void);
 
 #endif /* LSSGIU_H */

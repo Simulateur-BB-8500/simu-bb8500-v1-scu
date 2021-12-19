@@ -41,14 +41,14 @@ static LSSGIU_Context lssgiu_ctx;
  * @return: None.
  */
 void LSSGIU_Decode(void) {
-	unsigned char lssgiu_command = lssgiu_ctx.rx_buf[lssgiu_ctx.rx_read_idx];
-	if (lssgiu_command <= TCH_SPEED_MAX_KMH) {
+	unsigned char ls_cmd = lssgiu_ctx.rx_buf[lssgiu_ctx.rx_read_idx];
+	if (ls_cmd <= TCH_SPEED_MAX_KMH) {
 		// Save speed in main context.
-		lsmcu_ctx.lsmcu_speed_kmh = lssgiu_command;
+		lsmcu_ctx.speed_kmh = ls_cmd;
 	}
 	else {
 		// Decode LSSGIU command.
-		switch(lssgiu_command) {
+		switch(ls_cmd) {
 		case LSMCU_IN_KVB_LVAL_BLINK:
 			GPIO_Write(&GPIO_KVB_LVAL, 0);
 			KVB_EnableBlinkLVAL(1);
@@ -173,8 +173,8 @@ void LSSGIU_Init(void) {
  * @param lssgiu_cmd:	The new LSSGIU command to store.
  * @return:			None.
  */
-void LSSGIU_FillRxBuffer(unsigned char lssgiu_cmd) {
-	lssgiu_ctx.rx_buf[lssgiu_ctx.rx_write_idx] = lssgiu_cmd;
+void LSSGIU_FillRxBuffer(unsigned char ls_cmd) {
+	lssgiu_ctx.rx_buf[lssgiu_ctx.rx_write_idx] = ls_cmd;
 	lssgiu_ctx.rx_write_idx++;
 	// Roll-over management.
 	if (lssgiu_ctx.rx_write_idx == LSSGIU_RX_BUFFER_SIZE) {
@@ -186,8 +186,8 @@ void LSSGIU_FillRxBuffer(unsigned char lssgiu_cmd) {
  * @param lssgiu_cmd: 	LSSGIU command (byte) to transmit.
  * @return: 			None.
  */
-void LSSGIU_Send(unsigned char lssgiu_cmd) {
-	USART1_SendByte(lssgiu_cmd, USART_FORMAT_ASCII);
+void LSSGIU_Send(unsigned char ls_cmd) {
+	USART1_SendByte(ls_cmd, USART_FORMAT_ASCII);
 }
 
 /* MAIN ROUTINE OF LSSGIU COMMAND MANAGER.

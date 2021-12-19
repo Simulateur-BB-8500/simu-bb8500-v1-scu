@@ -9,7 +9,7 @@
 
 #include "lsmcu.h"
 #include "mapping.h"
-#include "stepper.h"
+#include "step_motor.h"
 #include "tim.h"
 
 /*** MANOMETER local macros ***/
@@ -18,20 +18,20 @@
 
 /*** MANOMETER external global variables ***/
 
-extern STEPPER_Context stepper_cp;
-extern STEPPER_Context stepper_re;
-extern STEPPER_Context stepper_cg;
-extern STEPPER_Context stepper_cf1;
-extern STEPPER_Context stepper_cf2;
+extern STEP_MOTOR_Context step_motor_cp;
+extern STEP_MOTOR_Context step_motor_re;
+extern STEP_MOTOR_Context step_motor_cg;
+extern STEP_MOTOR_Context step_motor_cf1;
+extern STEP_MOTOR_Context step_motor_cf2;
 extern LSMCU_Context lsmcu_ctx;
 
 /*** MANOMETER local global variables ***/
 
-MANOMETER_Context manometer_cp = {&stepper_cp, 100, 3072, 20, 100, 0, 0, 0, 0, 0};
-MANOMETER_Context manometer_re = {&stepper_re, 100, 3072, 20, 100, 0, 0, 0, 0, 0};
-MANOMETER_Context manometer_cg = {&stepper_cg, 100, 3072, 20, 100, 0, 0, 0, 0, 0};
-MANOMETER_Context manometer_cf1 = {&stepper_cf1, 60, 3072, 20, 100, 0, 0, 0, 0, 0};
-MANOMETER_Context manometer_cf2 = {&stepper_cf2, 60, 3072, 20, 100, 0, 0, 0, 0, 0};
+MANOMETER_Context manometer_cp = {0, &step_motor_cp, 100, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_re = {0, &step_motor_re, 100, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_cg = {0, &step_motor_cg, 100, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_cf1 = {0, &step_motor_cf1, 60, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_cf2 = {0, &step_motor_cf2, 60, 3072, 20, 0, 0, 100, 0, 0};
 
 /*** MANOMETER local functions ***/
 
@@ -65,7 +65,7 @@ static void MANOMETER_PowerOffAll(void) {
  */
 static unsigned char MANOMETER_NeedleIsMoving(MANOMETER_Context* manometer) {
 	unsigned char moving = 0;
-	if (((manometer -> manometer_stepper) -> stepper_current_step) != (manometer -> manometer_target_step)) {
+	if (((manometer -> step_motor) -> step) != (manometer -> step_target)) {
 		moving = 1;
 	}
 	return moving;
@@ -81,17 +81,17 @@ void MANOMETER_InitAll(void) {
 	// Init GPIOs.
 	GPIO_Configure(&GPIO_MANOMETER_POWER_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init step motors.
-	STEPPER_Init(manometer_cp.manometer_stepper);
-	STEPPER_Init(manometer_cg.manometer_stepper);
-	STEPPER_Init(manometer_re.manometer_stepper);
-	STEPPER_Init(manometer_cf1.manometer_stepper);
-	STEPPER_Init(manometer_cf2.manometer_stepper);
+	STEP_MOTOR_Init(manometer_cp.step_motor);
+	STEP_MOTOR_Init(manometer_cg.step_motor);
+	STEP_MOTOR_Init(manometer_re.step_motor);
+	STEP_MOTOR_Init(manometer_cf1.step_motor);
+	STEP_MOTOR_Init(manometer_cf2.step_motor);
 	// Link to global context.
-	lsmcu_ctx.lsmcu_manometer_cp = &manometer_cp;
-	lsmcu_ctx.lsmcu_manometer_re = &manometer_re;
-	lsmcu_ctx.lsmcu_manometer_cg = &manometer_cg;
-	lsmcu_ctx.lsmcu_manometer_cf1 = &manometer_cf1;
-	lsmcu_ctx.lsmcu_manometer_cf2 = &manometer_cf1;
+	lsmcu_ctx.manometer_cp = &manometer_cp;
+	lsmcu_ctx.manometer_re = &manometer_re;
+	lsmcu_ctx.manometer_cg = &manometer_cg;
+	lsmcu_ctx.manometer_cf1 = &manometer_cf1;
+	lsmcu_ctx.manometer_cf2 = &manometer_cf1;
 }
 
 /* CONTROL MANOMETER POWER.
@@ -120,7 +120,7 @@ void MANOMETER_ManagePowerAll(void) {
  */
 void MANOMETER_SetPressure(MANOMETER_Context* manometer, unsigned int pressure_decibars) {
 	// Update target step.
-	manometer -> manometer_target_step = ((manometer -> manometer_pressure_max_steps) * pressure_decibars) / (manometer -> manometer_pressure_max_decibars);
+	manometer -> step_target = ((manometer -> pressure_max_steps) * pressure_decibars) / (manometer -> pressure_max_decibars);
 }
 
 /* GET CURRENT MANOMETER PRESSURE.
@@ -128,7 +128,7 @@ void MANOMETER_SetPressure(MANOMETER_Context* manometer, unsigned int pressure_d
  * @return pressure_decibars:	Current pressure displayed by the manometer in decibars.
  */
 unsigned int MANOMETER_GetPressure(MANOMETER_Context* manometer) {
-	unsigned int pressure_decibars = (((manometer -> manometer_stepper) -> stepper_current_step) * (manometer -> manometer_pressure_max_decibars)) / (manometer -> manometer_pressure_max_steps);
+	unsigned int pressure_decibars = (((manometer -> step_motor) -> step) * (manometer -> pressure_max_decibars)) / (manometer -> pressure_max_steps);
 	return pressure_decibars;
 }
 
@@ -138,9 +138,9 @@ unsigned int MANOMETER_GetPressure(MANOMETER_Context* manometer) {
  */
 void MANOMETER_NeedleStart(MANOMETER_Context* manometer) {
 	// Enable movement.
-	manometer -> manometer_enable = 1;
+	manometer -> enable = 1;
 	// Store current position as start step.
-	manometer -> manometer_start_step = (manometer -> manometer_stepper -> stepper_current_step);
+	manometer -> step_start = (manometer -> step_motor -> step);
 }
 
 /* STOP NEEDLE MOVEMENT.
@@ -149,22 +149,22 @@ void MANOMETER_NeedleStart(MANOMETER_Context* manometer) {
  */
 void MANOMETER_NeedleStop(MANOMETER_Context* manometer) {
 	// Disable movement.
-	manometer -> manometer_enable = 0;
+	manometer -> enable = 0;
 	// Update target to perform inertia.
 	// Up direction.
-	if (((manometer -> manometer_stepper) -> stepper_current_step) < (manometer -> manometer_target_step)) {
+	if (((manometer -> step_motor) -> step) < (manometer -> step_target)) {
 		// Current step < (max - inertia)
-		if (((manometer -> manometer_stepper) -> stepper_current_step) < ((manometer -> manometer_pressure_max_steps) - (manometer -> manometer_needle_inertia_steps))) {
+		if (((manometer -> step_motor) -> step) < ((manometer -> pressure_max_steps) - (manometer -> needle_inertia_steps))) {
 			// New target = current + inertia.
-			manometer -> manometer_target_step = ((manometer -> manometer_stepper) -> stepper_current_step) + (manometer -> manometer_needle_inertia_steps);
+			manometer -> step_target = ((manometer -> step_motor) -> step) + (manometer -> needle_inertia_steps);
 		}
 	}
 	// Down direction.
-	if (((manometer -> manometer_stepper) -> stepper_current_step) > (manometer -> manometer_target_step)) {
+	if (((manometer -> step_motor) -> step) > (manometer -> step_target)) {
 		// Current step > (0 + inertia).
-		if (((manometer -> manometer_stepper) -> stepper_current_step) > (manometer -> manometer_needle_inertia_steps)) {
+		if (((manometer -> step_motor) -> step) > (manometer -> needle_inertia_steps)) {
 			// New target = current - inertia.
-			manometer -> manometer_target_step = ((manometer -> manometer_stepper) -> stepper_current_step) - (manometer -> manometer_needle_inertia_steps);
+			manometer -> step_target = ((manometer -> step_motor) -> step) - (manometer -> needle_inertia_steps);
 		}
 	}
 }
@@ -175,47 +175,47 @@ void MANOMETER_NeedleStop(MANOMETER_Context* manometer) {
  */
 void MANOMETER_NeedleTask(MANOMETER_Context* manometer) {
 	// Movement feedback loop.
-	manometer -> manometer_step_it_count++;
-	unsigned int current_step = ((manometer -> manometer_stepper) -> stepper_current_step);
+	manometer -> step_it_count++;
+	unsigned int current_step = ((manometer -> step_motor) -> step);
 	// ChecK if the period was reached.
-	if ((manometer -> manometer_step_it_count) >= (manometer -> manometer_step_it_period)) {
+	if ((manometer -> step_it_count) >= (manometer -> step_it_period)) {
 		// Reset interrupt count.
-		manometer -> manometer_step_it_count = 0;
+		manometer -> step_it_count = 0;
 		// Up direction.
-		if (current_step < (manometer -> manometer_target_step)) {
-			STEPPER_Up(manometer -> manometer_stepper);
+		if (current_step < (manometer -> step_target)) {
+			STEP_MOTOR_Up(manometer -> step_motor);
 		}
 		// Down direction.
-		if (current_step > (manometer -> manometer_target_step)) {
-			STEPPER_Down(manometer -> manometer_stepper);
+		if (current_step > (manometer -> step_target)) {
+			STEP_MOTOR_Down(manometer -> step_motor);
 		}
 	}
 	// Compute next period.
-	if (current_step != (manometer -> manometer_target_step)) {
+	if (current_step != (manometer -> step_target)) {
 		// Get absolute distances between start, target and current steps.
 		unsigned int delta_start = 0;
 		unsigned int delta_target = 0;
 		// Up direction.
-		if (current_step < (manometer -> manometer_target_step)) {
-			delta_start = current_step - (manometer -> manometer_start_step);
-			delta_target = (manometer -> manometer_target_step) - current_step;
+		if (current_step < (manometer -> step_target)) {
+			delta_start = current_step - (manometer -> step_start);
+			delta_target = (manometer -> step_target) - current_step;
 		}
 		// Down direction.
-		if (current_step > (manometer -> manometer_target_step)) {
-			delta_start = (manometer -> manometer_start_step) - current_step;
-			delta_target = current_step - (manometer -> manometer_target_step);
+		if (current_step > (manometer -> step_target)) {
+			delta_start = (manometer -> step_start) - current_step;
+			delta_target = current_step - (manometer -> step_target);
 		}
 		// Perform linear equation.
-		if (delta_start < (manometer -> manometer_needle_inertia_steps)) {
-			manometer -> manometer_step_it_period = MANOMETER_STEP_IT_PERIOD_MAX - ((MANOMETER_STEP_IT_PERIOD_MAX - (manometer -> manometer_step_it_period_min)) * (delta_start)) / (manometer -> manometer_needle_inertia_steps);
+		if (delta_start < (manometer -> needle_inertia_steps)) {
+			manometer -> step_it_period = MANOMETER_STEP_IT_PERIOD_MAX - ((MANOMETER_STEP_IT_PERIOD_MAX - (manometer -> step_it_period_min)) * (delta_start)) / (manometer -> needle_inertia_steps);
 		}
 		else {
-			if (delta_target < (manometer -> manometer_needle_inertia_steps)) {
-				manometer -> manometer_step_it_period = MANOMETER_STEP_IT_PERIOD_MAX - ((MANOMETER_STEP_IT_PERIOD_MAX - (manometer -> manometer_step_it_period_min)) * (delta_target)) / (manometer -> manometer_needle_inertia_steps);
+			if (delta_target < (manometer -> needle_inertia_steps)) {
+				manometer -> step_it_period = MANOMETER_STEP_IT_PERIOD_MAX - ((MANOMETER_STEP_IT_PERIOD_MAX - (manometer -> step_it_period_min)) * (delta_target)) / (manometer -> needle_inertia_steps);
 			}
 			else {
 				// Maximum speed.
-				manometer -> manometer_step_it_period = (manometer -> manometer_step_it_period_min);
+				manometer -> step_it_period = (manometer -> step_it_period_min);
 			}
 		}
 	}

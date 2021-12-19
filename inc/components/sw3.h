@@ -31,17 +31,17 @@ typedef enum {
 
 // SW3 structure.
 typedef struct {
-	unsigned int sw3_voltage; // Current voltage measured by ADC.
-	SW3_InternalState sw3_internal_state; // Current state in SW3 internal state machine.
-	SW3_State sw3_state; // State after anti-bouncing (used in higher levels).
-	unsigned int sw3_debouncing_ms; // Delay before validating states (in ms).
-	unsigned int sw3_confirm_start_time;
+	unsigned int voltage; // Current voltage measured by ADC.
+	SW3_InternalState internal_state; // Current state in SW3 internal state machine.
+	SW3_State state; // State after anti-bouncing (used in higher levels).
+	unsigned int debouncing_ms; // Delay before validating states (in ms).
+	unsigned int confirm_start_time;
 } SW3_Context;
 
 /*** 3-poles switch functions ***/
 
-void SW3_Init(SW3_Context* sw3, const GPIO* sw3_gpio, unsigned int sw3_debouncing_ms);
-void SW3_SetVoltageMv(SW3_Context* sw3, unsigned int sw3_voltage_mv);
+void SW3_Init(SW3_Context* sw3, const GPIO* gpio, unsigned int debouncing_ms);
+void SW3_SetVoltageMv(SW3_Context* sw3, unsigned int voltage_mv);
 void SW3_UpdateState(SW3_Context* sw3);
 
 #endif /* SW3_H */

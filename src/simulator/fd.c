@@ -15,8 +15,8 @@
 /*** FD local structures ***/
 
 typedef struct {
-	SW3_Context fd_sw3;
-	SW3_State fd_previous_state;
+	SW3_Context sw3;
+	SW3_State previous_state;
 } FD_Context;
 
 /*** FD local global variables ***/
@@ -31,8 +31,8 @@ static FD_Context fd_ctx;
  */
 void FD_Init(void) {
 	// Init GPIO.
-	SW3_Init(&fd_ctx.fd_sw3, &GPIO_FD, 100);
-	fd_ctx.fd_previous_state = SW3_NEUTRAL;
+	SW3_Init(&fd_ctx.sw3, &GPIO_FD, 100);
+	fd_ctx.previous_state = SW3_NEUTRAL;
 }
 
 /* UPDATE THE VOLTAGE READ ON FD SELECTOR (CALLED BY ADC ROUTINE).
@@ -40,7 +40,7 @@ void FD_Init(void) {
  * @return:				None.
  */
 void FD_SetVoltageMv(unsigned int fd_voltage_mv) {
-	SW3_SetVoltageMv(&fd_ctx.fd_sw3, fd_voltage_mv);
+	SW3_SetVoltageMv(&fd_ctx.sw3, fd_voltage_mv);
 }
 
 /* MAIN ROUTINE OF FD MODULE.
@@ -49,23 +49,23 @@ void FD_SetVoltageMv(unsigned int fd_voltage_mv) {
  */
 void FD_Task(void) {
 	// Update current state.
-	SW3_UpdateState(&fd_ctx.fd_sw3);
+	SW3_UpdateState(&fd_ctx.sw3);
 	// Perform actions according to state.
-	switch (fd_ctx.fd_sw3.sw3_state) {
+	switch (fd_ctx.sw3.state) {
 	case SW3_BACK:
-		if (fd_ctx.fd_previous_state != SW3_BACK) {
+		if (fd_ctx.previous_state != SW3_BACK) {
 			// Backward.
 			LSSGIU_Send(LSMCU_OUT_FD_RELEASE);
 		}
 		break;
 	case SW3_NEUTRAL:
-		if (fd_ctx.fd_previous_state != SW3_NEUTRAL) {
+		if (fd_ctx.previous_state != SW3_NEUTRAL) {
 			// Forward.
 			LSSGIU_Send(LSMCU_OUT_FD_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
-		if (fd_ctx.fd_previous_state != SW3_FRONT) {
+		if (fd_ctx.previous_state != SW3_FRONT) {
 			// Forward.
 			LSSGIU_Send(LSMCU_OUT_FD_APPLY);
 		}
@@ -75,6 +75,6 @@ void FD_Task(void) {
 		break;
 	}
 	// Update previous state.
-	fd_ctx.fd_previous_state = fd_ctx.fd_sw3.sw3_state;
+	fd_ctx.previous_state = fd_ctx.sw3.state;
 }
 

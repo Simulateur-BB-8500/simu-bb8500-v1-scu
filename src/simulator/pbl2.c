@@ -37,7 +37,7 @@ void PBL2_Init(void) {
 	// Init GPIO.
 	SW4_Init(&pbl2_sw4, &GPIO_PBL2, 500);
 	// Init global context.
-	lsmcu_ctx.lsmcu_pbl2_on = 0;
+	lsmcu_ctx.pbl2_on = 0;
 }
 
 /* UPDATE THE VOLTAGE READ ON PBL2 SELECTOR (CALLED BY ADC ROUTINE).
@@ -56,19 +56,19 @@ void PBL2_Task(void) {
 	// Update current state.
 	SW4_UpdateState(&pbl2_sw4);
 	// Perform actions according to state.
-	switch (pbl2_sw4.sw4_state) {
+	switch (pbl2_sw4.state) {
 	case SW4_P0:
 		// Retrait.
-		if (lsmcu_ctx.lsmcu_pbl2_on != 0) {
+		if (lsmcu_ctx.pbl2_on != 0) {
 			// Send command on change.
 			LSSGIU_Send(LSMCU_OUT_FPB_OFF);
 			// Empty CG and RE.
-			MANOMETER_SetPressure(lsmcu_ctx.lsmcu_manometer_cg, 0);
-			MANOMETER_NeedleStart(lsmcu_ctx.lsmcu_manometer_cg);
-			MANOMETER_SetPressure(lsmcu_ctx.lsmcu_manometer_re, 0);
-			MANOMETER_NeedleStart(lsmcu_ctx.lsmcu_manometer_re);
+			MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, 0);
+			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cg);
+			MANOMETER_SetPressure(lsmcu_ctx.manometer_re, 0);
+			MANOMETER_NeedleStart(lsmcu_ctx.manometer_re);
 			// Update global context.
-			lsmcu_ctx.lsmcu_pbl2_on = 0;
+			lsmcu_ctx.pbl2_on = 0;
 		}
 		break;
 	case SW4_P1:
@@ -76,16 +76,16 @@ void PBL2_Task(void) {
 		break;
 	case SW4_P2:
 		// Service.
-		if ((lsmcu_ctx.lsmcu_pbl2_on == 0) && (MANOMETER_GetPressure(lsmcu_ctx.lsmcu_manometer_cp) > PBL2_MIN_CP_PRESSURE_DECIBARS)) {
+		if ((lsmcu_ctx.pbl2_on == 0) && (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) > PBL2_MIN_CP_PRESSURE_DECIBARS)) {
 			// Send command on change.
 			LSSGIU_Send(LSMCU_OUT_FPB_ON);
 			// Start CG and RE manometers.
-			MANOMETER_SetPressure(lsmcu_ctx.lsmcu_manometer_cg, PBL2_ON_CG_PRESSURE_DECIBARS);
-			MANOMETER_NeedleStart(lsmcu_ctx.lsmcu_manometer_cg);
-			MANOMETER_SetPressure(lsmcu_ctx.lsmcu_manometer_re, PBL2_ON_CG_PRESSURE_DECIBARS);
-			MANOMETER_NeedleStart(lsmcu_ctx.lsmcu_manometer_re);
+			MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_DECIBARS);
+			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cg);
+			MANOMETER_SetPressure(lsmcu_ctx.manometer_re, PBL2_ON_CG_PRESSURE_DECIBARS);
+			MANOMETER_NeedleStart(lsmcu_ctx.manometer_re);
 			// Update global context.
-			lsmcu_ctx.lsmcu_pbl2_on = 1;
+			lsmcu_ctx.pbl2_on = 1;
 		}
 		break;
 	case SW4_P3:

@@ -72,7 +72,7 @@ void TCH_Init(void) {
 	// Init context.
 	tch_state = TCH_STATE_OFF;
 	// Init global context.
-	lsmcu_ctx.lsmcu_speed_kmh = 0;
+	lsmcu_ctx.speed_kmh = 0;
 }
 
 /* MAIN ROUTINE OF TCH CONTROL INTERFACE.
@@ -91,10 +91,10 @@ void TCH_Task(void) {
 		GPIO_Write(&GPIO_TCH_PWM_B, 0);
 		GPIO_Write(&GPIO_TCH_PWM_C, 0);
 		// State evolution.
-		if (lsmcu_ctx.lsmcu_speed_kmh >= TCH_SPEED_MIN_KMH) {
+		if (lsmcu_ctx.speed_kmh >= TCH_SPEED_MIN_KMH) {
 			// Start timer and go to first step.
 			TIM5_Start();
-			TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.lsmcu_speed_kmh]);
+			TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
 			TIM5_ClearUifFlag();
 			tch_state = TCH_STATE_STEP1;
 		}
@@ -107,7 +107,7 @@ void TCH_Task(void) {
 		GPIO_Write(&GPIO_TCH_PWM_A, 1);
 		GPIO_Write(&GPIO_TCH_PWM_C, 0);
 		// State evolution.
-		if (lsmcu_ctx.lsmcu_speed_kmh < TCH_SPEED_MIN_KMH) {
+		if (lsmcu_ctx.speed_kmh < TCH_SPEED_MIN_KMH) {
 			// Stop timer and switch Tachro off.
 			TIM5_Stop();
 			tch_state = TCH_STATE_OFF;
@@ -116,7 +116,7 @@ void TCH_Task(void) {
 			// Check delay.
 			if (TIM5_GetUifFlag() != 0) {
 				// Clear flag, update delay and go to next step.
-				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.lsmcu_speed_kmh]);
+				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
 				TIM5_ClearUifFlag();
 				tch_state = TCH_STATE_STEP2;
 			}
@@ -127,7 +127,7 @@ void TCH_Task(void) {
 		GPIO_Write(&GPIO_TCH_INH_B, 0);
 		GPIO_Write(&GPIO_TCH_INH_C, 1);
 		// State evolution.
-		if (lsmcu_ctx.lsmcu_speed_kmh < TCH_SPEED_MIN_KMH) {
+		if (lsmcu_ctx.speed_kmh < TCH_SPEED_MIN_KMH) {
 			// Stop timer and switch Tachro off.
 			TIM5_Stop();
 			tch_state = TCH_STATE_OFF;
@@ -136,7 +136,7 @@ void TCH_Task(void) {
 			// Check delay.
 			if (TIM5_GetUifFlag() != 0) {
 				// Clear flag, update delay and go to next step.
-				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.lsmcu_speed_kmh]);
+				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
 				TIM5_ClearUifFlag();
 				tch_state = TCH_STATE_STEP3;
 			}
@@ -149,7 +149,7 @@ void TCH_Task(void) {
 		GPIO_Write(&GPIO_TCH_PWM_A, 0);
 		GPIO_Write(&GPIO_TCH_PWM_B, 1);
 		// State evolution.
-		if (lsmcu_ctx.lsmcu_speed_kmh < TCH_SPEED_MIN_KMH) {
+		if (lsmcu_ctx.speed_kmh < TCH_SPEED_MIN_KMH) {
 			// Stop timer and switch Tachro off.
 			TIM5_Stop();
 			tch_state = TCH_STATE_OFF;
@@ -158,7 +158,7 @@ void TCH_Task(void) {
 			// Check delay.
 			if (TIM5_GetUifFlag() != 0) {
 				// Clear flag, update delay and go to next step.
-				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.lsmcu_speed_kmh]);
+				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
 				TIM5_ClearUifFlag();
 				tch_state = TCH_STATE_STEP4;
 			}
@@ -169,7 +169,7 @@ void TCH_Task(void) {
 		GPIO_Write(&GPIO_TCH_INH_A, 1);
 		GPIO_Write(&GPIO_TCH_INH_C, 0);
 		// State evolution.
-		if (lsmcu_ctx.lsmcu_speed_kmh < TCH_SPEED_MIN_KMH) {
+		if (lsmcu_ctx.speed_kmh < TCH_SPEED_MIN_KMH) {
 			// Stop timer and switch Tachro off.
 			TIM5_Stop();
 			tch_state = TCH_STATE_OFF;
@@ -178,7 +178,7 @@ void TCH_Task(void) {
 			// Check delay.
 			if (TIM5_GetUifFlag() != 0) {
 				// Clear flag, update delay and go to next step.
-				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.lsmcu_speed_kmh]);
+				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
 				TIM5_ClearUifFlag();
 				tch_state = TCH_STATE_STEP5;
 			}
@@ -191,7 +191,7 @@ void TCH_Task(void) {
 		GPIO_Write(&GPIO_TCH_PWM_B, 0);
 		GPIO_Write(&GPIO_TCH_PWM_C, 1);
 		// State evolution.
-		if (lsmcu_ctx.lsmcu_speed_kmh < TCH_SPEED_MIN_KMH) {
+		if (lsmcu_ctx.speed_kmh < TCH_SPEED_MIN_KMH) {
 			// Stop timer and switch Tachro off.
 			TIM5_Stop();
 			tch_state = TCH_STATE_OFF;
@@ -200,7 +200,7 @@ void TCH_Task(void) {
 			// Check delay.
 			if (TIM5_GetUifFlag() != 0) {
 				// Clear flag, update delay and go to next step.
-				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.lsmcu_speed_kmh]);
+				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
 				TIM5_ClearUifFlag();
 				tch_state = TCH_STATE_STEP6;
 			}
@@ -211,7 +211,7 @@ void TCH_Task(void) {
 		GPIO_Write(&GPIO_TCH_INH_A, 0);
 		GPIO_Write(&GPIO_TCH_INH_B, 1);
 		// State evolution.
-		if (lsmcu_ctx.lsmcu_speed_kmh < TCH_SPEED_MIN_KMH) {
+		if (lsmcu_ctx.speed_kmh < TCH_SPEED_MIN_KMH) {
 			// Stop timer and switch Tachro off.
 			TIM5_Stop();
 			tch_state = TCH_STATE_OFF;
@@ -220,7 +220,7 @@ void TCH_Task(void) {
 			// Check delay.
 			if (TIM5_GetUifFlag() != 0) {
 				// Clear flag, update delay and go to next step.
-				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.lsmcu_speed_kmh]);
+				TIM5_SetDelayUs(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
 				TIM5_ClearUifFlag();
 				tch_state = TCH_STATE_STEP1;
 			}

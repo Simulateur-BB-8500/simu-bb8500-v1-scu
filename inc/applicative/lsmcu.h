@@ -13,23 +13,23 @@
 /*** LSMCU structure ***/
 
 typedef struct {
-	unsigned char lsmcu_zba_closed;
-	unsigned char lsmcu_bl_unlocked;
-	unsigned char lsmcu_zpt_raised;
-	unsigned char lsmcu_dj_closed;
-	unsigned char lsmcu_dj_locked;
-	unsigned char lsmcu_compressor_on;
-	unsigned char lsmcu_speed_kmh;
-	unsigned char lsmcu_rheostat_0;
-	unsigned char lsmcu_lsrh_blink_request;
-	unsigned char lsmcu_series_traction;
-	unsigned char lsmcu_pbl2_on;
-	unsigned char lsmcu_urgency;
-	MANOMETER_Context* lsmcu_manometer_cp;
-	MANOMETER_Context* lsmcu_manometer_re;
-	MANOMETER_Context* lsmcu_manometer_cg;
-	MANOMETER_Context* lsmcu_manometer_cf1;
-	MANOMETER_Context* lsmcu_manometer_cf2;
+	unsigned char zba_closed;
+	unsigned char bl_unlocked;
+	unsigned char zpt_raised;
+	unsigned char dj_closed;
+	unsigned char dj_locked;
+	unsigned char compressor_on;
+	unsigned char speed_kmh;
+	unsigned char rheostat_0;
+	unsigned char lsrh_blink_request;
+	unsigned char series_traction;
+	unsigned char pbl2_on;
+	unsigned char urgency;
+	MANOMETER_Context* manometer_cp;
+	MANOMETER_Context* manometer_re;
+	MANOMETER_Context* manometer_cg;
+	MANOMETER_Context* manometer_cf1;
+	MANOMETER_Context* manometer_cf2;
 } LSMCU_Context;
 
 #endif /* LSMCU_H */

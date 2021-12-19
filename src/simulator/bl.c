@@ -17,18 +17,18 @@
 /*** BL local structures ***/
 
 typedef struct {
-	SW2_Context bl_zdv;
-	SW2_Context bl_zdj;
-	SW2_Context bl_zen;
-	unsigned char bl_zen_on;
-	SW2_Context bl_zvm;
-	unsigned char bl_zvm_on;
-	SW2_Context bl_zfg;
-	unsigned char bl_zfg_on;
-	SW2_Context bl_zfd;
-	unsigned char bl_zfd_on;
-	SW2_Context bl_zpr;
-	unsigned char bl_zpr_on;
+	SW2_Context zdv;
+	SW2_Context zdj;
+	SW2_Context zen;
+	unsigned char zen_on;
+	SW2_Context zvm;
+	unsigned char zvm_on;
+	SW2_Context zfg;
+	unsigned char zfg_on;
+	SW2_Context zfd;
+	unsigned char zfd_on;
+	SW2_Context zpr;
+	unsigned char zpr_on;
 } BL_Context;
 
 /*** BL external global variables ***/
@@ -47,22 +47,22 @@ static BL_Context bl_ctx;
  */
 void BL_Init(void) {
 	// Init GPIOs.
-	SW2_Init(&bl_ctx.bl_zdv, &GPIO_BL_ZDV, 0, 100); // ZDV active low.
-	SW2_Init(&bl_ctx.bl_zdj, &GPIO_BL_ZDJ, 1, 100); // ZDJ active high.
-	SW2_Init(&bl_ctx.bl_zen, &GPIO_BL_ZEN, 1, 100); // ZEN active high.
-	bl_ctx.bl_zen_on = 0;
-	SW2_Init(&bl_ctx.bl_zvm, &GPIO_BL_ZVM, 0, 100); // ZVM active low.
-	bl_ctx.bl_zvm_on = 0;
-	SW2_Init(&bl_ctx.bl_zfg, &GPIO_BL_ZFG, 0, 100); // ZFG active low.
-	bl_ctx.bl_zfg_on = 0;
-	SW2_Init(&bl_ctx.bl_zfd, &GPIO_BL_ZFD, 0, 100); // ZFD active low.
-	bl_ctx.bl_zfd_on = 0;
-	SW2_Init(&bl_ctx.bl_zpr, &GPIO_BL_ZPR, 0, 100); // ZFD active low.
-	bl_ctx.bl_zpr_on = 0;
+	SW2_Init(&bl_ctx.zdv, &GPIO_BL_ZDV, 0, 100); // ZDV active low.
+	SW2_Init(&bl_ctx.zdj, &GPIO_BL_ZDJ, 1, 100); // ZDJ active high.
+	SW2_Init(&bl_ctx.zen, &GPIO_BL_ZEN, 1, 100); // ZEN active high.
+	bl_ctx.zen_on = 0;
+	SW2_Init(&bl_ctx.zvm, &GPIO_BL_ZVM, 0, 100); // ZVM active low.
+	bl_ctx.zvm_on = 0;
+	SW2_Init(&bl_ctx.zfg, &GPIO_BL_ZFG, 0, 100); // ZFG active low.
+	bl_ctx.zfg_on = 0;
+	SW2_Init(&bl_ctx.zfd, &GPIO_BL_ZFD, 0, 100); // ZFD active low.
+	bl_ctx.zfd_on = 0;
+	SW2_Init(&bl_ctx.zpr, &GPIO_BL_ZPR, 0, 100); // ZFD active low.
+	bl_ctx.zpr_on = 0;
 	// Init global context.
-	lsmcu_ctx.lsmcu_bl_unlocked = 0;
-	lsmcu_ctx.lsmcu_dj_closed = 0;
-	lsmcu_ctx.lsmcu_dj_locked = 0;
+	lsmcu_ctx.bl_unlocked = 0;
+	lsmcu_ctx.dj_closed = 0;
+	lsmcu_ctx.dj_locked = 0;
 }
 
 /* MAIN ROUTINE OF BL MODULE.
@@ -71,124 +71,124 @@ void BL_Init(void) {
  */
 void BL_Task(void) {
 	// ZDV.
-	SW2_UpdateState(&bl_ctx.bl_zdv);
-	if ((bl_ctx.bl_zdv.sw2_state == SW2_ON) && (lsmcu_ctx.lsmcu_zba_closed != 0)) {
+	SW2_UpdateState(&bl_ctx.zdv);
+	if ((bl_ctx.zdv.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
 		// Send command on change.
-		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
+		if (lsmcu_ctx.bl_unlocked == 0) {
 			LSSGIU_Send(LSMCU_OUT_ZDV_ON);
 			KVB_StartSweepTimer();
 		}
-		lsmcu_ctx.lsmcu_bl_unlocked = 1;
+		lsmcu_ctx.bl_unlocked = 1;
 	}
 	else {
 		// Send command on change.
-		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
+		if (lsmcu_ctx.bl_unlocked != 0) {
 			LSSGIU_Send(LSMCU_OUT_ZDV_OFF);
 			KVB_StopSweepTimer();
 		}
-		lsmcu_ctx.lsmcu_bl_unlocked = 0;
+		lsmcu_ctx.bl_unlocked = 0;
 	}
 	// ZDJ.
-	SW2_UpdateState(&bl_ctx.bl_zdj);
-	if (lsmcu_ctx.lsmcu_zpt_raised != 0) {
-		if (bl_ctx.bl_zdj.sw2_state == SW2_ON) {
-			lsmcu_ctx.lsmcu_dj_closed = 1;
+	SW2_UpdateState(&bl_ctx.zdj);
+	if (lsmcu_ctx.zpt_raised != 0) {
+		if (bl_ctx.zdj.state == SW2_ON) {
+			lsmcu_ctx.dj_closed = 1;
 		}
 		else {
 			// Send command on change (only if DJ is locked).
-			if (lsmcu_ctx.lsmcu_dj_closed != 0) {
-				if (lsmcu_ctx.lsmcu_dj_locked != 0) {
+			if (lsmcu_ctx.dj_closed != 0) {
+				if (lsmcu_ctx.dj_locked != 0) {
 					LSSGIU_Send(LSMCU_OUT_ZDJ_OFF);
 				}
-				lsmcu_ctx.lsmcu_dj_locked = 0;
+				lsmcu_ctx.dj_locked = 0;
 			}
-			lsmcu_ctx.lsmcu_dj_closed = 0;
+			lsmcu_ctx.dj_closed = 0;
 		}
 	}
 	else {
-		if (lsmcu_ctx.lsmcu_dj_closed != 0) {
+		if (lsmcu_ctx.dj_closed != 0) {
 			LSSGIU_Send(LSMCU_OUT_ZDJ_OFF);
 		}
-		lsmcu_ctx.lsmcu_dj_closed = 0; // Hack.
-		lsmcu_ctx.lsmcu_dj_locked = 0;
+		lsmcu_ctx.dj_closed = 0; // Hack.
+		lsmcu_ctx.dj_locked = 0;
 	}
 	// ZEN.
-	SW2_UpdateState(&bl_ctx.bl_zen);
-	if ((lsmcu_ctx.lsmcu_zpt_raised != 0) && (lsmcu_ctx.lsmcu_dj_closed != 0)) {
-		if (bl_ctx.bl_zen.sw2_state == SW2_ON) {
+	SW2_UpdateState(&bl_ctx.zen);
+	if ((lsmcu_ctx.zpt_raised != 0) && (lsmcu_ctx.dj_closed != 0)) {
+		if (bl_ctx.zen.state == SW2_ON) {
 			// Send command on change.
-			if ((bl_ctx.bl_zen_on == 0) && (lsmcu_ctx.lsmcu_dj_locked == 0)) {
+			if ((bl_ctx.zen_on == 0) && (lsmcu_ctx.dj_locked == 0)) {
 				LSSGIU_Send(LSMCU_OUT_ZEN_ON);
-				lsmcu_ctx.lsmcu_dj_locked = 1;
+				lsmcu_ctx.dj_locked = 1;
 			}
-			bl_ctx.bl_zen_on = 1;
+			bl_ctx.zen_on = 1;
 		}
 		else {
-			bl_ctx.bl_zen_on = 0;
+			bl_ctx.zen_on = 0;
 		}
 	}
 	// ZVM.
-	SW2_UpdateState(&bl_ctx.bl_zvm);
-	if ((lsmcu_ctx.lsmcu_dj_locked != 0) && (bl_ctx.bl_zvm.sw2_state == SW2_ON)) {
+	SW2_UpdateState(&bl_ctx.zvm);
+	if ((lsmcu_ctx.dj_locked != 0) && (bl_ctx.zvm.state == SW2_ON)) {
 		// Send command on change.
-		if (bl_ctx.bl_zvm_on == 0) {
+		if (bl_ctx.zvm_on == 0) {
 			LSSGIU_Send(LSMCU_OUT_ZVM_ON);
 		}
-		bl_ctx.bl_zvm_on = 1;
+		bl_ctx.zvm_on = 1;
 	}
 	else {
 		// Send command on change.
-		if (bl_ctx.bl_zvm_on != 0) {
+		if (bl_ctx.zvm_on != 0) {
 			LSSGIU_Send(LSMCU_OUT_ZVM_OFF);
 		}
-		bl_ctx.bl_zvm_on = 0;
+		bl_ctx.zvm_on = 0;
 	}
 	// ZFG.
-	SW2_UpdateState(&bl_ctx.bl_zfg);
-	if ((bl_ctx.bl_zfg.sw2_state == SW2_ON) && (lsmcu_ctx.lsmcu_zba_closed != 0)) {
+	SW2_UpdateState(&bl_ctx.zfg);
+	if ((bl_ctx.zfg.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
 		// Send command on change.
-		if (bl_ctx.bl_zfg_on == 0) {
+		if (bl_ctx.zfg_on == 0) {
 			LSSGIU_Send(LSMCU_OUT_ZFG_ON);
 		}
-		bl_ctx.bl_zfg_on = 1;
+		bl_ctx.zfg_on = 1;
 	}
 	else {
 		// Send command on change.
-		if (bl_ctx.bl_zfg_on != 0) {
+		if (bl_ctx.zfg_on != 0) {
 			LSSGIU_Send(LSMCU_OUT_ZFG_OFF);
 		}
-		bl_ctx.bl_zfg_on = 0;
+		bl_ctx.zfg_on = 0;
 	}
 	// ZFD.
-	SW2_UpdateState(&bl_ctx.bl_zfd);
-	if ((bl_ctx.bl_zfd.sw2_state == SW2_ON) && (lsmcu_ctx.lsmcu_zba_closed != 0)) {
+	SW2_UpdateState(&bl_ctx.zfd);
+	if ((bl_ctx.zfd.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
 		// Send command on change.
-		if (bl_ctx.bl_zfd_on == 0) {
+		if (bl_ctx.zfd_on == 0) {
 			LSSGIU_Send(LSMCU_OUT_ZFD_ON);
 		}
-		bl_ctx.bl_zfd_on = 1;
+		bl_ctx.zfd_on = 1;
 	}
 	else {
 		// Send command on change.
-		if (bl_ctx.bl_zfd_on != 0) {
+		if (bl_ctx.zfd_on != 0) {
 			LSSGIU_Send(LSMCU_OUT_ZFD_OFF);
 		}
-		bl_ctx.bl_zfd_on = 0;
+		bl_ctx.zfd_on = 0;
 	}
 	// ZPR.
-	SW2_UpdateState(&bl_ctx.bl_zpr);
-	if ((bl_ctx.bl_zpr.sw2_state == SW2_ON) && (lsmcu_ctx.lsmcu_zba_closed != 0)) {
+	SW2_UpdateState(&bl_ctx.zpr);
+	if ((bl_ctx.zpr.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
 		// Send command on change.
-		if (bl_ctx.bl_zpr_on == 0) {
+		if (bl_ctx.zpr_on == 0) {
 			LSSGIU_Send(LSMCU_OUT_ZPR_ON);
 		}
-		bl_ctx.bl_zpr_on = 1;
+		bl_ctx.zpr_on = 1;
 	}
 	else {
 		// Send command on change.
-		if (bl_ctx.bl_zpr_on != 0) {
+		if (bl_ctx.zpr_on != 0) {
 			LSSGIU_Send(LSMCU_OUT_ZPR_OFF);
 		}
-		bl_ctx.bl_zpr_on = 0;
+		bl_ctx.zpr_on = 0;
 	}
 }
