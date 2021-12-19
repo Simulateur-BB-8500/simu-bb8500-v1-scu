@@ -9,7 +9,7 @@
 
 #include "gpio.h"
 #include "lsmcu.h"
-#include "lssgkcu.h"
+#include "lssgiu.h"
 #include "mapping.h"
 #include "sw3.h"
 
@@ -61,19 +61,19 @@ void FPB_Task(void) {
 		case SW3_BACK:
 			if (fpb_ctx.fpb_previous_state != SW3_BACK) {
 				// Backward.
-				LSSGKCU_Send(LSMCU_OUT_FPB_RELEASE);
+				LSSGIU_Send(LSMCU_OUT_FPB_RELEASE);
 			}
 			break;
 		case SW3_NEUTRAL:
 			if (fpb_ctx.fpb_previous_state != SW3_NEUTRAL) {
 				// Forward.
-				LSSGKCU_Send(LSMCU_OUT_FPB_NEUTRAL);
+				LSSGIU_Send(LSMCU_OUT_FPB_NEUTRAL);
 			}
 			break;
 		case SW3_FRONT:
 			if (fpb_ctx.fpb_previous_state != SW3_FRONT) {
 				// Forward.
-				LSSGKCU_Send(LSMCU_OUT_FPB_APPLY);
+				LSSGIU_Send(LSMCU_OUT_FPB_APPLY);
 			}
 			break;
 		default:

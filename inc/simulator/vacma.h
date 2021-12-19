@@ -13,4 +13,4 @@
 void VACMA_Init(void);
 void VACMA_Task(void);
 
-#endif /* APPLICATIVE_VACMA_H_ */
+#endif /* VACMA_H */

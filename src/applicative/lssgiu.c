@@ -1,11 +1,11 @@
 /*
- * lssgkcu.c
+ * lssgiu.c
  *
  *  Created on: 1 oct. 2017
  *      Author: Ludo
  */
 
-#include "lssgkcu.h"
+#include "lssgiu.h"
 
 #include "kvb.h"
 #include "gpio.h"
@@ -14,41 +14,41 @@
 #include "tch.h"
 #include "usart.h"
 
-/*** LSSGKCU local macros ***/
+/*** LSSGIU local macros ***/
 
-#define LSSGKCU_RX_BUFFER_SIZE	32
+#define LSSGIU_RX_BUFFER_SIZE	32
 
-/*** LSSGKCU local structures ***/
+/*** LSSGIU local structures ***/
 
 typedef struct {
-	unsigned char rx_buf[LSSGKCU_RX_BUFFER_SIZE];
+	unsigned char rx_buf[LSSGIU_RX_BUFFER_SIZE];
 	unsigned int rx_write_idx;
 	unsigned int rx_read_idx;
-} LSSGKCU_Context;
+} LSSGIU_Context;
 
-/*** LSSGKCU external global variables ***/
+/*** LSSGIU external global variables ***/
 
 extern LSMCU_Context lsmcu_ctx;
 
-/*** LSSGKCU local global variables ***/
+/*** LSSGIU local global variables ***/
 
-static LSSGKCU_Context lssgkcu_ctx;
+static LSSGIU_Context lssgiu_ctx;
 
-/*** LSSGKCU local functions ***/
+/*** LSSGIU local functions ***/
 
-/* DECODE THE CURRENT LSSGKCU COMMAND.
+/* DECODE THE CURRENT LSSGIU COMMAND.
  * @param:	None.
  * @return: None.
  */
-void LSSGKCU_Decode(void) {
-	unsigned char lssgkcu_command = lssgkcu_ctx.rx_buf[lssgkcu_ctx.rx_read_idx];
-	if (lssgkcu_command <= TCH_SPEED_MAX_KMH) {
+void LSSGIU_Decode(void) {
+	unsigned char lssgiu_command = lssgiu_ctx.rx_buf[lssgiu_ctx.rx_read_idx];
+	if (lssgiu_command <= TCH_SPEED_MAX_KMH) {
 		// Save speed in main context.
-		lsmcu_ctx.lsmcu_speed_kmh = lssgkcu_command;
+		lsmcu_ctx.lsmcu_speed_kmh = lssgiu_command;
 	}
 	else {
-		// Decode LSSGKCU command.
-		switch(lssgkcu_command) {
+		// Decode LSSGIU command.
+		switch(lssgiu_command) {
 		case LSMCU_IN_KVB_LVAL_BLINK:
 			GPIO_Write(&GPIO_KVB_LVAL, 0);
 			KVB_EnableBlinkLVAL(1);
@@ -155,53 +155,53 @@ void LSSGKCU_Decode(void) {
 	}
 }
 
-/*** LSSGKCU functions ***/
+/*** LSSGIU functions ***/
 
-/* INIT LSSGKCU COMMUNICATION MODULE.
+/* INIT LSSGIU COMMUNICATION MODULE.
  * @param:	None.
  * @return:	None.
  */
-void LSSGKCU_Init(void) {
+void LSSGIU_Init(void) {
 	// Init context.
 	unsigned int i = 0;
-	for(i=0 ; i<LSSGKCU_RX_BUFFER_SIZE ; i++) lssgkcu_ctx.rx_buf[i] = 0;
-	lssgkcu_ctx.rx_write_idx = 0;
-	lssgkcu_ctx.rx_read_idx = 0;
+	for(i=0 ; i<LSSGIU_RX_BUFFER_SIZE ; i++) lssgiu_ctx.rx_buf[i] = 0;
+	lssgiu_ctx.rx_write_idx = 0;
+	lssgiu_ctx.rx_read_idx = 0;
 }
 
-/* FILL LSSGKCU BUFFER (CALLED BY USART2 INTERRUPT HANDLER).
- * @param lssgkcu_cmd:	The new LSSGKCU command to store.
+/* FILL LSSGIU BUFFER (CALLED BY USART2 INTERRUPT HANDLER).
+ * @param lssgiu_cmd:	The new LSSGIU command to store.
  * @return:			None.
  */
-void LSSGKCU_FillRxBuffer(unsigned char lssgkcu_cmd) {
-	lssgkcu_ctx.rx_buf[lssgkcu_ctx.rx_write_idx] = lssgkcu_cmd;
-	lssgkcu_ctx.rx_write_idx++;
+void LSSGIU_FillRxBuffer(unsigned char lssgiu_cmd) {
+	lssgiu_ctx.rx_buf[lssgiu_ctx.rx_write_idx] = lssgiu_cmd;
+	lssgiu_ctx.rx_write_idx++;
 	// Roll-over management.
-	if (lssgkcu_ctx.rx_write_idx == LSSGKCU_RX_BUFFER_SIZE) {
-		lssgkcu_ctx.rx_write_idx = 0;
+	if (lssgiu_ctx.rx_write_idx == LSSGIU_RX_BUFFER_SIZE) {
+		lssgiu_ctx.rx_write_idx = 0;
 	}
 }
 
-/* SEND AN LSSGKCU COMMAND TO SGKCU.
- * @param lssgkcu_cmd: 	LSSGKCU command (byte) to transmit.
+/* SEND AN LSSGIU COMMAND TO SGKCU.
+ * @param lssgiu_cmd: 	LSSGIU command (byte) to transmit.
  * @return: 			None.
  */
-void LSSGKCU_Send(unsigned char lssgkcu_cmd) {
-	USART1_SendByte(lssgkcu_cmd, USART_FORMAT_ASCII);
+void LSSGIU_Send(unsigned char lssgiu_cmd) {
+	USART1_SendByte(lssgiu_cmd, USART_FORMAT_ASCII);
 }
 
-/* MAIN ROUTINE OF LSSGKCU COMMAND MANAGER.
+/* MAIN ROUTINE OF LSSGIU COMMAND MANAGER.
  * @param:	None.
  * @return:	None.
  */
-void LSSGKCU_Task(void) {
-	// LSSGKCU routine.
-	if (lssgkcu_ctx.rx_read_idx != lssgkcu_ctx.rx_write_idx) {
-		LSSGKCU_Decode();
+void LSSGIU_Task(void) {
+	// LSSGIU routine.
+	if (lssgiu_ctx.rx_read_idx != lssgiu_ctx.rx_write_idx) {
+		LSSGIU_Decode();
 		// Increment read index and manage roll-over.
-		lssgkcu_ctx.rx_read_idx++;
-		if (lssgkcu_ctx.rx_read_idx == LSSGKCU_RX_BUFFER_SIZE) {
-			lssgkcu_ctx.rx_read_idx = 0;
+		lssgiu_ctx.rx_read_idx++;
+		if (lssgiu_ctx.rx_read_idx == LSSGIU_RX_BUFFER_SIZE) {
+			lssgiu_ctx.rx_read_idx = 0;
 		}
 	}
 }

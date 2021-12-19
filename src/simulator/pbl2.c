@@ -9,7 +9,7 @@
 
 #include "gpio.h"
 #include "lsmcu.h"
-#include "lssgkcu.h"
+#include "lssgiu.h"
 #include "mapping.h"
 #include "sw4.h"
 
@@ -61,12 +61,12 @@ void PBL2_Task(void) {
 		// Retrait.
 		if (lsmcu_ctx.lsmcu_pbl2_on != 0) {
 			// Send command on change.
-			LSSGKCU_Send(LSMCU_OUT_FPB_OFF);
+			LSSGIU_Send(LSMCU_OUT_FPB_OFF);
 			// Empty CG and RE.
-			MANO_SetTarget(lsmcu_ctx.lsmcu_mano_cg, 0);
-			MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_cg);
-			MANO_SetTarget(lsmcu_ctx.lsmcu_mano_re, 0);
-			MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_re);
+			MANOMETER_SetPressure(lsmcu_ctx.lsmcu_manometer_cg, 0);
+			MANOMETER_NeedleStart(lsmcu_ctx.lsmcu_manometer_cg);
+			MANOMETER_SetPressure(lsmcu_ctx.lsmcu_manometer_re, 0);
+			MANOMETER_NeedleStart(lsmcu_ctx.lsmcu_manometer_re);
 			// Update global context.
 			lsmcu_ctx.lsmcu_pbl2_on = 0;
 		}
@@ -76,14 +76,14 @@ void PBL2_Task(void) {
 		break;
 	case SW4_P2:
 		// Service.
-		if ((lsmcu_ctx.lsmcu_pbl2_on == 0) && (MANO_GetPressure(lsmcu_ctx.lsmcu_mano_cp) > PBL2_MIN_CP_PRESSURE_DECIBARS)) {
+		if ((lsmcu_ctx.lsmcu_pbl2_on == 0) && (MANOMETER_GetPressure(lsmcu_ctx.lsmcu_manometer_cp) > PBL2_MIN_CP_PRESSURE_DECIBARS)) {
 			// Send command on change.
-			LSSGKCU_Send(LSMCU_OUT_FPB_ON);
+			LSSGIU_Send(LSMCU_OUT_FPB_ON);
 			// Start CG and RE manometers.
-			MANO_SetTarget(lsmcu_ctx.lsmcu_mano_cg, PBL2_ON_CG_PRESSURE_DECIBARS);
-			MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_cg);
-			MANO_SetTarget(lsmcu_ctx.lsmcu_mano_re, PBL2_ON_CG_PRESSURE_DECIBARS);
-			MANO_StartNeedle(lsmcu_ctx.lsmcu_mano_re);
+			MANOMETER_SetPressure(lsmcu_ctx.lsmcu_manometer_cg, PBL2_ON_CG_PRESSURE_DECIBARS);
+			MANOMETER_NeedleStart(lsmcu_ctx.lsmcu_manometer_cg);
+			MANOMETER_SetPressure(lsmcu_ctx.lsmcu_manometer_re, PBL2_ON_CG_PRESSURE_DECIBARS);
+			MANOMETER_NeedleStart(lsmcu_ctx.lsmcu_manometer_re);
 			// Update global context.
 			lsmcu_ctx.lsmcu_pbl2_on = 1;
 		}

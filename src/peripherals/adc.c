@@ -16,7 +16,7 @@
 #include "mpinv.h"
 #include "pbl2.h"
 #include "rcc_reg.h"
-#include "s.h"
+#include "whistle.h"
 #include "zpt.h"
 
 /*** ADC local macros ***/
@@ -159,7 +159,7 @@ void ADC1_Task(void) {
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to S module.
 			adc_result_mv = ADC1_GetVoltageMv();
-			S_SetVoltageMv(adc_result_mv);
+			WHISTLE_SetVoltageMv(adc_result_mv);
 			// Start next conversion.
 			ADC1_SetChannel(ADC_CHANNEL_ZLFR);
 			ADC1_StartConversion();

@@ -9,7 +9,7 @@
 
 #include "gpio.h"
 #include "lsmcu.h"
-#include "lssgkcu.h"
+#include "lssgiu.h"
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
@@ -66,7 +66,7 @@ void MP_IncreaseGear(void) {
 		// Increment gear and send command.
 		mp_ctx.mp_gear_count++;
 		lsmcu_ctx.lsmcu_lsrh_blink_request = 1;
-		LSSGKCU_Send(LSMCU_OUT_MP_T_MORE);
+		LSSGIU_Send(LSMCU_OUT_MP_T_MORE);
 	}
 }
 
@@ -80,7 +80,7 @@ void MP_DecreaseGear(void) {
 		// Decrement gear and send command.
 		mp_ctx.mp_gear_count--;
 		lsmcu_ctx.lsmcu_lsrh_blink_request = 1;
-		LSSGKCU_Send(LSMCU_OUT_MP_T_LESS);
+		LSSGIU_Send(LSMCU_OUT_MP_T_LESS);
 	}
 }
 
@@ -131,7 +131,7 @@ void MP_Task(void) {
 		if ((mp_ctx.mp_gear_count > 0) && (TIM2_GetMs() > (mp_ctx.mp_gear_switch_next_time + MP_T_LESS_PERIOD_MS))) {
 			MP_DecreaseGear();
 			//if (mp_ctx.mp_gear_count == 0) {
-				//LSSGKCU_Send(LSMCU_OUT_MP_0);
+				//LSSGIU_Send(LSMCU_OUT_MP_0);
 			//}
 			// Update next time.
 			mp_ctx.mp_gear_switch_next_time = TIM2_GetMs() + MP_T_LESS_PERIOD_MS;

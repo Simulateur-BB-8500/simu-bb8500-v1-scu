@@ -2,7 +2,7 @@
  * pbl2.h
  *
  *  Created on: 21 mar. 2020
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef PBL2_H

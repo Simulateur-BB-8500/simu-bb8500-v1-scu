@@ -10,7 +10,7 @@
 #include "gpio.h"
 #include "kvb.h"
 #include "lsmcu.h"
-#include "lssgkcu.h"
+#include "lssgiu.h"
 #include "mapping.h"
 #include "sw2.h"
 
@@ -75,7 +75,7 @@ void BL_Task(void) {
 	if ((bl_ctx.bl_zdv.sw2_state == SW2_ON) && (lsmcu_ctx.lsmcu_zba_closed != 0)) {
 		// Send command on change.
 		if (lsmcu_ctx.lsmcu_bl_unlocked == 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZDV_ON);
+			LSSGIU_Send(LSMCU_OUT_ZDV_ON);
 			KVB_StartSweepTimer();
 		}
 		lsmcu_ctx.lsmcu_bl_unlocked = 1;
@@ -83,7 +83,7 @@ void BL_Task(void) {
 	else {
 		// Send command on change.
 		if (lsmcu_ctx.lsmcu_bl_unlocked != 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZDV_OFF);
+			LSSGIU_Send(LSMCU_OUT_ZDV_OFF);
 			KVB_StopSweepTimer();
 		}
 		lsmcu_ctx.lsmcu_bl_unlocked = 0;
@@ -98,7 +98,7 @@ void BL_Task(void) {
 			// Send command on change (only if DJ is locked).
 			if (lsmcu_ctx.lsmcu_dj_closed != 0) {
 				if (lsmcu_ctx.lsmcu_dj_locked != 0) {
-					LSSGKCU_Send(LSMCU_OUT_ZDJ_OFF);
+					LSSGIU_Send(LSMCU_OUT_ZDJ_OFF);
 				}
 				lsmcu_ctx.lsmcu_dj_locked = 0;
 			}
@@ -107,7 +107,7 @@ void BL_Task(void) {
 	}
 	else {
 		if (lsmcu_ctx.lsmcu_dj_closed != 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZDJ_OFF);
+			LSSGIU_Send(LSMCU_OUT_ZDJ_OFF);
 		}
 		lsmcu_ctx.lsmcu_dj_closed = 0; // Hack.
 		lsmcu_ctx.lsmcu_dj_locked = 0;
@@ -118,7 +118,7 @@ void BL_Task(void) {
 		if (bl_ctx.bl_zen.sw2_state == SW2_ON) {
 			// Send command on change.
 			if ((bl_ctx.bl_zen_on == 0) && (lsmcu_ctx.lsmcu_dj_locked == 0)) {
-				LSSGKCU_Send(LSMCU_OUT_ZEN_ON);
+				LSSGIU_Send(LSMCU_OUT_ZEN_ON);
 				lsmcu_ctx.lsmcu_dj_locked = 1;
 			}
 			bl_ctx.bl_zen_on = 1;
@@ -132,14 +132,14 @@ void BL_Task(void) {
 	if ((lsmcu_ctx.lsmcu_dj_locked != 0) && (bl_ctx.bl_zvm.sw2_state == SW2_ON)) {
 		// Send command on change.
 		if (bl_ctx.bl_zvm_on == 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZVM_ON);
+			LSSGIU_Send(LSMCU_OUT_ZVM_ON);
 		}
 		bl_ctx.bl_zvm_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.bl_zvm_on != 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZVM_OFF);
+			LSSGIU_Send(LSMCU_OUT_ZVM_OFF);
 		}
 		bl_ctx.bl_zvm_on = 0;
 	}
@@ -148,14 +148,14 @@ void BL_Task(void) {
 	if ((bl_ctx.bl_zfg.sw2_state == SW2_ON) && (lsmcu_ctx.lsmcu_zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.bl_zfg_on == 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZFG_ON);
+			LSSGIU_Send(LSMCU_OUT_ZFG_ON);
 		}
 		bl_ctx.bl_zfg_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.bl_zfg_on != 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZFG_OFF);
+			LSSGIU_Send(LSMCU_OUT_ZFG_OFF);
 		}
 		bl_ctx.bl_zfg_on = 0;
 	}
@@ -164,14 +164,14 @@ void BL_Task(void) {
 	if ((bl_ctx.bl_zfd.sw2_state == SW2_ON) && (lsmcu_ctx.lsmcu_zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.bl_zfd_on == 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZFD_ON);
+			LSSGIU_Send(LSMCU_OUT_ZFD_ON);
 		}
 		bl_ctx.bl_zfd_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.bl_zfd_on != 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZFD_OFF);
+			LSSGIU_Send(LSMCU_OUT_ZFD_OFF);
 		}
 		bl_ctx.bl_zfd_on = 0;
 	}
@@ -180,14 +180,14 @@ void BL_Task(void) {
 	if ((bl_ctx.bl_zpr.sw2_state == SW2_ON) && (lsmcu_ctx.lsmcu_zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.bl_zpr_on == 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZPR_ON);
+			LSSGIU_Send(LSMCU_OUT_ZPR_ON);
 		}
 		bl_ctx.bl_zpr_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.bl_zpr_on != 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZPR_OFF);
+			LSSGIU_Send(LSMCU_OUT_ZPR_OFF);
 		}
 		bl_ctx.bl_zpr_on = 0;
 	}

@@ -8,7 +8,7 @@
 #ifndef LSMCU_H
 #define LSMCU_H
 
-#include "mano.h"
+#include "manometer.h"
 
 /*** LSMCU structure ***/
 
@@ -25,11 +25,11 @@ typedef struct {
 	unsigned char lsmcu_series_traction;
 	unsigned char lsmcu_pbl2_on;
 	unsigned char lsmcu_urgency;
-	MANO_Context* lsmcu_mano_cp;
-	MANO_Context* lsmcu_mano_re;
-	MANO_Context* lsmcu_mano_cg;
-	MANO_Context* lsmcu_mano_cf1;
-	MANO_Context* lsmcu_mano_cf2;
+	MANOMETER_Context* lsmcu_manometer_cp;
+	MANOMETER_Context* lsmcu_manometer_re;
+	MANOMETER_Context* lsmcu_manometer_cg;
+	MANOMETER_Context* lsmcu_manometer_cf1;
+	MANOMETER_Context* lsmcu_manometer_cf2;
 } LSMCU_Context;
 
 #endif /* LSMCU_H */

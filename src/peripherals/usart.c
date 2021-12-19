@@ -8,7 +8,7 @@
 #include "usart.h"
 
 #include "gpio.h"
-#include "lssgkcu.h"
+#include "lssgiu.h"
 #include "mapping.h"
 #include "nvic.h"
 #include "rcc.h"
@@ -62,7 +62,7 @@ void USART1_IRQHandler(void) {
 	if (((USART1 -> ISR) & (0b1 << 5)) != 0) { // RXNE='1'.
 		// Get and store new byte into RX buffer.
 		unsigned char rx_byte = USART1 -> RDR;
-		LSSGKCU_FillRxBuffer(rx_byte);
+		LSSGIU_FillRxBuffer(rx_byte);
 	}
 }
 

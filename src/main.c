@@ -6,33 +6,34 @@
  */
 
 // Peripherals.
-#include <lsmcu.h>
 #include "adc.h"
 #include "dac.h"
 #include "gpio.h"
 #include "rcc.h"
 #include "tim.h"
 #include "usart.h"
-// Applicative.
+// Simulator.
+#include "bell.h"
 #include "bl.h"
-#include "comp.h"
-#include "dep.h"
+#include "compressor.h"
 #include "fpb.h"
 #include "fd.h"
-#include "il.h"
 #include "kvb.h"
-#include "lssgkcu.h"
-#include "mano.h"
+#include "manometer.h"
 #include "mapping.h"
 #include "mp.h"
 #include "mpinv.h"
 #include "pbl2.h"
-#include "s.h"
+#include "pictograms.h"
 #include "tch.h"
 #include "vacma.h"
+#include "whistle.h"
 #include "zba.h"
 #include "zlfr.h"
 #include "zpt.h"
+// Applicative.
+#include "lsmcu.h"
+#include "lssgiu.h"
 
 /*** MAIN global variables ***/
 
@@ -57,21 +58,21 @@ int main(void) {
 	DAC_Init();
 	USART1_Init();
 	// Init communication interface.
-	LSSGKCU_Init();
-	// Init dashboard modules.
+	LSSGIU_Init();
+	// Init simulator modules.
+	BELL_Init();
 	BL_Init();
-	COMP_Init();
-	DEP_Init();
+	COMPRESSOR_Init();
 	FD_Init();
 	FPB_Init();
-	IL_Init();
 	KVB_Init();
-	MANOS_Init();
+	MANOMETER_InitAll();
 	MP_Init();
 	MPINV_Init();
+	PICTOGRAMS_Init();
 	PBL2_Init();
-	S_Init();
 	TCH_Init();
+	WHISTLE_Init();
 	VACMA_Init();
 	ZBA_Init();
 	ZLFR_Init();
@@ -81,21 +82,21 @@ int main(void) {
 		// Peripherals tasks.
 		ADC1_Task();
 		// Communication tasks.
-		LSSGKCU_Task();
-		// Dashboard tasks.
+		LSSGIU_Task();
+		// Simulator tasks.
+		BELL_Task();
 		BL_Task();
-		COMP_Task();
-		DEP_Task();
+		COMPRESSOR_Task();
 		FD_Task();
 		FPB_Task();
-		IL_Task();
 		KVB_Task();
-		MANOS_ManagePower();
+		MANOMETER_ManagePowerAll();
 		MP_Task();
 		MPINV_Task();
 		PBL2_Task();
-		S_Task();
+		PICTOGRAMS_Task();
 		TCH_Task();
+		WHISTLE_Task();
 		VACMA_Task();
 		ZBA_Task();
 		ZPT_Task();

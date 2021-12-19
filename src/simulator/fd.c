@@ -8,7 +8,7 @@
 #include "fd.h"
 
 #include "gpio.h"
-#include "lssgkcu.h"
+#include "lssgiu.h"
 #include "mapping.h"
 #include "sw3.h"
 
@@ -55,19 +55,19 @@ void FD_Task(void) {
 	case SW3_BACK:
 		if (fd_ctx.fd_previous_state != SW3_BACK) {
 			// Backward.
-			LSSGKCU_Send(LSMCU_OUT_FD_RELEASE);
+			LSSGIU_Send(LSMCU_OUT_FD_RELEASE);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (fd_ctx.fd_previous_state != SW3_NEUTRAL) {
 			// Forward.
-			LSSGKCU_Send(LSMCU_OUT_FD_NEUTRAL);
+			LSSGIU_Send(LSMCU_OUT_FD_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (fd_ctx.fd_previous_state != SW3_FRONT) {
 			// Forward.
-			LSSGKCU_Send(LSMCU_OUT_FD_APPLY);
+			LSSGIU_Send(LSMCU_OUT_FD_APPLY);
 		}
 		break;
 	default:

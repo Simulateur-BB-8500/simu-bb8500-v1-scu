@@ -8,7 +8,7 @@
 #include "mpinv.h"
 
 #include "gpio.h"
-#include "lssgkcu.h"
+#include "lssgiu.h"
 #include "mapping.h"
 #include "sw3.h"
 
@@ -55,19 +55,19 @@ void MPINV_Task(void) {
 	case SW3_BACK:
 		if (mpinv_ctx.mpinv_previous_state != SW3_BACK) {
 			// Backward.
-			LSSGKCU_Send(LSMCU_OUT_MPINV_BACKWARD);
+			LSSGIU_Send(LSMCU_OUT_MPINV_BACKWARD);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (mpinv_ctx.mpinv_previous_state != SW3_NEUTRAL) {
 			// Forward.
-			LSSGKCU_Send(LSMCU_OUT_MPINV_NEUTRAL);
+			LSSGIU_Send(LSMCU_OUT_MPINV_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (mpinv_ctx.mpinv_previous_state != SW3_FRONT) {
 			// Forward.
-			LSSGKCU_Send(LSMCU_OUT_MPINV_FORWARD);
+			LSSGIU_Send(LSMCU_OUT_MPINV_FORWARD);
 		}
 		break;
 	default:

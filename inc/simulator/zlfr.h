@@ -12,4 +12,4 @@
 
 void ZLFR_Init(void);
 
-#endif /* APPLICATIVE_ZLFR_H_ */
+#endif /* ZLFR_H */

@@ -8,7 +8,7 @@
 #include "zba.h"
 
 #include "lsmcu.h"
-#include "lssgkcu.h"
+#include "lssgiu.h"
 #include "mapping.h"
 #include "sw2.h"
 
@@ -43,14 +43,14 @@ void ZBA_Task(void) {
 	if (zba.sw2_state == SW2_ON) {
 		// Send command on change.
 		if (lsmcu_ctx.lsmcu_zba_closed == 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZBA_ON);
+			LSSGIU_Send(LSMCU_OUT_ZBA_ON);
 		}
 		lsmcu_ctx.lsmcu_zba_closed = 1;
 	}
 	else {
 		// Send command on change.
 		if (lsmcu_ctx.lsmcu_zba_closed != 0) {
-			LSSGKCU_Send(LSMCU_OUT_ZBA_OFF);
+			LSSGIU_Send(LSMCU_OUT_ZBA_OFF);
 		}
 		lsmcu_ctx.lsmcu_zba_closed = 0;
 	}

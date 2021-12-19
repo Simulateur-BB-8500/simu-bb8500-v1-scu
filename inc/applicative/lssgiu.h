@@ -1,16 +1,16 @@
 /*
- * lssgkcu.h
+ * lssgiu.h
  *
  *  Created on: 1 oct. 2017
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
-#ifndef LSSGKCU_H
-#define LSSGKCU_H
+#ifndef LSSGIU_H
+#define LSSGIU_H
 
 #include "tch.h"
 
-/*** LSSGKCU structures ***/
+/*** LSSGIU structures ***/
 
 typedef enum {
 	LSMCU_OUT_ZBA_ON = 0,
@@ -25,10 +25,10 @@ typedef enum {
 	LSMCU_OUT_ZPT_FRONT_DOWN,
 	LSMCU_OUT_ZDJ_OFF,
 	LSMCU_OUT_ZEN_ON,
-	LSMCU_OUT_COMP_AUTO_REG_MIN_ON,
-	LSMCU_OUT_COMP_AUTO_REG_MAX_ON,
-	LSMCU_OUT_COMP_DIRECT_ON,
-	LSMCU_OUT_COMP_OFF,
+	LSMCU_OUT_COMPRESSOR_AUTO_REG_MIN_ON,
+	LSMCU_OUT_COMPRESSOR_AUTO_REG_MAX_ON,
+	LSMCU_OUT_COMPRESSOR_DIRECT_ON,
+	LSMCU_OUT_COMPRESSOR_OFF,
 	LSMCU_OUT_FPB_ON,
 	LSMCU_OUT_FPB_OFF,
 	LSMCU_OUT_FPB_APPLY,
@@ -51,9 +51,9 @@ typedef enum {
 	LSMCU_OUT_FD_NEUTRAL,
 	LSMCU_OUT_FD_RELEASE,
 	LSMCU_OUT_BPURG,
-	LSMCU_OUT_S_HIGH_TONE,
-	LSMCU_OUT_S_LOW_TONE,
-	LSMCU_OUT_S_NEUTRAL,
+	LSMCU_OUT_WHISTLE_HIGH_TONE,
+	LSMCU_OUT_WHISTLE_LOW_TONE,
+	LSMCU_OUT_WHISTLE_NEUTRAL,
 	LSMCU_OUT_BPEV_ON,
 	LSMCU_OUT_BPEV_OFF,
 	LSMCU_OUT_BPSA_ON,
@@ -81,7 +81,7 @@ typedef enum {
 	LSMCU_OUT_KVB_BPSF_ON,
 	LSMCU_OUT_KVB_BPSF_OFF,
 	LSMCU_OUT_NOP = 0xFF
-} LSMCU_To_LSSGKCU;
+} LSMCU_To_LSSGIU;
 
 typedef enum {
 	// Bytes 0 to TCH_SPEED_MAX_KMH are reserved for coding speed in km/h.
@@ -120,13 +120,13 @@ typedef enum {
 	LSMCU_IN_KVB_Y_00,
 	LSMCU_IN_KVB_G_000,
 	LSMCU_IN_KVB_Y_000,
-} LSSGKCU_To_LSMCU;
+} LSSGIU_To_LSMCU;
 
-/*** LSSGKCU functions ***/
+/*** LSSGIU functions ***/
 
-void LSSGKCU_Init(void);
-void LSSGKCU_FillRxBuffer(unsigned char at_cmd);
-void LSSGKCU_Send(unsigned char at_cmd);
-void LSSGKCU_Task(void);
+void LSSGIU_Init(void);
+void LSSGIU_FillRxBuffer(unsigned char at_cmd);
+void LSSGIU_Send(unsigned char at_cmd);
+void LSSGIU_Task(void);
 
-#endif /* LSSGKCU_H */
+#endif /* LSSGIU_H */
