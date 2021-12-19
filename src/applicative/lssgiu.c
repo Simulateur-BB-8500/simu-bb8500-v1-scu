@@ -40,7 +40,7 @@ static LSSGIU_Context lssgiu_ctx;
  * @param:	None.
  * @return: None.
  */
-void LSSGIU_Decode(void) {
+static void LSSGIU_Decode(void) {
 	unsigned char ls_cmd = lssgiu_ctx.rx_buf[lssgiu_ctx.rx_read_idx];
 	if (ls_cmd <= TCH_SPEED_MAX_KMH) {
 		// Save speed in main context.

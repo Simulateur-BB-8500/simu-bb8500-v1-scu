@@ -63,7 +63,7 @@ static ADC_State adc_state;
  * @param channel: 		ADC channel (x for 'ADCChannelx', 17 for 'VREF' or 18 for 'VBAT').
  * @return: 			None.
  */
-void ADC1_SetChannel(unsigned char channel) {
+static void ADC1_SetChannel(unsigned char channel) {
 	// Ensure channel ranges between 0 and 18.
 	unsigned char local_channel = channel;
 	if (local_channel > ADC_CHANNEL_MAX) {
@@ -78,7 +78,7 @@ void ADC1_SetChannel(unsigned char channel) {
  * @param:	None.
  * @return: None.
  */
-void ADC1_StartConversion(void) {
+static void ADC1_StartConversion(void) {
 	// Clear EOC flag.
 	ADC1 -> SR &= ~(0b1 << 1);
 	// Start conversion.
@@ -89,7 +89,7 @@ void ADC1_StartConversion(void) {
  * @param:	None.
  * @return:	ADC conversion result represented in mV.
  */
-unsigned int ADC1_GetVoltageMv(void) {
+static unsigned int ADC1_GetVoltageMv(void) {
 	return ((VCC_MV * (ADC1 -> DR)) / (ADC_FULL_SCALE));
 }
 

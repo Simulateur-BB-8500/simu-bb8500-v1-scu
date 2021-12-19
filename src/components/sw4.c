@@ -27,7 +27,7 @@
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P0 position, '0' otherwise.
  */
-unsigned char SW4_VoltageIsP0(SW4_Context* sw4) {
+static unsigned char SW4_VoltageIsP0(SW4_Context* sw4) {
 	unsigned char result = 0;
 	if ((sw4 -> voltage) < SW4_P0P1_THRESHOLD_LOW) {
 		result = 1;
@@ -39,7 +39,7 @@ unsigned char SW4_VoltageIsP0(SW4_Context* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P1 position, '0' otherwise.
  */
-unsigned char SW4_VoltageIsP1(SW4_Context* sw4) {
+static unsigned char SW4_VoltageIsP1(SW4_Context* sw4) {
 	unsigned char result = 0;
 	if (((sw4 -> voltage) > SW4_P0P1_THRESHOLD_HIGH) && ((sw4 -> voltage) < SW4_P1P2_THRESHOLD_LOW)) {
 		result = 1;
@@ -51,7 +51,7 @@ unsigned char SW4_VoltageIsP1(SW4_Context* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P2 position, '0' otherwise.
  */
-unsigned char SW4_VoltageIsP2(SW4_Context* sw4) {
+static unsigned char SW4_VoltageIsP2(SW4_Context* sw4) {
 	unsigned char result = 0;
 	if (((sw4 -> voltage) > SW4_P1P2_THRESHOLD_HIGH) && ((sw4 -> voltage) < SW4_P2P3_THRESHOLD_LOW)) {
 		result = 1;
@@ -63,7 +63,7 @@ unsigned char SW4_VoltageIsP2(SW4_Context* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P3 position, '0' otherwise.
  */
-unsigned char SW4_VoltageIsP3(SW4_Context* sw4) {
+static unsigned char SW4_VoltageIsP3(SW4_Context* sw4) {
 	unsigned char result = 0;
 	if ((sw4 -> voltage) > SW4_P2P3_THRESHOLD_HIGH) {
 		result = 1;

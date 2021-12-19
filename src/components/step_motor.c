@@ -24,7 +24,7 @@ STEP_MOTOR_Context step_motor_cf2 = {&GPIO_MCF2_1, &GPIO_MCF2_2, 0};
  * @param step_motor:	Step motor to control.
  * @return:				None.
  */
-void STEP_MOTOR_SingleStep(STEP_MOTOR_Context* step_motor) {
+static void STEP_MOTOR_SingleStep(STEP_MOTOR_Context* step_motor) {
 	// Convert step to state.
 	switch ((step_motor -> step) % 4) {
 	// 00.

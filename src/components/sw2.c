@@ -10,10 +10,10 @@
 #include "gpio.h"
 #include "tim.h"
 
-/*** 2-poles switch functions ***/
+/*** SW2 functions ***/
 
 /* INITIALISE AN SW2 STRUCTURE.
- * @param sw2:				Switch structure to initialise.
+ * @param sw2:				Switch structure to initialize.
  * @param gpio:				GPIO attached to the switch.
  * @param active_state:		GPIO state ('0' or '1') for which the switch is considered on.
  * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).

@@ -56,7 +56,7 @@ static const GPIO* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_ZJG, &G
  * @param segment:	The corresponding segment configuration, coded as <dot G F E D B C B A>.
  * 					0 (all segments off) if the input character is unknown or can't be displayed with 7 segments.
  */
-unsigned char KVB_AsciiTo7Segments(unsigned char ascii) {
+static unsigned char KVB_AsciiTo7Segments(unsigned char ascii) {
 	unsigned char segment = 0;
 	switch (ascii) {
 	case 'b':
@@ -160,7 +160,7 @@ unsigned char KVB_AsciiTo7Segments(unsigned char ascii) {
  * @param:	None.
  * @return:	None.
  */
-void KVB_BlinkLVAL(void) {
+static void KVB_BlinkLVAL(void) {
 	// TBC: add time offset to start at 0%.
 	unsigned int t = TIM2_GetMs() % KVB_LVAL_BLINK_PERIOD_MS;
 	unsigned int lvalDutyCycle = 0;
@@ -179,7 +179,7 @@ void KVB_BlinkLVAL(void) {
  * @param:	None.
  * @return:	None.
  */
-void KVB_BlinkLSSF(void) {
+static void KVB_BlinkLSSF(void) {
 	// TBC: add time offset to start at 0.
 	unsigned int t = TIM2_GetMs() % KVB_LSSF_BLINK_PERIOD_MS;
 	// Square wave equation.

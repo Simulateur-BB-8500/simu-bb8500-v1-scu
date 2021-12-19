@@ -60,7 +60,7 @@ static MP_Context mp_ctx;
  * @param:	None.
  * @return:	None.
  */
-void MP_IncreaseGear(void) {
+static void MP_IncreaseGear(void) {
 	// Check gear count.
 	if (mp_ctx.gear_count < MP_GEAR_MAX) {
 		// Increment gear and send command.
@@ -74,7 +74,7 @@ void MP_IncreaseGear(void) {
  * @param:	None.
  * @return:	None.
  */
-void MP_DecreaseGear(void) {
+static void MP_DecreaseGear(void) {
 	// Check gear count.
 	if (mp_ctx.gear_count > 0) {
 		// Decrement gear and send command.

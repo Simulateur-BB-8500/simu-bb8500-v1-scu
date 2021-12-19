@@ -10,7 +10,7 @@
 
 #include "gpio.h"
 
-/*** 2-poles switch structures ***/
+/*** SW2 structures ***/
 
 // Output state.
 typedef enum {
@@ -36,7 +36,7 @@ typedef struct {
 	unsigned int confirm_start_time;
 } SW2_Context;
 
-/*** 2-poles switch functions ***/
+/*** SW2 functions ***/
 
 void SW2_Init(SW2_Context* sw2, const GPIO* gpio, unsigned char active_state, unsigned int debouncing_ms);
 void SW2_UpdateState(SW2_Context* sw2);

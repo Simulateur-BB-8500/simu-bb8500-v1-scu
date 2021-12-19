@@ -70,7 +70,7 @@ void USART1_IRQHandler(void) {
  * @param newbyte:		Byte to store in buffer.
  * @return:				None.
  */
-void USART1_FillTxBuffer(unsigned char new_tx_byte) {
+static void USART1_FillTxBuffer(unsigned char new_tx_byte) {
 	(usart1_ctx.tx_buf)[usart1_ctx.tx_write_idx] = new_tx_byte;
 	// Increment index and manage roll-over.
 	usart1_ctx.tx_write_idx++;
@@ -83,13 +83,15 @@ void USART1_FillTxBuffer(unsigned char new_tx_byte) {
  * @param n:	The word to converts.
  * @return:		The results of conversion.
  */
-unsigned char CharToASCII(unsigned char n) {
+static unsigned char CharToASCII(unsigned char n) {
 	unsigned char result = 0;
 	if (n <= 15) {
 		result = (n <= 9 ? (char) (n + 48) : (char) (n + 55));
 	}
 	return result;
 }
+
+/*** USART functions ***/
 
 /* CONFIGURE USART PERIPHERAL.
  * @param:	None.

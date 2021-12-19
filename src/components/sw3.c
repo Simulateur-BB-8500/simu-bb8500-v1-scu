@@ -25,7 +25,7 @@
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a neutral position, '0' otherwise.
  */
-unsigned char SW3_VoltageIsNeutral(SW3_Context* sw3) {
+static unsigned char SW3_VoltageIsNeutral(SW3_Context* sw3) {
 	unsigned char result = 0;
 	if (((sw3 -> voltage) > SW3_BACK_THRESHOLD_HIGH) && ((sw3 -> voltage) < SW3_FRONT_THRESHOLD_LOW)) {
 		result = 1;
@@ -37,7 +37,7 @@ unsigned char SW3_VoltageIsNeutral(SW3_Context* sw3) {
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a back position, '0' otherwise.
  */
-unsigned char SW3_VoltageIsBack(SW3_Context* sw3) {
+static unsigned char SW3_VoltageIsBack(SW3_Context* sw3) {
 	unsigned char result = 0;
 	if ((sw3 -> voltage) < SW3_BACK_THRESHOLD_LOW) {
 		result = 1;
@@ -49,7 +49,7 @@ unsigned char SW3_VoltageIsBack(SW3_Context* sw3) {
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a front position, '0' otherwise.
  */
-unsigned char SW3_VoltageIsFront(SW3_Context* sw3) {
+static unsigned char SW3_VoltageIsFront(SW3_Context* sw3) {
 	unsigned char result = 0;
 	if ((sw3 -> voltage) > SW3_FRONT_THRESHOLD_HIGH) {
 		result = 1;
