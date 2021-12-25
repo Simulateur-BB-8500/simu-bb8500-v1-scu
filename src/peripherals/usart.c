@@ -121,7 +121,7 @@ void USART1_Init(void) {
 	USART1 -> CR1 |= (0b1 << 5); // // Enable RX interrupt (RXNEIE='1').
 	// Enable peripheral.
 	USART1 -> CR1 |= (0b1 << 0); // UE='1'.
-	NVIC_EnableInterrupt(IT_USART1);
+	NVIC_EnableInterrupt(NVIC_IT_USART1);
 }
 
 /* SEND A BYTE THROUGH USART.
@@ -130,7 +130,7 @@ void USART1_Init(void) {
  * @return: 			None.
  */
 void USART1_SendByte(unsigned char tx_byte, USART_Format format) {
-	NVIC_DisableInterrupt(IT_USART1);
+	NVIC_DisableInterrupt(NVIC_IT_USART1);
 	switch (format) {
 	unsigned int i;
 	unsigned char hundreds, tens, units;
@@ -168,5 +168,5 @@ void USART1_SendByte(unsigned char tx_byte, USART_Format format) {
 		break;
 	}
 	USART1 -> CR1 |= (0b1 << 7); // TXEIE = '1'.
-	NVIC_EnableInterrupt(IT_USART1);
+	NVIC_EnableInterrupt(NVIC_IT_USART1);
 }

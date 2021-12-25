@@ -9,6 +9,7 @@
 #include "adc.h"
 #include "dac.h"
 #include "gpio.h"
+#include "nvic.h"
 #include "rcc.h"
 #include "tim.h"
 #include "usart.h"
@@ -47,6 +48,7 @@ LSMCU_Context lsmcu_ctx;
  */
 int main(void) {
 	// Init Peripherals.
+	NVIC_Init();
 	RCC_Init();
 	GPIO_Init();
 	TIM2_Init(); // Time keeper.
@@ -101,5 +103,5 @@ int main(void) {
 		ZBA_Task();
 		ZPT_Task();
 	}
-	return (0);
+	return 0;
 }

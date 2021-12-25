@@ -180,7 +180,7 @@ void TIM6_Init(void) {
 void TIM6_Start(void) {
 	// Enable counter.
 	TIM6 -> CR1 |= (0b1 << 0); // CEN='1'.
-	NVIC_EnableInterrupt(IT_TIM6_DAC);
+	NVIC_EnableInterrupt(NVIC_IT_TIM6_DAC);
 }
 
 /* STOP TIM6.
@@ -222,7 +222,7 @@ void TIM7_Init(void) {
 void TIM7_Start(void) {
 	// Enable counter.
 	TIM7 -> CR1 |= (0b1 << 0); // CEN='1'.
-	NVIC_EnableInterrupt(IT_TIM7);
+	NVIC_EnableInterrupt(NVIC_IT_TIM7);
 }
 
 /* STOP TIM6.
@@ -233,7 +233,7 @@ void TIM7_Stop(void) {
 	// Disable and reset counter.
 	TIM7 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM7 -> CNT = 0;
-	NVIC_DisableInterrupt(IT_TIM7);
+	NVIC_DisableInterrupt(NVIC_IT_TIM7);
 }
 
 /* CONFIGURE TIM8 IN PWM MODE FOR LVAL BLINKING.
