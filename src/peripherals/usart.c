@@ -114,7 +114,7 @@ void USART1_Init(void) {
 	USART1 -> CR2 = 0;
 	USART1 -> CR3 = 0;
 	// Baud rate.
-	USART1 -> BRR = (RCC_PCLK2_KHZ * 1000) / (BAUD_RATE); // USART clock = PCLK2 (APB2 peripheral).
+	USART1 -> BRR = (RCC_GetClockFrequency(RCC_CLOCK_PCLK2) * 1000) / (BAUD_RATE); // USART clock = PCLK2 (APB2 peripheral).
 	// Enable transmitter and receiver.
 	USART1 -> CR1 |= (0b1 << 3); // TE='1'.
 	USART1 -> CR1 |= (0b1 << 2); // RE='1'.

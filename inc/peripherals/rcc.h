@@ -8,17 +8,23 @@
 #ifndef RCC_H
 #define RCC_H
 
+/*** RCC structures ***/
+
+typedef enum {
+	RCC_CLOCK_SYSCLK,
+	RCC_CLOCK_PCLK1,
+	RCC_CLOCK_PCLK2,
+	RCC_CLOCK_LAST
+} RCC_Clock;
+
 /*** RCC macros ***/
 
 // If defined, output clocks on MCO1 and MCO2 pins.
 //#define RCC_OUTPUT_CLOCK
-// System clocks frequency in kHz.
-#define RCC_SYSCLK_KHZ	100000
-#define RCC_PCLK1_KHZ	25000
-#define RCC_PCLK2_KHZ	25000
 
 /*** RCC functions ***/
 
 void RCC_Init(void);
+unsigned int RCC_GetClockFrequency(RCC_Clock rcc_clock);
 
 #endif /* RCC_H */

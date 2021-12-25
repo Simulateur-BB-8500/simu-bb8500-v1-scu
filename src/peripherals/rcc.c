@@ -7,8 +7,16 @@
 
 #include "rcc.h"
 
-#include "flash_reg.h"
+#include "flash.h"
 #include "rcc_reg.h"
+
+/*** RCC local macros ***/
+
+#define RCC_HSI_FREQUENCY_KHZ	16000
+
+/*** RCC local global variables ***/
+
+static unsigned int rcc_clock_frequency[RCC_CLOCK_LAST] = {RCC_HSI_FREQUENCY_KHZ, RCC_HSI_FREQUENCY_KHZ, RCC_HSI_FREQUENCY_KHZ};
 
 /*** RCC functions ***/
 
@@ -17,12 +25,6 @@
  * @return: None.
  */
 void RCC_Init(void) {
-	// Use HSI first for start-up.
-	RCC -> CR &= ~(0b1 << 16); // HSEON = '0'.
-	RCC -> CR |= (0b1 << 0); // HSION='1'.
-	while (((RCC -> CR) & (0b1 << 1)) == 0); // // Wait for HSI to be stable (HSIRDY='1').
-	RCC -> CFGR &= ~(0b11 << 0); // Select HSI as system clock (SW='00').
-	while (((RCC -> CFGR) & (0b11 << 0)) != 0b00); // // Wait for clock switch (SWS='00').
 	// Peripherals clock prescalers:
 	// HPRE = 1 -> HCLK = SYSCLK = 100MHz (max 216).
 	// PPRE1 = 4 -> PCLK1 = HCLK/4 = 25MHz (max 54).
@@ -43,18 +45,33 @@ void RCC_Init(void) {
 	RCC -> CR |= (0b1 << 24);
 	// Wait for PLL to be ready.
 	while (((RCC -> CR) & (0b1 << 25)) == 0);
-	// Use main PLL output clock as system clock.
-	FLASH -> ACR |= (0b1 << 8); // Enable flash prefetch.
 	// Increase flash latency according to new system clock frequency (see p.74 of RM0385 datasheet).
 	// HCLK = SYSCLK = 100MHz -> flash latency must be set to 3 wait states (WS).
-	FLASH -> ACR &= ~(0b1111 << 0); // Reset bits 0-3.
-	FLASH -> ACR |= 3; // LATENCY=3.
-	while (((FLASH -> ACR) & (0b1111 << 0)) != 3);
-	RCC -> CFGR |= (0b10 << 0); // // Select PLLCLK (SW='10').
+	FLASH_SetLatency(3);
+	// Switch to PLLCLK.
+	RCC -> CFGR |= (0b10 << 0); // SW='10'.
 	while (((RCC -> CFGR) & (0b11 << 0)) != 0b10); // // Wait for clock switch (SWS='00').
 #ifdef RCC_OUTPUT_CLOCK
 	// Output HSI on MCO1 (PA8 as AF0) and SYSCLK on MCO2 (PC9 as AF0) with both prescalers = 4.
 	RCC -> CFGR &= 0x369FFFFF;
 	RCC -> CFGR |= 0x36000000;
 #endif
+	// Update frequencies.
+	rcc_clock_frequency[RCC_CLOCK_SYSCLK] = 100000;
+	rcc_clock_frequency[RCC_CLOCK_PCLK1] = 25000;
+	rcc_clock_frequency[RCC_CLOCK_PCLK2] = 25000;
+}
+
+/* GET RCC CLOC FREQUENCY.
+ * @param rcc_clock:	RCC clock source.
+ * @return freq_khz:	RCC clock frequency in kHz.
+ */
+unsigned int RCC_GetClockFrequency(RCC_Clock rcc_clock) {
+	// Local variables.
+	unsigned int freq_khz = 0;
+	// Check parameter.
+	if (rcc_clock < RCC_CLOCK_LAST) {
+		freq_khz = rcc_clock_frequency[rcc_clock];
+	}
+	return freq_khz;
 }
