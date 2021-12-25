@@ -90,7 +90,7 @@ static void ADC1_StartConversion(void) {
  * @return:	ADC conversion result represented in mV.
  */
 static unsigned int ADC1_GetVoltageMv(void) {
-	return ((VCC_MV * (ADC1 -> DR)) / (ADC_FULL_SCALE));
+	return ((ADC_VCC_DEFAULT_MV * (ADC1 -> DR)) / (ADC_FULL_SCALE));
 }
 
 /*** ADC functions ***/

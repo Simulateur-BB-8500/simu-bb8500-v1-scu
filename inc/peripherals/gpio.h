@@ -10,11 +10,6 @@
 
 #include "gpio_reg.h"
 
-/*** GPIO macros ***/
-
-// MCU power supply in mV.
-#define VCC_MV	3300
-
 /*** GPIO structures ***/
 
 // GPIO structure.

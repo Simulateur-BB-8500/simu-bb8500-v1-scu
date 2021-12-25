@@ -26,7 +26,7 @@ extern LSMCU_Context lsmcu_ctx;
  * @param: 	None.
  * @return: None.
  */
-void TIM6_DAC_IRQHandler(void) {
+void __attribute__((optimize("-O0"))) TIM6_DAC_IRQHandler(void) {
 	// Perform KVB display sweep.
 	KVB_Sweep();
 	// Clear flag.
@@ -37,7 +37,7 @@ void TIM6_DAC_IRQHandler(void) {
  * @param: 	None.
  * @return: None.
  */
-void TIM7_IRQHandler(void) {
+void __attribute__((optimize("-O0"))) TIM7_IRQHandler(void) {
 	// Perform manometers needle control.
 	MANOMETER_NeedleTask(lsmcu_ctx.manometer_cp);
 	MANOMETER_NeedleTask(lsmcu_ctx.manometer_re);
@@ -73,7 +73,7 @@ void TIM2_Init(void) {
 
 /* RETURNS THE NUMBER OF MILLISECONDS ELLAPSED SINCE START-UP.
  * @param: 	None.
- * @return:	Number of milliseconds (32-bits word) ellapsed since start-up.
+ * @return:	Number of milliseconds (32-bits word) elapsed since start-up.
  */
 unsigned int TIM2_GetMs(void) {
 	return (TIM2 -> CNT);

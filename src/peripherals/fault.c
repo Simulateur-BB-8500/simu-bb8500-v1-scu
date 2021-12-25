@@ -11,7 +11,7 @@
  * @param:	None.
  * @return:	None.
  */
-void NMI_Handler(void) {
+void __attribute__((optimize("-O0"))) NMI_Handler(void) {
 	// Trigger software reset.
 	SCB -> AIRCR = 0x05FA0000 | ((SCB -> AIRCR) & 0x0000FFFF) | (0b1 << 2);
 }
@@ -20,7 +20,7 @@ void NMI_Handler(void) {
  * @param:	None.
  * @return:	None.
  */
-void HardFault_Handler(void) {
+void __attribute__((optimize("-O0"))) HardFault_Handler(void) {
 	// Trigger software reset.
 	SCB -> AIRCR = 0x05FA0000 | ((SCB -> AIRCR) & 0x0000FFFF) | (0b1 << 2);
 }
@@ -38,7 +38,7 @@ void MemManage_Handler(void) {
  * @param:	None.
  * @return:	None.
  */
-void BusFault_Handler(void) {
+void __attribute__((optimize("-O0"))) BusFault_Handler(void) {
 	// Trigger software reset.
 	SCB -> AIRCR = 0x05FA0000 | ((SCB -> AIRCR) & 0x0000FFFF) | (0b1 << 2);
 }
@@ -47,7 +47,7 @@ void BusFault_Handler(void) {
  * @param:	None.
  * @return:	None.
  */
-void UsageFault_Handler(void) {
+void __attribute__((optimize("-O0"))) UsageFault_Handler(void) {
 	// Trigger software reset.
 	SCB -> AIRCR = 0x05FA0000 | ((SCB -> AIRCR) & 0x0000FFFF) | (0b1 << 2);
 }

@@ -14,10 +14,10 @@
 /*** SW3 local macros ***/
 
 #define SW3_DELTA_HYSTERESIS_MV		100 // Set the voltage difference (in mV) between low and high thresholds.
-#define SW3_BACK_THRESHOLD_LOW		((VCC_MV/4)-(SW3_DELTA_HYSTERESIS_MV/2))
-#define SW3_BACK_THRESHOLD_HIGH 	((VCC_MV/4)+(SW3_DELTA_HYSTERESIS_MV/2))
-#define SW3_FRONT_THRESHOLD_LOW 	(((3*VCC_MV)/4)-(SW3_DELTA_HYSTERESIS_MV/2))
-#define SW3_FRONT_THRESHOLD_HIGH 	(((3*VCC_MV)/4)+(SW3_DELTA_HYSTERESIS_MV/2))
+#define SW3_BACK_THRESHOLD_LOW		((ADC_VCC_DEFAULT_MV / 4) - (SW3_DELTA_HYSTERESIS_MV / 2))
+#define SW3_BACK_THRESHOLD_HIGH 	((ADC_VCC_DEFAULT_MV / 4) + (SW3_DELTA_HYSTERESIS_MV / 2))
+#define SW3_FRONT_THRESHOLD_LOW 	(((3 * ADC_VCC_DEFAULT_MV) / 4) - (SW3_DELTA_HYSTERESIS_MV / 2))
+#define SW3_FRONT_THRESHOLD_HIGH 	(((3 * ADC_VCC_DEFAULT_MV) / 4) + (SW3_DELTA_HYSTERESIS_MV / 2))
 
 /*** SW3 local functions ***/
 
@@ -69,7 +69,7 @@ void SW3_Init(SW3_Context* sw3, const GPIO* gpio, unsigned int debouncing_ms) {
 	// Init GPIO.
 	GPIO_Configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
-	(sw3 -> voltage) = (VCC_MV / 2); // Neutral = Vcc/2.
+	(sw3 -> voltage) = (ADC_VCC_DEFAULT_MV / 2); // Neutral = Vcc/2.
 	(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
 	(sw3 -> state) = SW3_NEUTRAL;
 	(sw3 -> debouncing_ms) = debouncing_ms;

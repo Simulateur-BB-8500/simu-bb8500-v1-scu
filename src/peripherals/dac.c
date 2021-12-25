@@ -7,6 +7,7 @@
 
 #include "dac.h"
 
+#include "adc.h"
 #include "dac_reg.h"
 #include "gpio.h"
 #include "mapping.h"
@@ -45,10 +46,10 @@ void DAC_SetVoltageMv(unsigned int voltage_mv) {
 	if (real_voltage_mv < 0) {
 		real_voltage_mv = 0;
 	}
-	if (real_voltage_mv > VCC_MV) {
-		real_voltage_mv = VCC_MV;
+	if (real_voltage_mv > ADC_VCC_DEFAULT_MV) {
+		real_voltage_mv = ADC_VCC_DEFAULT_MV;
 	}
-	DAC -> DHR12R1 = (DAC_FULL_SCALE * real_voltage_mv) / (VCC_MV);
+	DAC -> DHR12R1 = (DAC_FULL_SCALE * real_voltage_mv) / (ADC_VCC_DEFAULT_MV);
 }
 
 /* GET DAC CURRENT OUTPUT VOLTAGE.
@@ -56,6 +57,6 @@ void DAC_SetVoltageMv(unsigned int voltage_mv) {
  * @return voltage:	Current output voltage expressed in mV (between 0 and VCC_MV).
  */
 unsigned int DAC_GetVoltageMv(void) {
-	unsigned int voltage_mv = ((DAC -> DOR1) * VCC_MV) / (DAC_FULL_SCALE);
+	unsigned int voltage_mv = ((DAC -> DOR1) * ADC_VCC_DEFAULT_MV) / (DAC_FULL_SCALE);
 	return voltage_mv;
 }
