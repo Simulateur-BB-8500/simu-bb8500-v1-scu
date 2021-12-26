@@ -21,8 +21,8 @@
 /*** LSSGIU local structures ***/
 
 typedef struct {
-	unsigned char rx_buf[LSSGIU_RX_BUFFER_SIZE];
-	unsigned int rx_write_idx;
+	volatile unsigned char rx_buf[LSSGIU_RX_BUFFER_SIZE];
+	volatile unsigned int rx_write_idx;
 	unsigned int rx_read_idx;
 } LSSGIU_Context;
 
@@ -41,6 +41,7 @@ static LSSGIU_Context lssgiu_ctx;
  * @return: None.
  */
 static void LSSGIU_Decode(void) {
+	// Read last command.
 	unsigned char ls_cmd = lssgiu_ctx.rx_buf[lssgiu_ctx.rx_read_idx];
 	if (ls_cmd <= TCH_SPEED_MAX_KMH) {
 		// Save speed in main context.
@@ -153,6 +154,11 @@ static void LSSGIU_Decode(void) {
 			break;
 		}
 	}
+	// Increment read index and manage roll-over.
+	lssgiu_ctx.rx_read_idx++;
+	if (lssgiu_ctx.rx_read_idx == LSSGIU_RX_BUFFER_SIZE) {
+		lssgiu_ctx.rx_read_idx = 0;
+	}
 }
 
 /*** LSSGIU functions ***/
@@ -163,8 +169,8 @@ static void LSSGIU_Decode(void) {
  */
 void LSSGIU_Init(void) {
 	// Init context.
-	unsigned int i = 0;
-	for(i=0 ; i<LSSGIU_RX_BUFFER_SIZE ; i++) lssgiu_ctx.rx_buf[i] = 0;
+	unsigned int idx = 0;
+	for (idx=0 ; idx<LSSGIU_RX_BUFFER_SIZE ; idx++) lssgiu_ctx.rx_buf[idx] = LSMCU_IN_NOP;
 	lssgiu_ctx.rx_write_idx = 0;
 	lssgiu_ctx.rx_read_idx = 0;
 }
@@ -177,7 +183,7 @@ void LSSGIU_FillRxBuffer(unsigned char ls_cmd) {
 	lssgiu_ctx.rx_buf[lssgiu_ctx.rx_write_idx] = ls_cmd;
 	lssgiu_ctx.rx_write_idx++;
 	// Roll-over management.
-	if (lssgiu_ctx.rx_write_idx == LSSGIU_RX_BUFFER_SIZE) {
+	if (lssgiu_ctx.rx_write_idx >= LSSGIU_RX_BUFFER_SIZE) {
 		lssgiu_ctx.rx_write_idx = 0;
 	}
 }
@@ -187,7 +193,7 @@ void LSSGIU_FillRxBuffer(unsigned char ls_cmd) {
  * @return: 			None.
  */
 void LSSGIU_Send(unsigned char ls_cmd) {
-	USART1_SendByte(ls_cmd, USART_FORMAT_ASCII);
+	USART1_SendByte(ls_cmd);
 }
 
 /* MAIN ROUTINE OF LSSGIU COMMAND MANAGER.
@@ -198,10 +204,5 @@ void LSSGIU_Task(void) {
 	// LSSGIU routine.
 	if (lssgiu_ctx.rx_read_idx != lssgiu_ctx.rx_write_idx) {
 		LSSGIU_Decode();
-		// Increment read index and manage roll-over.
-		lssgiu_ctx.rx_read_idx++;
-		if (lssgiu_ctx.rx_read_idx == LSSGIU_RX_BUFFER_SIZE) {
-			lssgiu_ctx.rx_read_idx = 0;
-		}
 	}
 }

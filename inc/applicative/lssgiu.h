@@ -120,6 +120,8 @@ typedef enum {
 	LSMCU_IN_KVB_Y_00,
 	LSMCU_IN_KVB_G_000,
 	LSMCU_IN_KVB_Y_000,
+	// NOP.
+	LSMCU_IN_NOP = 0xFF
 } LSSGIU_To_LSMCU;
 
 /*** LSSGIU functions ***/

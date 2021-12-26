@@ -17,23 +17,8 @@
 
 /*** USART local macros ***/
 
-// Baud rate.
-#define BAUD_RATE 				9600
-// Buffer sizes.
-#define USART_TX_BUFFER_SIZE	32
-#define USART_RX_BUFFER_SIZE	32
-
-/*** USART local structures ***/
-
-typedef struct {
-	unsigned char tx_buf[USART_TX_BUFFER_SIZE]; 	// Transmit buffer
-	unsigned int tx_read_idx; 						// Reading index in TX buffer.
-	unsigned int tx_write_idx; 						// Writing index in TX buffer.
-} USART_Context;
-
-/*** USART local global variables ***/
-
-static USART_Context usart1_ctx;
+#define USART_BAUD_RATE 		9600
+#define USART_TIMEOUT_COUNT		100000
 
 /*** USART local functions ***/
 
@@ -42,53 +27,17 @@ static USART_Context usart1_ctx;
  * @return:	None.
  */
 void __attribute__((optimize("-O0"))) USART1_IRQHandler(void) {
-	// TX.
-	if (((USART1 -> ISR) & (0b1 << 7)) != 0) { // TXE='1'.
-		if ((usart1_ctx.tx_read_idx) != (usart1_ctx.tx_write_idx)) {
-			// Send byte.
-			USART1 -> TDR = (usart1_ctx.tx_buf)[usart1_ctx.tx_read_idx];
-			// Increment read index.
-			usart1_ctx.tx_read_idx++;
-			if (usart1_ctx.tx_read_idx == USART_TX_BUFFER_SIZE) {
-				usart1_ctx.tx_read_idx = 0;
-			}
-		}
-		else {
-			// No more bytes.
-			USART1 -> CR1 &= ~(0b1 << 7); // TXEIE = '0'.
-		}
-	}
 	// RX.
 	if (((USART1 -> ISR) & (0b1 << 5)) != 0) { // RXNE='1'.
 		// Get and store new byte into RX buffer.
 		unsigned char rx_byte = USART1 -> RDR;
 		LSSGIU_FillRxBuffer(rx_byte);
 	}
-}
-
-/* APPEND A NEW BYTE TO TX BUFFER AND MANAGE INDEX ROLL-OVER.
- * @param newbyte:		Byte to store in buffer.
- * @return:				None.
- */
-static void USART1_FillTxBuffer(unsigned char new_tx_byte) {
-	(usart1_ctx.tx_buf)[usart1_ctx.tx_write_idx] = new_tx_byte;
-	// Increment index and manage roll-over.
-	usart1_ctx.tx_write_idx++;
-	if (usart1_ctx.tx_write_idx == USART_TX_BUFFER_SIZE) {
-		usart1_ctx.tx_write_idx = 0;
+	// Overrun error interrupt.
+	if (((USART1 -> ISR) & (0b1 << 3)) != 0) {
+		// Clear ORE flag.
+		USART1 -> ICR |= (0b1 << 3);
 	}
-}
-
-/* CONVERTS A 4-BIT WORD TO THE ASCII CODE OF THE CORRESPONDING HEXADECIMAL CHARACTER.
- * @param n:	The word to converts.
- * @return:		The results of conversion.
- */
-static unsigned char CharToASCII(unsigned char n) {
-	unsigned char result = 0;
-	if (n <= 15) {
-		result = (n <= 9 ? (char) (n + 48) : (char) (n + 55));
-	}
-	return result;
 }
 
 /*** USART functions ***/
@@ -98,11 +47,6 @@ static unsigned char CharToASCII(unsigned char n) {
  * @return: None.
  */
 void USART1_Init(void) {
-	// Init context.
-	unsigned int i = 0;
-	for (i=0 ; i<USART_TX_BUFFER_SIZE ; i++) (usart1_ctx.tx_buf)[i] = 0;
-	usart1_ctx.tx_read_idx = 0;
-	usart1_ctx.tx_write_idx = 0;
 	// Enable peripheral clock.
 	RCC -> APB2ENR |= (0b1 << 4);
 	// Configure GPIOs.
@@ -114,7 +58,7 @@ void USART1_Init(void) {
 	USART1 -> CR2 = 0;
 	USART1 -> CR3 = 0;
 	// Baud rate.
-	USART1 -> BRR = (RCC_GetClockFrequency(RCC_CLOCK_PCLK2) * 1000) / (BAUD_RATE); // USART clock = PCLK2 (APB2 peripheral).
+	USART1 -> BRR = (RCC_GetClockFrequency(RCC_CLOCK_PCLK2) * 1000) / (USART_BAUD_RATE); // USART clock = PCLK2 (APB2 peripheral).
 	// Enable transmitter and receiver.
 	USART1 -> CR1 |= (0b1 << 3); // TE='1'.
 	USART1 -> CR1 |= (0b1 << 2); // RE='1'.
@@ -125,48 +69,17 @@ void USART1_Init(void) {
 }
 
 /* SEND A BYTE THROUGH USART.
- * @param byte:			The byte to send.
- * @param format:		Display format (should be 'Binary', 'Hexadecimal', 'Decimal' or 'ASCII').
- * @return: 			None.
+ * @param byte:	Byte to send.
+ * @return: 	None.
  */
-void USART1_SendByte(unsigned char tx_byte, USART_Format format) {
-	NVIC_DisableInterrupt(NVIC_IT_USART1);
-	switch (format) {
-	unsigned int i;
-	unsigned char hundreds, tens, units;
-	case USART_FORMAT_BINARY:
-		for (i=7 ; i>=0 ; i--) {
-			if (tx_byte & (1 << i)) {
-				USART1_FillTxBuffer(0x31); // = '1'.
-			}
-			else {
-				USART1_FillTxBuffer(0x30); // = '0'.
-			}
-		}
-		break;
-	case USART_FORMAT_HEXADECIMAL:
-		USART1_FillTxBuffer(CharToASCII((tx_byte & 0xF0) >> 4));
-		USART1_FillTxBuffer(CharToASCII(tx_byte & 0x0F));
-		break;
-	case USART_FORMAT_DECIMAL:
-		// Hundreds.
-		hundreds = (tx_byte/100);
-		USART1_FillTxBuffer(hundreds+48); // 48 = ASCII offset to reach character '0'.
-		// Tens.
-		tens = (tx_byte-hundreds*100)/10;
-		USART1_FillTxBuffer(tens+48); // 48 = ASCII offset to reach character '0'.
-		// Units.
-		units = (tx_byte-hundreds*100-tens*10);
-		USART1_FillTxBuffer(units+48); // 48 = ASCII offset to reach character '0'.
-		break;
-	case USART_FORMAT_ASCII:
-		// Raw byte.
-		USART1_FillTxBuffer(tx_byte);
-		break;
-	default:
-		// Unknown format.
-		break;
+void USART1_SendByte(unsigned char tx_byte) {
+	// Fill transmit register.
+	USART1 -> TDR = tx_byte;
+	// Wait for transmission to complete.
+	unsigned int loop_count = 0;
+	while (((USART1 -> ISR) & (0b1 << 7)) == 0) {
+		// Wait for TXE='1' or timeout.
+		loop_count++;
+		if (loop_count > USART_TIMEOUT_COUNT) break;
 	}
-	USART1 -> CR1 |= (0b1 << 7); // TXEIE = '1'.
-	NVIC_EnableInterrupt(NVIC_IT_USART1);
 }
