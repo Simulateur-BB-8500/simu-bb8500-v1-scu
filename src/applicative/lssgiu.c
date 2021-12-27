@@ -11,7 +11,6 @@
 #include "gpio.h"
 #include "lsmcu.h"
 #include "mapping.h"
-#include "tch.h"
 #include "usart.h"
 
 /*** LSSGIU local macros ***/
@@ -43,116 +42,13 @@ static LSSGIU_Context lssgiu_ctx;
 static void LSSGIU_Decode(void) {
 	// Read last command.
 	unsigned char ls_cmd = lssgiu_ctx.rx_buf[lssgiu_ctx.rx_read_idx];
-	if (ls_cmd <= TCH_SPEED_MAX_KMH) {
-		// Save speed in main context.
+	if (ls_cmd <= LSMCU_TCH_SPEED_LAST) {
+		// Store current speed in global context.
 		lsmcu_ctx.speed_kmh = ls_cmd;
 	}
-	else {
-		// Decode LSSGIU command.
-		switch(ls_cmd) {
-		case LSMCU_IN_KVB_LVAL_BLINK:
-			GPIO_Write(&GPIO_KVB_LVAL, 0);
-			KVB_EnableBlinkLVAL(1);
-			break;
-		case LSMCU_IN_KVB_LVAL_ON:
-			KVB_EnableBlinkLVAL(0);
-			GPIO_Write(&GPIO_KVB_LVAL, 1);
-			break;
-		case LSMCU_IN_KVB_LVAL_OFF:
-			KVB_EnableBlinkLVAL(0);
-			GPIO_Write(&GPIO_KVB_LVAL, 0);
-			break;
-		case LSMCU_IN_KVB_LMV_ON:
-			GPIO_Write(&GPIO_KVB_LMV, 1);
-			break;
-		case LSMCU_IN_KVB_LMV_OFF:
-			GPIO_Write(&GPIO_KVB_LMV, 0);
-			break;
-		case LSMCU_IN_KVB_LFC_ON:
-			GPIO_Write(&GPIO_KVB_LFC, 1);
-			break;
-		case LSMCU_IN_KVB_LFC_OFF:
-			GPIO_Write(&GPIO_KVB_LFC, 0);
-			break;
-		case LSMCU_IN_KVB_LV_ON:
-			GPIO_Write(&GPIO_KVB_LV, 1);
-			break;
-		case LSMCU_IN_KVB_LV_OFF:
-			GPIO_Write(&GPIO_KVB_LV, 0);
-			break;
-		case LSMCU_IN_KVB_LFU_ON:
-			GPIO_Write(&GPIO_KVB_LFU, 1);
-			break;
-		case LSMCU_IN_KVB_LFU_OFF:
-			GPIO_Write(&GPIO_KVB_LFU, 0);
-			break;
-		case LSMCU_IN_KVB_LPS_ON:
-			GPIO_Write(&GPIO_KVB_LPS, 1);
-			break;
-		case LSMCU_IN_KVB_LPS_OFF:
-			GPIO_Write(&GPIO_KVB_LPS, 0);
-			break;
-		case LSMCU_IN_KVB_LSSF_BLINK:
-			GPIO_Write(&GPIO_KVB_LSSF, 0);
-			KVB_EnableBlinkLSSF(1);
-			break;
-		case LSMCU_IN_KVB_LSSF_ON:
-			KVB_EnableBlinkLSSF(0);
-			GPIO_Write(&GPIO_KVB_LSSF, 1);
-			break;
-		case LSMCU_IN_KVB_LSSF_OFF:
-			KVB_EnableBlinkLSSF(0);
-			GPIO_Write(&GPIO_KVB_LSSF, 0);
-			break;
-		case LSMCU_IN_KVB_YG_OFF:
-			KVB_DisplayOff();
-			break;
-		case LSMCU_IN_KVB_YG_PA400:
-			KVB_Display(KVB_YG_PA400);
-			break;
-		case LSMCU_IN_KVB_YG_UC512:
-			KVB_Display(KVB_YG_UC512);
-			break;
-		case LSMCU_IN_KVB_YG_888:
-			KVB_Display(KVB_YG_888);
-			break;
-		case LSMCU_IN_KVB_YG_DASH:
-			KVB_Display(KVB_YG_DASH);
-			break;
-		case LSMCU_IN_KVB_G_B:
-			KVB_Display(KVB_G_B);
-			break;
-		case LSMCU_IN_KVB_Y_B:
-			KVB_Display(KVB_Y_B);
-			break;
-		case LSMCU_IN_KVB_G_P:
-			KVB_Display(KVB_G_P);
-			break;
-		case LSMCU_IN_KVB_Y_P:
-			KVB_Display(KVB_Y_P);
-			break;
-		case LSMCU_IN_KVB_G_L:
-			KVB_Display(KVB_G_L);
-			break;
-		case LSMCU_IN_KVB_Y_L:
-			KVB_Display(KVB_Y_L);
-			break;
-		case LSMCU_IN_KVB_G_00:
-			KVB_Display(KVB_G_00);
-			break;
-		case LSMCU_IN_KVB_Y_00:
-			KVB_Display(KVB_Y_00);
-			break;
-		case LSMCU_IN_KVB_G_000:
-			KVB_Display(KVB_G_000);
-			break;
-		case LSMCU_IN_KVB_Y_000:
-			KVB_Display(KVB_Y_000);
-			break;
-		default:
-			// Unknown command.
-			break;
-		}
+	else if (ls_cmd <= LSMCU_SPEED_LIMIT_LAST) {
+		// Store speed limit in global context.
+		lsmcu_ctx.speed_limit_kmh = 10 * (ls_cmd - LSMCU_SPEED_LIMIT_OFFSET);
 	}
 	// Increment read index and manage roll-over.
 	lssgiu_ctx.rx_read_idx++;

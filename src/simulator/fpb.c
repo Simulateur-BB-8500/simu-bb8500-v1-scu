@@ -10,6 +10,7 @@
 #include "gpio.h"
 #include "lsmcu.h"
 #include "lssgiu.h"
+#include "manometer.h"
 #include "mapping.h"
 #include "sw3.h"
 
@@ -62,18 +63,31 @@ void FPB_Task(void) {
 			if (fpb_ctx.previous_state != SW3_BACK) {
 				// Backward.
 				LSSGIU_Send(LSMCU_OUT_FPB_RELEASE);
+				// Start CG and RE manometers.
+				MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, (lsmcu_ctx.manometer_cg) -> pressure_limit_decibars);
+				MANOMETER_NeedleStart(lsmcu_ctx.manometer_cg);
+				MANOMETER_SetPressure(lsmcu_ctx.manometer_re, (lsmcu_ctx.manometer_re) -> pressure_limit_decibars);
+				MANOMETER_NeedleStart(lsmcu_ctx.manometer_re);
 			}
 			break;
 		case SW3_NEUTRAL:
 			if (fpb_ctx.previous_state != SW3_NEUTRAL) {
 				// Forward.
 				LSSGIU_Send(LSMCU_OUT_FPB_NEUTRAL);
+				// Stop manometers.
+				MANOMETER_NeedleStop(lsmcu_ctx.manometer_cg);
+				MANOMETER_NeedleStop(lsmcu_ctx.manometer_re);
 			}
 			break;
 		case SW3_FRONT:
 			if (fpb_ctx.previous_state != SW3_FRONT) {
 				// Forward.
 				LSSGIU_Send(LSMCU_OUT_FPB_APPLY);
+				// Start CG and RE manometers.
+				MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, 0);
+				MANOMETER_NeedleStart(lsmcu_ctx.manometer_cg);
+				MANOMETER_SetPressure(lsmcu_ctx.manometer_re, 0);
+				MANOMETER_NeedleStart(lsmcu_ctx.manometer_re);
 			}
 			break;
 		default:
@@ -83,6 +97,5 @@ void FPB_Task(void) {
 	}
 	// Update previous state.
 	fpb_ctx.previous_state = fpb_ctx.sw3.state;
-
 }
 

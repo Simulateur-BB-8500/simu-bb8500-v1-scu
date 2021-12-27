@@ -14,7 +14,7 @@
 
 /*** MANOMETER local macros ***/
 
-#define MANOMETER_STEP_IT_PERIOD_MAX		1000	// 1000 * 100µs = 100ms.
+#define MANOMETER_STEP_IT_PERIOD_MAX	1000	// 1000 * 100us = 100ms.
 
 /*** MANOMETER external global variables ***/
 
@@ -27,11 +27,11 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** MANOMETER local global variables ***/
 
-MANOMETER_Context manometer_cp = {0, &step_motor_cp, 100, 3072, 20, 0, 0, 100, 0, 0};
-MANOMETER_Context manometer_re = {0, &step_motor_re, 100, 3072, 20, 0, 0, 100, 0, 0};
-MANOMETER_Context manometer_cg = {0, &step_motor_cg, 100, 3072, 20, 0, 0, 100, 0, 0};
-MANOMETER_Context manometer_cf1 = {0, &step_motor_cf1, 60, 3072, 20, 0, 0, 100, 0, 0};
-MANOMETER_Context manometer_cf2 = {0, &step_motor_cf2, 60, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_cp = {0, &step_motor_cp, 95, 100, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_re = {0, &step_motor_re, 50, 100, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_cg = {0, &step_motor_cg, 50, 100, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_cf1 = {0, &step_motor_cf1, 41, 60, 3072, 20, 0, 0, 100, 0, 0};
+MANOMETER_Context manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20, 0, 0, 100, 0, 0};
 
 /*** MANOMETER local functions ***/
 
@@ -124,7 +124,7 @@ void MANOMETER_SetPressure(MANOMETER_Context* manometer, unsigned int pressure_d
 }
 
 /* GET CURRENT MANOMETER PRESSURE.
- * @param manometer:			Manometer to analyse.
+ * @param manometer:			Manometer to analyze.
  * @return pressure_decibars:	Current pressure displayed by the manometer in decibars.
  */
 unsigned int MANOMETER_GetPressure(MANOMETER_Context* manometer) {

@@ -10,6 +10,7 @@
 #include "gpio.h"
 #include "lsmcu.h"
 #include "mapping.h"
+#include "sw2.h"
 #include "tim.h"
 
 /*** KVB local macros ***/
@@ -22,17 +23,60 @@
 #define KVB_LVAL_BLINK_PERIOD_MS	900		// Period of LVAL blinking (in ms).
 // LSSF.
 #define KVB_LSSF_BLINK_PERIOD_MS	333		// Period of LSSF blinking (in ms).
+// Display messages.
+#define KVB_YG_PA400				((unsigned char*) "PA 400")
+#define KVB_YG_UC512				((unsigned char*) "UC 512")
+#define KVB_YG_888					((unsigned char*) "888888")
+#define KVB_YG_DASH					((unsigned char*) "------")
+#define KVB_G_B						((unsigned char*) "    b ")
+#define KVB_Y_B						((unsigned char*) " b    ")
+#define KVB_G_P						((unsigned char*) "    P ")
+#define KVB_Y_P						((unsigned char*) " P    ")
+#define KVB_G_L						((unsigned char*) "    L ")
+#define KVB_Y_L						((unsigned char*) " L    ")
+#define KVB_G_00					((unsigned char*) "    00")
+#define KVB_Y_00					((unsigned char*) " 00   ")
+#define KVB_G_000					((unsigned char*) "   000")
+#define KVB_Y_000					((unsigned char*) "000   ")
+// Initialization screens duration.
+#define KVB_PA400_DURATION_MS		2000
+#define KVB_PA400_OFF_DURATION_MS	2000
+#define KVB_UC512_DURATION_MS		2000
+#define KVB_888888_DURATION_MS		3000
+// Security parameters.
+#define KVB_SPEED_LIMIT_MARGIN_KMH	5
 
 /*** KVB local structures ***/
 
+typedef enum {
+	KVB_STATE_OFF,
+	KVB_STATE_PA400,
+	KVB_STATE_PA400_OFF,
+	KVB_STATE_UC512,
+	KVB_STATE_888888,
+	KVB_STATE_WAIT_VALIDATION,
+	KVB_STATE_IDLE,
+	KVB_STATE_URGENCY
+} KVB_State;
+
 // KVB context.
 typedef struct KVB_Context {
-	unsigned char ascii_buf[KVB_NUMBER_OF_DISPLAYS];
+	// State machine.
+	KVB_State state;
+	unsigned int state_switch_time_ms;
+	// Buttons.
+	SW2_Context bpval;
+	SW2_Context bpmv;
+	SW2_Context bpfc;
+	SW2_Context bpat;
+	SW2_Context bpsf;
+	SW2_Context acsf;
 	// Each display state is coded in a byte: <dot G F E D B C B A>.
 	// A '1' bit means the segment is on, a '0' means the segment is off.
+	unsigned char ascii_buf[KVB_NUMBER_OF_DISPLAYS];
 	unsigned char segment_buf[KVB_NUMBER_OF_DISPLAYS];
 	unsigned char segment_idx; // A to dot.
-	unsigned char display_idx; // yel0 left to green right.
+	unsigned char display_idx; // Yellow left to green right.
 	// Flags to enable LVAL and LSSF blinking.
 	unsigned char lval_blink_enable;
 	unsigned char lval_blinking;
@@ -191,56 +235,11 @@ static void KVB_BlinkLSSF(void) {
 	}
 }
 
-/*** KVB functions ***/
-
-/* INITIALISE KVB MODULE.
- * @param:	None.
- * @return:	None.
- */
-void KVB_Init(void) {
-	// Init GPIOs.
-	unsigned int idx = 0;
-	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_Configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_Configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	// LVAL is configured in TIM8_Init() function since it is linked to TIM8 channel 1.
-	GPIO_Configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	// Init context.
-	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) {
-		kvb_ctx.ascii_buf[idx] = 0;
-		kvb_ctx.segment_buf[idx] = 0;
-	}
-	kvb_ctx.display_idx = 0;
-	kvb_ctx.segment_idx = 0;
-	kvb_ctx.lssf_blink_enable = 1;
-	kvb_ctx.lval_blink_enable = 0;
-	kvb_ctx.lval_blinking = 0;
-	// Init global context.
-	lsmcu_ctx.urgency = 0;
-}
-
-/* ENABLE KVB DISPLAY SWEEP TIMER.
- * @param:	None.
- * @return:	None.
- */
-void KVB_StartSweepTimer(void) {
-	// Start sweep timer.
-	TIM6_Start();
-}
-
-/* DISABLE KVB DISPLAY SWEEP TIMER.
- * @param:	None.
- * @return:	None.
- */
-void KVB_StopSweepTimer(void) {
-	// Stop sweep timer.
-	TIM6_Stop();
-}
-
 /* FILL KVB ASCII BUFFER FOR FUTURE DISPLAYING.
  * @param display:	String to display (cut if too long, padded with null character if too short).
  * @return:			None.
  */
-void KVB_Display(unsigned char* display) {
+static void KVB_Display(unsigned char* display) {
 	unsigned char charIndex = 0;
 	// Copy message into ascii_buf.
 	while (*display) {
@@ -259,13 +258,15 @@ void KVB_Display(unsigned char* display) {
 	for (charIndex=0 ; charIndex<KVB_NUMBER_OF_DISPLAYS ; charIndex++) {
 		kvb_ctx.segment_buf[charIndex] = KVB_AsciiTo7Segments(kvb_ctx.ascii_buf[charIndex]);
 	}
+	// Start sweep timer.
+	TIM6_Start();
 }
 
-/* SWITCH OFF ALL KVB PANEL.
+/* TURN ALL KVB DISPLAYS OFF.
  * @param:	None.
  * @return:	None.
  */
-void KVB_DisplayOff(void) {
+static void KVB_DisplayOff(void) {
 	unsigned int i = 0;
 	// Flush buffers and switch off GPIOs.
 	for (i=0 ; i<KVB_NUMBER_OF_DISPLAYS ; i++) {
@@ -276,22 +277,59 @@ void KVB_DisplayOff(void) {
 	for (i=0 ; i<KVB_NUMBER_OF_SEGMENTS ; i++) {
 		GPIO_Write(segment_gpio_buf[i], 0);
 	}
+	// Stop sweep timer.
+	TIM6_Stop();
 }
 
-/* ENABLE OR DISABLE LVAL BLINKING.
- * @param blinkEnabled:		New state.
- * @return:					None.
+/* TURN ALL KVB LIGHTS OFF.
+ * @param:	None.
+ * @return:	None.
  */
-void KVB_EnableBlinkLVAL(unsigned char blink_enabled) {
-	kvb_ctx.lval_blink_enable = blink_enabled;
+static void KVB_LightsOff(void) {
+	kvb_ctx.lval_blink_enable = 0;
+	kvb_ctx.lssf_blink_enable = 0;
 }
 
-/* ENABLE OR DISABLE LSSF BLINKING.
- * @param blinkEnabled:		New state.
- * @return:					None.
+/*** KVB functions ***/
+
+/* INITIALISE KVB MODULE.
+ * @param:	None.
+ * @return:	None.
  */
-void KVB_EnableBlinkLSSF(unsigned char blink_enabled) {
-	kvb_ctx.lssf_blink_enable = blink_enabled;
+void KVB_Init(void) {
+	// Init 7-segments displays.
+	unsigned int idx = 0;
+	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_Configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_Configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	// Init lights (exceptv LVAL configured in TIM8 driver).
+	GPIO_Configure(&GPIO_KVB_LMV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_KVB_LFC, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_KVB_LV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_KVB_LFU, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_KVB_LPE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_KVB_LPS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	// Init buttons.
+	SW2_Init(&kvb_ctx.bpval, &GPIO_KVB_BPVAL, 0, 100); // BPVAL active low.
+	SW2_Init(&kvb_ctx.bpmv, &GPIO_KVB_BPVAL, 0, 100); // BPMV active low.
+	SW2_Init(&kvb_ctx.bpfc, &GPIO_KVB_BPVAL, 0, 100); // BPFC active low.
+	SW2_Init(&kvb_ctx.bpat, &GPIO_KVB_BPVAL, 0, 100); // BPAT active low.
+	SW2_Init(&kvb_ctx.bpsf, &GPIO_KVB_BPVAL, 0, 100); // BPSF active low.
+	SW2_Init(&kvb_ctx.acsf, &GPIO_KVB_BPVAL, 0, 100); // ACSF active low.
+	// Init context.
+	kvb_ctx.state = KVB_STATE_OFF;
+	kvb_ctx.state_switch_time_ms = 0;
+	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) {
+		kvb_ctx.ascii_buf[idx] = 0;
+		kvb_ctx.segment_buf[idx] = 0;
+	}
+	kvb_ctx.display_idx = 0;
+	kvb_ctx.segment_idx = 0;
+	kvb_ctx.lssf_blink_enable = 0;
+	kvb_ctx.lval_blink_enable = 0;
+	kvb_ctx.lval_blinking = 0;
+	// Init global context.
+	lsmcu_ctx.speed_limit_kmh = 0;
 }
 
 /* PROCESS KVB DISPLAY (CALLED BY TIM6 INTERRUPT HANDLER EVERY 2ms).
@@ -322,20 +360,88 @@ void KVB_Sweep(void) {
  * @return:	None.
  */
 void KVB_Task(void) {
-	// LVAL.
-	if (kvb_ctx.lval_blink_enable != 0) {
-		if (kvb_ctx.lval_blinking == 0) {
-			TIM8_Start();
-			kvb_ctx.lval_blinking = 1;
+	// Update buttons state.
+	SW2_UpdateState(&kvb_ctx.bpval);
+	SW2_UpdateState(&kvb_ctx.bpmv);
+	SW2_UpdateState(&kvb_ctx.bpfc);
+	SW2_UpdateState(&kvb_ctx.bpat);
+	SW2_UpdateState(&kvb_ctx.bpsf);
+	SW2_UpdateState(&kvb_ctx.acsf);
+	// Perform internal state machine.
+	switch (kvb_ctx.state) {
+	case KVB_STATE_OFF:
+		if (lsmcu_ctx.bl_unlocked != 0) {
+			// Start KVB init.
+			KVB_Display(KVB_YG_PA400);
+			kvb_ctx.lssf_blink_enable = 1;
+			kvb_ctx.state = KVB_STATE_PA400;
+			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
 		}
-		KVB_BlinkLVAL();
+		break;
+	case KVB_STATE_PA400:
+		// Wait PA400 display duration.
+		if (TIM2_GetMs() > (kvb_ctx.state_switch_time_ms + KVB_PA400_DURATION_MS)) {
+			KVB_DisplayOff();
+			kvb_ctx.state = KVB_STATE_PA400_OFF;
+			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+		}
+		break;
+	case KVB_STATE_PA400_OFF:
+		// Wait transition duration.
+		if (TIM2_GetMs() > (kvb_ctx.state_switch_time_ms + KVB_PA400_OFF_DURATION_MS)) {
+			KVB_Display(KVB_YG_UC512);
+			kvb_ctx.state = KVB_STATE_UC512;
+			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+		}
+		break;
+	case KVB_STATE_UC512:
+		// Wait for UC512 display duration.
+		if (TIM2_GetMs() > (kvb_ctx.state_switch_time_ms + KVB_UC512_DURATION_MS)) {
+			KVB_Display(KVB_YG_888);
+			kvb_ctx.lssf_blink_enable = 1;
+			kvb_ctx.state = KVB_STATE_888888;
+			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+		}
+		break;
+	case KVB_STATE_888888:
+		// Wait for 888888 display duration.
+		if (TIM2_GetMs() > (kvb_ctx.state_switch_time_ms + KVB_888888_DURATION_MS)) {
+			KVB_DisplayOff();
+			kvb_ctx.state = KVB_STATE_WAIT_VALIDATION;
+			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+		}
+		break;
+	case KVB_STATE_WAIT_VALIDATION:
+		// Check BPVAL.
+		if (kvb_ctx.bpval.state == SW2_ON) {
+			// Parameters validated, go to idle state.
+			kvb_ctx.state = KVB_STATE_IDLE;
+		}
+		break;
+	case KVB_STATE_IDLE:
+		// Speed check.
+		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_LIMIT_MARGIN_KMH)) {
+			// Trigger urgency brake.
+			lsmcu_ctx.urgency = 1;
+			kvb_ctx.state = KVB_STATE_URGENCY;
+		}
+		break;
+	case KVB_STATE_URGENCY:
+		break;
+	default:
+		break;
 	}
-	else {
-		TIM8_Stop();
-		kvb_ctx.lval_blinking = 0;
+	// Force OFF state if BL is locked.
+	if (lsmcu_ctx.bl_unlocked == 0) {
+		KVB_DisplayOff();
+		KVB_LightsOff();
+		kvb_ctx.state = KVB_STATE_OFF;
 	}
-	// LSSF
+	// Manage LVAL and LSSF blinking.
 	if (kvb_ctx.lssf_blink_enable != 0) {
 		KVB_BlinkLSSF();
+	}
+	if (kvb_ctx.lval_blink_enable != 0) {
+		KVB_BlinkLVAL();
 	}
 }

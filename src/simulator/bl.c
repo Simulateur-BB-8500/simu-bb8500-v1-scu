@@ -8,7 +8,6 @@
 #include "bl.h"
 
 #include "gpio.h"
-#include "kvb.h"
 #include "lsmcu.h"
 #include "lssgiu.h"
 #include "mapping.h"
@@ -76,7 +75,6 @@ void BL_Task(void) {
 		// Send command on change.
 		if (lsmcu_ctx.bl_unlocked == 0) {
 			LSSGIU_Send(LSMCU_OUT_ZDV_ON);
-			KVB_StartSweepTimer();
 		}
 		lsmcu_ctx.bl_unlocked = 1;
 	}
@@ -84,7 +82,6 @@ void BL_Task(void) {
 		// Send command on change.
 		if (lsmcu_ctx.bl_unlocked != 0) {
 			LSSGIU_Send(LSMCU_OUT_ZDV_OFF);
-			KVB_StopSweepTimer();
 		}
 		lsmcu_ctx.bl_unlocked = 0;
 	}

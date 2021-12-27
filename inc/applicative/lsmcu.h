@@ -20,6 +20,7 @@ typedef struct {
 	unsigned char dj_locked;
 	unsigned char compressor_on;
 	unsigned char speed_kmh;
+	unsigned char speed_limit_kmh;
 	unsigned char rheostat_0;
 	unsigned char lsrh_blink_request;
 	unsigned char series_traction;

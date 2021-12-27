@@ -16,6 +16,7 @@
 // Simulator.
 #include "bell.h"
 #include "bl.h"
+#include "bpgd.h"
 #include "compressor.h"
 #include "fpb.h"
 #include "fd.h"
@@ -27,6 +28,7 @@
 #include "pbl2.h"
 #include "pictograms.h"
 #include "tch.h"
+#include "urgency.h"
 #include "vacma.h"
 #include "whistle.h"
 #include "zba.h"
@@ -64,6 +66,7 @@ int main(void) {
 	// Init simulator modules.
 	BELL_Init();
 	BL_Init();
+	BPGD_Init();
 	COMPRESSOR_Init();
 	FD_Init();
 	FPB_Init();
@@ -74,8 +77,9 @@ int main(void) {
 	PICTOGRAMS_Init();
 	PBL2_Init();
 	TCH_Init();
-	WHISTLE_Init();
+	URGENCY_Init();
 	VACMA_Init();
+	WHISTLE_Init();
 	ZBA_Init();
 	ZLFR_Init();
 	ZPT_Init();
@@ -88,6 +92,7 @@ int main(void) {
 		// Simulator tasks.
 		BELL_Task();
 		BL_Task();
+		BPGD_Task();
 		COMPRESSOR_Task();
 		FD_Task();
 		FPB_Task();
@@ -98,8 +103,9 @@ int main(void) {
 		PBL2_Task();
 		PICTOGRAMS_Task();
 		TCH_Task();
-		WHISTLE_Task();
+		URGENCY_Task();
 		VACMA_Task();
+		WHISTLE_Task();
 		ZBA_Task();
 		ZPT_Task();
 	}

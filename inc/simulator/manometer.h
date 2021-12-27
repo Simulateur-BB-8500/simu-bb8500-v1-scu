@@ -15,8 +15,9 @@
 typedef struct {
 	volatile unsigned char enable;
 	STEP_MOTOR_Context* step_motor;
-	unsigned int pressure_max_decibars;
-	unsigned int pressure_max_steps;
+	unsigned int pressure_limit_decibars; // Maximum operation pressure.
+	unsigned int pressure_max_decibars; // Maximum pressure displayed on the dial.
+	unsigned int pressure_max_steps; // Number of steps required to display the maximum pressure of the dial.
 	unsigned int needle_inertia_steps;
 	unsigned int step_start;
 	volatile unsigned int step_target;
