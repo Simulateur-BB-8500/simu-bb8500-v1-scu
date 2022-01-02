@@ -11,7 +11,12 @@
 #include "gpio.h"
 #include "lsmcu.h"
 #include "mapping.h"
+#include "mode.h"
+#include "nvic.h"
 #include "usart.h"
+#ifdef DEBUG
+#include "string.h"
+#endif
 
 /*** LSSGIU local macros ***/
 
@@ -52,7 +57,7 @@ static void LSSGIU_Decode(void) {
 	}
 	// Increment read index and manage roll-over.
 	lssgiu_ctx.rx_read_idx++;
-	if (lssgiu_ctx.rx_read_idx == LSSGIU_RX_BUFFER_SIZE) {
+	if (lssgiu_ctx.rx_read_idx >= LSSGIU_RX_BUFFER_SIZE) {
 		lssgiu_ctx.rx_read_idx = 0;
 	}
 }
@@ -69,6 +74,8 @@ void LSSGIU_Init(void) {
 	for (idx=0 ; idx<LSSGIU_RX_BUFFER_SIZE ; idx++) lssgiu_ctx.rx_buf[idx] = LSMCU_IN_NOP;
 	lssgiu_ctx.rx_write_idx = 0;
 	lssgiu_ctx.rx_read_idx = 0;
+	// Enable USART interrupt.
+	NVIC_EnableInterrupt(NVIC_IT_USART1);
 }
 
 /* FILL LSSGIU BUFFER (CALLED BY USART2 INTERRUPT HANDLER).
@@ -89,7 +96,15 @@ void LSSGIU_FillRxBuffer(unsigned char ls_cmd) {
  * @return: 			None.
  */
 void LSSGIU_Send(unsigned char ls_cmd) {
+#ifdef DEBUG
+	char str_value[16];
+	STRING_ConvertValue(ls_cmd, STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_SendString("\nLSSGIU command = ");
+	USART1_SendString(str_value);
+	USART1_SendString("\n");
+#else
 	USART1_SendByte(ls_cmd);
+#endif
 }
 
 /* MAIN ROUTINE OF LSSGIU COMMAND MANAGER.

@@ -30,8 +30,9 @@ void __attribute__((optimize("-O0"))) USART1_IRQHandler(void) {
 	// RX.
 	if (((USART1 -> ISR) & (0b1 << 5)) != 0) { // RXNE='1'.
 		// Get and store new byte into RX buffer.
-		unsigned char rx_byte = USART1 -> RDR;
+		unsigned char rx_byte = (USART1 -> RDR);
 		LSSGIU_FillRxBuffer(rx_byte);
+		GPIO_Toggle(&GPIO_LED_GREEN);
 	}
 	// Overrun error interrupt.
 	if (((USART1 -> ISR) & (0b1 << 3)) != 0) {
@@ -57,20 +58,20 @@ void USART1_Init(void) {
 	USART1 -> CR1 = 0; // M='00' and OVER8='0'.
 	USART1 -> CR2 = 0;
 	USART1 -> CR3 = 0;
+	USART1 -> CR3 |= (0b1 << 12); // Disable overrun (OVRDIS='1').
 	// Baud rate.
 	USART1 -> BRR = (RCC_GetClockFrequency(RCC_CLOCK_PCLK2) * 1000) / (USART_BAUD_RATE); // USART clock = PCLK2 (APB2 peripheral).
 	// Enable transmitter and receiver.
 	USART1 -> CR1 |= (0b1 << 3); // TE='1'.
 	USART1 -> CR1 |= (0b1 << 2); // RE='1'.
-	USART1 -> CR1 |= (0b1 << 5); // // Enable RX interrupt (RXNEIE='1').
+	USART1 -> CR1 |= (0b1 << 5); // Enable RX interrupt (RXNEIE='1').
 	// Enable peripheral.
 	USART1 -> CR1 |= (0b1 << 0); // UE='1'.
-	NVIC_EnableInterrupt(NVIC_IT_USART1);
 }
 
 /* SEND A BYTE THROUGH USART.
- * @param byte:	Byte to send.
- * @return: 	None.
+ * @param tx_byte:	Byte to send.
+ * @return: 		None.
  */
 void USART1_SendByte(unsigned char tx_byte) {
 	// Fill transmit register.
@@ -81,5 +82,15 @@ void USART1_SendByte(unsigned char tx_byte) {
 		// Wait for TXE='1' or timeout.
 		loop_count++;
 		if (loop_count > USART_TIMEOUT_COUNT) break;
+	}
+}
+
+/* SEND A STRING THROUGH USART.
+ * @param tx_string:	String to send.
+ * @return: 			None.
+ */
+void USART1_SendString(char* tx_string) {
+	while (*tx_string) {
+		USART1_SendByte((unsigned char) *(tx_string++));
 	}
 }

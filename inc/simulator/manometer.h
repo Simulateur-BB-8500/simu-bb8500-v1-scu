@@ -8,6 +8,7 @@
 #ifndef MANOMETERS_H
 #define MANOMETERS_H
 
+#include "mode.h"
 #include "step_motor.h"
 
 /*** MANOMETERS structures ***/
@@ -35,5 +36,8 @@ unsigned int MANOMETER_GetPressure(MANOMETER_Context* manometer);
 void MANOMETER_NeedleStart(MANOMETER_Context* manometer);
 void MANOMETER_NeedleStop(MANOMETER_Context* manometer);
 void MANOMETER_NeedleTask(MANOMETER_Context* manometer);
+#ifdef DEBUG
+void MANOMETER_PrintData(void);
+#endif
 
 #endif /* MANOMETERS_H */

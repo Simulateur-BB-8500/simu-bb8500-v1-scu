@@ -8,7 +8,9 @@
 #include "fd.h"
 
 #include "gpio.h"
+#include "lsmcu.h"
 #include "lssgiu.h"
+#include "manometer.h"
 #include "mapping.h"
 #include "sw3.h"
 
@@ -18,6 +20,10 @@ typedef struct {
 	SW3_Context sw3;
 	SW3_State previous_state;
 } FD_Context;
+
+/*** FD external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** FD local global variables ***/
 
@@ -54,18 +60,31 @@ void FD_Task(void) {
 	switch (fd_ctx.sw3.state) {
 	case SW3_BACK:
 		if (fd_ctx.previous_state != SW3_BACK) {
-			// Backward.
+			// Update CF1/CF2 manometers.
+			MANOMETER_SetPressure(lsmcu_ctx.manometer_cf1, 0);
+			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cf1);
+			MANOMETER_SetPressure(lsmcu_ctx.manometer_cf2, 0);
+			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cf2);
+			// Send command.
 			LSSGIU_Send(LSMCU_OUT_FD_RELEASE);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (fd_ctx.previous_state != SW3_NEUTRAL) {
-			// Forward.
+			// Stop CF1/CF2 manometers.
+			MANOMETER_NeedleStop(lsmcu_ctx.manometer_cf1);
+			MANOMETER_NeedleStop(lsmcu_ctx.manometer_cf2);
+			// Neutral.
 			LSSGIU_Send(LSMCU_OUT_FD_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (fd_ctx.previous_state != SW3_FRONT) {
+			// Update CF1/CF2 manometers.
+			MANOMETER_SetPressure(lsmcu_ctx.manometer_cf1, (lsmcu_ctx.manometer_cf1) -> pressure_limit_decibars);
+			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cf1);
+			MANOMETER_SetPressure(lsmcu_ctx.manometer_cf2, (lsmcu_ctx.manometer_cf2) -> pressure_limit_decibars);
+			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cf2);
 			// Forward.
 			LSSGIU_Send(LSMCU_OUT_FD_APPLY);
 		}

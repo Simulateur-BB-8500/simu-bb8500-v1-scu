@@ -9,8 +9,13 @@
 
 #include "lsmcu.h"
 #include "mapping.h"
+#include "mode.h"
 #include "step_motor.h"
 #include "tim.h"
+#ifdef DEBUG
+#include "string.h"
+#include "usart.h"
+#endif
 
 /*** MANOMETER local macros ***/
 
@@ -27,11 +32,11 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** MANOMETER local global variables ***/
 
-MANOMETER_Context manometer_cp = {0, &step_motor_cp, 95, 100, 3072, 20, 0, 0, 100, 0, 0};
-MANOMETER_Context manometer_re = {0, &step_motor_re, 50, 100, 3072, 20, 0, 0, 100, 0, 0};
-MANOMETER_Context manometer_cg = {0, &step_motor_cg, 50, 100, 3072, 20, 0, 0, 100, 0, 0};
-MANOMETER_Context manometer_cf1 = {0, &step_motor_cf1, 41, 60, 3072, 20, 0, 0, 100, 0, 0};
-MANOMETER_Context manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_Context manometer_cp = {0, &step_motor_cp, 95, 100, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_Context manometer_re = {0, &step_motor_re, 50, 100, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_Context manometer_cg = {0, &step_motor_cg, 54, 100, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_Context manometer_cf1 = {0, &step_motor_cf1, 41, 60, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_Context manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20, 0, 0, 100, 0, 0};
 
 /*** MANOMETER local functions ***/
 
@@ -42,7 +47,6 @@ MANOMETER_Context manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20, 0, 0, 1
 static void MANOMETER_PowerOnAll(void) {
 	// Turn step motors on.
 	GPIO_Write(&GPIO_MANOMETER_POWER_ENABLE, 1);
-	GPIO_Write(&GPIO_LED_RED, 1);
 	// Start timer.
 	TIM7_Start();
 }
@@ -54,7 +58,6 @@ static void MANOMETER_PowerOnAll(void) {
 static void MANOMETER_PowerOffAll(void) {
 	// Turn step motors on.
 	GPIO_Write(&GPIO_MANOMETER_POWER_ENABLE, 0);
-	GPIO_Write(&GPIO_LED_RED, 0);
 	// Stop timer.
 	TIM7_Stop();
 }
@@ -220,3 +223,31 @@ void MANOMETER_NeedleTask(MANOMETER_Context* manometer) {
 		}
 	}
 }
+
+#ifdef DEBUG
+/* PRINT ALL MANOMETERS PRESSURE.
+ * @param:	None.
+ * @return:	None.
+ */
+void MANOMETER_PrintData(void) {
+	// Local variables.
+	char str_value[16];
+	// Print all pressure values.
+	USART1_SendString("\nCP  = ");
+	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_cp), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_SendString(str_value);
+	USART1_SendString("\nRE  = ");
+	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_re), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_SendString(str_value);
+	USART1_SendString("\nCG  = ");
+	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_cg), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_SendString(str_value);
+	USART1_SendString("\nCF1 = ");
+	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_cf1), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_SendString(str_value);
+	USART1_SendString("\nCF2 = ");
+	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_cf2), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_SendString(str_value);
+	USART1_SendString("\n");
+}
+#endif

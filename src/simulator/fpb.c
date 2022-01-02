@@ -14,6 +14,10 @@
 #include "mapping.h"
 #include "sw3.h"
 
+/*** FPB local macros ***/
+
+#define FPB_CG_PRESSURE_MAX_DECIBARS	50
+
 /*** FPB local structures ***/
 
 typedef struct {
@@ -64,7 +68,7 @@ void FPB_Task(void) {
 				// Backward.
 				LSSGIU_Send(LSMCU_OUT_FPB_RELEASE);
 				// Start CG and RE manometers.
-				MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, (lsmcu_ctx.manometer_cg) -> pressure_limit_decibars);
+				MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, FPB_CG_PRESSURE_MAX_DECIBARS);
 				MANOMETER_NeedleStart(lsmcu_ctx.manometer_cg);
 				MANOMETER_SetPressure(lsmcu_ctx.manometer_re, (lsmcu_ctx.manometer_re) -> pressure_limit_decibars);
 				MANOMETER_NeedleStart(lsmcu_ctx.manometer_re);

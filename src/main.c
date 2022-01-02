@@ -34,9 +34,12 @@
 #include "zba.h"
 #include "zlfr.h"
 #include "zpt.h"
+#include "zsur.h"
 // Applicative.
 #include "lsmcu.h"
 #include "lssgiu.h"
+#include "mode.h"
+#include "string.h"
 
 /*** MAIN global variables ***/
 
@@ -49,6 +52,9 @@ LSMCU_Context lsmcu_ctx;
  * @return: 0.
  */
 int main(void) {
+	// Local variables.
+	char str_value[16];
+	unsigned int print_timestamp = 0;
 	// Init Peripherals.
 	NVIC_Init();
 	RCC_Init();
@@ -83,6 +89,7 @@ int main(void) {
 	ZBA_Init();
 	ZLFR_Init();
 	ZPT_Init();
+	ZSUR_Init();
 	// Main loop.
 	while (1) {
 		// Peripherals tasks.
@@ -108,6 +115,14 @@ int main(void) {
 		WHISTLE_Task();
 		ZBA_Task();
 		ZPT_Task();
+		ZSUR_Task();
+#ifdef DEBUG
+		// Print manometers pressure.
+		if (TIM2_GetMs() > (print_timestamp + 1000)) {
+			MANOMETER_PrintData();
+			print_timestamp = TIM2_GetMs();
+		}
+#endif
 	}
 	return 0;
 }
