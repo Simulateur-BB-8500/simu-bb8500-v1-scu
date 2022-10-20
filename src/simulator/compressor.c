@@ -31,12 +31,12 @@ typedef enum {
 
 typedef struct {
 	// Inputs.
-	SW2_Context zca;
-	SW2_Context zcd;
+	SW2_context_t zca;
+	SW2_context_t zcd;
 	// State machine.
 	COMPRESSOR_State state;
 	unsigned char sound_auto_off; // Set when off command is not required.
-} COMPRESSOR_Context;
+} COMPRESSOR_context_t;
 
 /*** COMPRESSOR external global variables ***/
 
@@ -44,7 +44,7 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** COMPRESSOR local global variables ***/
 
-static COMPRESSOR_Context compressor_ctx;
+static COMPRESSOR_context_t compressor_ctx;
 
 /*** COMPRESSOR functions ***/
 
@@ -52,10 +52,10 @@ static COMPRESSOR_Context compressor_ctx;
  * @param:	None.
  * @return:	None.
  */
-void COMPRESSOR_Init(void) {
+void COMPRESSOR_init(void) {
 	// Init GPIOs.
-	SW2_Init(&compressor_ctx.zca, &GPIO_BL_ZCA, 1, 100); // ZCA active high.
-	SW2_Init(&compressor_ctx.zcd, &GPIO_BL_ZCD, 0, 100); // ZCD active low.
+	SW2_init(&compressor_ctx.zca, &GPIO_BL_ZCA, 1, 100); // ZCA active high.
+	SW2_init(&compressor_ctx.zcd, &GPIO_BL_ZCD, 0, 100); // ZCD active low.
 	// Init context.
 	compressor_ctx.state = COMPRESSOR_STATE_OFF;
 	compressor_ctx.sound_auto_off = 0;
@@ -67,11 +67,11 @@ void COMPRESSOR_Init(void) {
  * @param:	None.
  * @return:	None.
  */
-void COMPRESSOR_Task(void) {
+void COMPRESSOR_task(void) {
 	// Update ZCA.
 	if (lsmcu_ctx.dj_locked != 0) {
-		SW2_UpdateState(&compressor_ctx.zca);
-		SW2_UpdateState(&compressor_ctx.zcd);
+		SW2_update_state(&compressor_ctx.zca);
+		SW2_update_state(&compressor_ctx.zcd);
 	}
 	// Perform state machine.
 	switch (compressor_ctx.state) {
@@ -84,8 +84,8 @@ void COMPRESSOR_Task(void) {
 			if (compressor_ctx.zcd.state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSSGIU_Send(LSMCU_OUT_COMPRESSOR_DIRECT_ON);
-				MANOMETER_SetPressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
-				MANOMETER_NeedleStart(lsmcu_ctx.manometer_cp);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
+				MANOMETER_needle_start(lsmcu_ctx.manometer_cp);
 				// Compute next state.
 				compressor_ctx.state = COMPRESSOR_STATE_DIRECT;
 
@@ -93,9 +93,9 @@ void COMPRESSOR_Task(void) {
 			else {
 				if (compressor_ctx.zca.state == SW2_ON) {
 					// Check CP value.
-					if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS) {
+					if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS) {
 						// Play accurate sound.
-						if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) > (COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS - COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
+						if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > (COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS - COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
 							// Play minimum regulation sound.
 							LSSGIU_Send(LSMCU_OUT_COMPRESSOR_AUTO_REG_MIN_ON);
 							compressor_ctx.sound_auto_off = 1;
@@ -103,7 +103,7 @@ void COMPRESSOR_Task(void) {
 						else {
 							// Play maximum regulation sound.
 							LSSGIU_Send(LSMCU_OUT_COMPRESSOR_AUTO_REG_MAX_ON);
-							if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
+							if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
 								compressor_ctx.sound_auto_off = 1;
 							}
 							else {
@@ -111,14 +111,14 @@ void COMPRESSOR_Task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANOMETER_SetPressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
-						MANOMETER_NeedleStart(lsmcu_ctx.manometer_cp);
+						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
+						MANOMETER_needle_start(lsmcu_ctx.manometer_cp);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_ON;
 					}
 					else {
 						// Auto mode in off zone.
-						MANOMETER_NeedleStop(lsmcu_ctx.manometer_cp);
+						MANOMETER_needle_stop(lsmcu_ctx.manometer_cp);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_OFF;
 					}
@@ -133,7 +133,7 @@ void COMPRESSOR_Task(void) {
 		if (lsmcu_ctx.dj_locked == 0) {
 			// Stop compressor.
 			LSSGIU_Send(LSMCU_OUT_COMPRESSOR_OFF);
-			MANOMETER_NeedleStop(lsmcu_ctx.manometer_cp);
+			MANOMETER_needle_stop(lsmcu_ctx.manometer_cp);
 			// Compute next state.
 			compressor_ctx.state = COMPRESSOR_STATE_OFF;
 		}
@@ -142,8 +142,8 @@ void COMPRESSOR_Task(void) {
 			if (compressor_ctx.zcd.state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSSGIU_Send(LSMCU_OUT_COMPRESSOR_DIRECT_ON);
-				MANOMETER_SetPressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
-				MANOMETER_NeedleStart(lsmcu_ctx.manometer_cp);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
+				MANOMETER_needle_start(lsmcu_ctx.manometer_cp);
 				// Compute next state.
 				compressor_ctx.state = COMPRESSOR_STATE_DIRECT;
 
@@ -151,12 +151,12 @@ void COMPRESSOR_Task(void) {
 			else {
 				if (compressor_ctx.zca.state == SW2_ON) {
 					// Perform hysterersis.
-					if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) > COMPRESSOR_CP_HYSTERESIS_HIGH_DECIBARS) {
+					if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > COMPRESSOR_CP_HYSTERESIS_HIGH_DECIBARS) {
 						// Stop regulation.
 						if (compressor_ctx.sound_auto_off == 0) {
 							LSSGIU_Send(LSMCU_OUT_COMPRESSOR_OFF);
 						}
-						MANOMETER_NeedleStop(lsmcu_ctx.manometer_cp);
+						MANOMETER_needle_stop(lsmcu_ctx.manometer_cp);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_OFF;
 					}
@@ -164,7 +164,7 @@ void COMPRESSOR_Task(void) {
 				else {
 					// Compressor off.
 					LSSGIU_Send(LSMCU_OUT_COMPRESSOR_OFF);
-					MANOMETER_NeedleStop(lsmcu_ctx.manometer_cp);
+					MANOMETER_needle_stop(lsmcu_ctx.manometer_cp);
 					// Compute next state.
 					compressor_ctx.state = COMPRESSOR_STATE_OFF;
 				}
@@ -184,8 +184,8 @@ void COMPRESSOR_Task(void) {
 			if (compressor_ctx.zcd.state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSSGIU_Send(LSMCU_OUT_COMPRESSOR_DIRECT_ON);
-				MANOMETER_SetPressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
-				MANOMETER_NeedleStart(lsmcu_ctx.manometer_cp);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
+				MANOMETER_needle_start(lsmcu_ctx.manometer_cp);
 				// Compute next state.
 				compressor_ctx.state = COMPRESSOR_STATE_DIRECT;
 
@@ -193,9 +193,9 @@ void COMPRESSOR_Task(void) {
 			else {
 				if (compressor_ctx.zca.state == SW2_ON) {
 					// Check CP value.
-					if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS) {
+					if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS) {
 						// Play accurate sound.
-						if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) > (COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS - COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
+						if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > (COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS - COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
 							// Play minimum regulation sound.
 							LSSGIU_Send(LSMCU_OUT_COMPRESSOR_AUTO_REG_MIN_ON);
 							compressor_ctx.sound_auto_off = 1;
@@ -203,7 +203,7 @@ void COMPRESSOR_Task(void) {
 						else {
 							// Play maximum regulation sound.
 							LSSGIU_Send(LSMCU_OUT_COMPRESSOR_AUTO_REG_MAX_ON);
-							if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
+							if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
 								compressor_ctx.sound_auto_off = 1;
 							}
 							else {
@@ -211,8 +211,8 @@ void COMPRESSOR_Task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANOMETER_SetPressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
-						MANOMETER_NeedleStart(lsmcu_ctx.manometer_cp);
+						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
+						MANOMETER_needle_start(lsmcu_ctx.manometer_cp);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_ON;
 					}
@@ -231,7 +231,7 @@ void COMPRESSOR_Task(void) {
 		if (lsmcu_ctx.dj_locked == 0) {
 			// Stop compressor.
 			LSSGIU_Send(LSMCU_OUT_COMPRESSOR_OFF);
-			MANOMETER_NeedleStop(lsmcu_ctx.manometer_cp);
+			MANOMETER_needle_stop(lsmcu_ctx.manometer_cp);
 			// Compute next state.
 			compressor_ctx.state = COMPRESSOR_STATE_OFF;
 		}
@@ -241,9 +241,9 @@ void COMPRESSOR_Task(void) {
 				// Check ZCA.
 				if (compressor_ctx.zca.state == SW2_ON) {
 					// Check CP value.
-					if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS) {
+					if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS) {
 						// Play accurate sound.
-						if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) > (COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS - COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
+						if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > (COMPRESSOR_CP_HYSTERESIS_LOW_DECIBARS - COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS)) {
 							// Play minimum regulation sound.
 							LSSGIU_Send(LSMCU_OUT_COMPRESSOR_AUTO_REG_MIN_ON);
 							compressor_ctx.sound_auto_off = 1;
@@ -251,7 +251,7 @@ void COMPRESSOR_Task(void) {
 						else {
 							// Play maximum regulation sound.
 							LSSGIU_Send(LSMCU_OUT_COMPRESSOR_AUTO_REG_MAX_ON);
-							if (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
+							if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) < COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_DECIBARS) {
 								compressor_ctx.sound_auto_off = 1;
 							}
 							else {
@@ -259,14 +259,14 @@ void COMPRESSOR_Task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANOMETER_SetPressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
-						MANOMETER_NeedleStart(lsmcu_ctx.manometer_cp);
+						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_DECIBARS);
+						MANOMETER_needle_start(lsmcu_ctx.manometer_cp);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_ON;
 					}
 					else {
 						// Auto mode in off zone.
-						MANOMETER_NeedleStop(lsmcu_ctx.manometer_cp);
+						MANOMETER_needle_stop(lsmcu_ctx.manometer_cp);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_OFF;
 					}
@@ -274,7 +274,7 @@ void COMPRESSOR_Task(void) {
 				else {
 					// Stop compressor.
 					LSSGIU_Send(LSMCU_OUT_COMPRESSOR_OFF);
-					MANOMETER_NeedleStop(lsmcu_ctx.manometer_cp);
+					MANOMETER_needle_stop(lsmcu_ctx.manometer_cp);
 					// Compute next state.
 					compressor_ctx.state = COMPRESSOR_STATE_OFF;
 				}

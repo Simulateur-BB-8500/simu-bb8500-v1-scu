@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef URGENCY_H
-#define URGENCY_H
+#ifndef __URGENCY_H__
+#define __URGENCY_H__
 
 /*** URGENCY functions ***/
 
-void URGENCY_Init(void);
-void URGENCY_Task(void);
+void URGENCY_init(void);
+void URGENCY_task(void);
 
-#endif /* URGENCY_H */
+#endif /* __URGENCY_H__ */

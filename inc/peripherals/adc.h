@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef ADC_H
-#define ADC_H
+#ifndef __ADC_H__
+#define __ADC_H__
 
 /*** ADC macros ***/
 
@@ -14,7 +14,7 @@
 
 /*** ADC functions ***/
 
-void ADC1_Init(void);
-void ADC1_Task(void);
+void ADC1_init(void);
+void ADC1_task(void);
 
-#endif /* ADC_H */
+#endif /* __ADC_H__ */

@@ -17,9 +17,9 @@
 /*** FD local structures ***/
 
 typedef struct {
-	SW3_Context sw3;
-	SW3_State previous_state;
-} FD_Context;
+	SW3_context_t sw3;
+	SW3_state_t previous_state;
+} FD_context_t;
 
 /*** FD external global variables ***/
 
@@ -27,7 +27,7 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** FD local global variables ***/
 
-static FD_Context fd_ctx;
+static FD_context_t fd_ctx;
 
 /*** FD functions ***/
 
@@ -35,9 +35,9 @@ static FD_Context fd_ctx;
  * @param:	None.
  * @return:	None.
  */
-void FD_Init(void) {
+void FD_init(void) {
 	// Init GPIO.
-	SW3_Init(&fd_ctx.sw3, &GPIO_FD, 100);
+	SW3_init(&fd_ctx.sw3, &GPIO_FD, 100);
 	fd_ctx.previous_state = SW3_NEUTRAL;
 }
 
@@ -45,26 +45,26 @@ void FD_Init(void) {
  * @param new_voltage:	New voltage measured.
  * @return:				None.
  */
-void FD_SetVoltageMv(unsigned int fd_voltage_mv) {
-	SW3_SetVoltageMv(&fd_ctx.sw3, fd_voltage_mv);
+void FD_set_voltage_mv(unsigned int fd_voltage_mv) {
+	SW3_set_voltage_mv(&fd_ctx.sw3, fd_voltage_mv);
 }
 
 /* MAIN ROUTINE OF FD MODULE.
  * @param:	None.
  * @return:	None.
  */
-void FD_Task(void) {
+void FD_task(void) {
 	// Update current state.
-	SW3_UpdateState(&fd_ctx.sw3);
+	SW3_update_state(&fd_ctx.sw3);
 	// Perform actions according to state.
 	switch (fd_ctx.sw3.state) {
 	case SW3_BACK:
 		if (fd_ctx.previous_state != SW3_BACK) {
 			// Update CF1/CF2 manometers.
-			MANOMETER_SetPressure(lsmcu_ctx.manometer_cf1, 0);
-			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cf1);
-			MANOMETER_SetPressure(lsmcu_ctx.manometer_cf2, 0);
-			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cf2);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0);
+			MANOMETER_needle_start(lsmcu_ctx.manometer_cf1);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0);
+			MANOMETER_needle_start(lsmcu_ctx.manometer_cf2);
 			// Send command.
 			LSSGIU_Send(LSMCU_OUT_FD_RELEASE);
 		}
@@ -72,8 +72,8 @@ void FD_Task(void) {
 	case SW3_NEUTRAL:
 		if (fd_ctx.previous_state != SW3_NEUTRAL) {
 			// Stop CF1/CF2 manometers.
-			MANOMETER_NeedleStop(lsmcu_ctx.manometer_cf1);
-			MANOMETER_NeedleStop(lsmcu_ctx.manometer_cf2);
+			MANOMETER_needle_stop(lsmcu_ctx.manometer_cf1);
+			MANOMETER_needle_stop(lsmcu_ctx.manometer_cf2);
 			// Neutral.
 			LSSGIU_Send(LSMCU_OUT_FD_NEUTRAL);
 		}
@@ -81,10 +81,10 @@ void FD_Task(void) {
 	case SW3_FRONT:
 		if (fd_ctx.previous_state != SW3_FRONT) {
 			// Update CF1/CF2 manometers.
-			MANOMETER_SetPressure(lsmcu_ctx.manometer_cf1, (lsmcu_ctx.manometer_cf1) -> pressure_limit_decibars);
-			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cf1);
-			MANOMETER_SetPressure(lsmcu_ctx.manometer_cf2, (lsmcu_ctx.manometer_cf2) -> pressure_limit_decibars);
-			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cf2);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, (lsmcu_ctx.manometer_cf1) -> pressure_limit_decibars);
+			MANOMETER_needle_start(lsmcu_ctx.manometer_cf1);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, (lsmcu_ctx.manometer_cf2) -> pressure_limit_decibars);
+			MANOMETER_needle_start(lsmcu_ctx.manometer_cf2);
 			// Forward.
 			LSSGIU_Send(LSMCU_OUT_FD_APPLY);
 		}

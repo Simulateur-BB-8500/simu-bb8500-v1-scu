@@ -5,13 +5,13 @@
  *      Author: Ludo
  */
 
-#ifndef DAC_H
-#define DAC_H
+#ifndef __DAC_H__
+#define __DAC_H__
 
 /*** DAC functions ***/
 
-void DAC_Init(void);
-void DAC_SetVoltageMv(unsigned int voltage_mv);
-unsigned int DAC_GetVoltageMv(void);
+void DAC_init(void);
+void DAC_set_voltage_mv(unsigned int voltage_mv);
+unsigned int DAC_get_voltage_mv(void);
 
-#endif /* DAC_H */
+#endif /* __DAC_H__ */

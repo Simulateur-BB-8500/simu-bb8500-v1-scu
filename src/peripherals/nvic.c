@@ -20,36 +20,36 @@ extern unsigned int __Vectors;
  * @param:	None.
  * @return:	None.
  */
-void NVIC_Init(void) {
+void NVIC_init(void) {
 	SCB -> VTOR = (unsigned int) &__Vectors;
 }
 
 /* ENABLE AN INTERRUPT LINE.
- * @param it_num: 	Interrupt number (use enum defined in 'nvic.h').
+ * @param irq_index:	Interrupt number (use enum defined in 'nvic.h').
  * @return:			None.
  */
-void NVIC_EnableInterrupt(NVIC_InterruptVector it_num) {
-	NVIC -> ISER[it_num >> 5] = (0b1 << (it_num % 32));
+void NVIC_enable_interrupt(NVIC_interrupt_t irq_index) {
+	NVIC -> ISER[irq_index >> 5] = (0b1 << (irq_index % 32));
 }
 
 /* DISABLE AN INTERRUPT LINE.
- * @param it_num: 	Interrupt number (use enum defined in 'nvic.h').
+ * @param irq_index:	Interrupt number (use enum defined in 'nvic.h').
  * @return:			None.
  */
-void NVIC_DisableInterrupt(NVIC_InterruptVector it_num) {
-	NVIC -> ICER[it_num >> 5] = (0b1 << (it_num % 32));
+void NVIC_disable_interrupt(NVIC_interrupt_t irq_index) {
+	NVIC -> ICER[irq_index >> 5] = (0b1 << (irq_index % 32));
 }
 
 /* SET THE PRIORITY OF AN INTERRUPT LINE.
- * @param it_num:	Interrupt number (use enum defined in 'nvic.h').
+ * @param irq_index:	Interrupt number (use enum defined in 'nvic.h').
  * @param priority:	Interrupt priority (0 to 255).
  */
-void NVIC_SetPriority(NVIC_InterruptVector it_num, unsigned char priority) {
+void NVIC_set_priority(NVIC_interrupt_t irq_index, unsigned char priority) {
 	// Check parameter.
 	if ((priority >= NVIC_PRIORITY_MAX) && (priority <= NVIC_PRIORITY_MIN)) {
 		// Reset bits.
-		NVIC -> IPR[(it_num >> 2)] &= ~(0xFF << (8 * (it_num % 4)));
+		NVIC -> IPR[(irq_index >> 2)] &= ~(0xFF << (8 * (irq_index % 4)));
 		// Set priority.
-		NVIC -> IPR[(it_num >> 2)] |= (priority << (8 * (it_num % 4)));
+		NVIC -> IPR[(irq_index >> 2)] |= (priority << (8 * (irq_index % 4)));
 	}
 }

@@ -5,17 +5,17 @@
  *      Author: Ludo
  */
 
-#ifndef USART_H
-#define USART_H
+#ifndef __USART_H__
+#define __USART_H__
 
 #include "mode.h"
 
 /*** USART functions ***/
 
-void USART1_Init(void);
-void USART1_SendByte(unsigned char tx_byte);
+void USART1_init(void);
+void USART1_send_byte(unsigned char tx_byte);
 #ifdef DEBUG
-void USART1_SendString(char* tx_string);
+void USART1_send_string(char* tx_string);
 #endif
 
-#endif /* USART_H */
+#endif /* __USART_H__ */

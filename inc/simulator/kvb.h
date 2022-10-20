@@ -5,13 +5,13 @@
  *      Author: Ludo
  */
 
-#ifndef KVB_H
-#define KVB_H
+#ifndef __KVB_H__
+#define __KVB_H__
 
 /*** KVB functions ***/
 
-void KVB_Init(void);
-void KVB_Sweep(void);
-void KVB_Task(void);
+void KVB_init(void);
+void KVB_sweep(void);
+void KVB_task(void);
 
-#endif /* KVB_H */
+#endif /* __KVB_H__ */

@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef MAPPING_H
-#define MAPPING_H
+#ifndef __MAPPING_H__
+#define __MAPPING_H__
 
 #include "gpio.h"
 #include "gpio_reg.h"
@@ -157,4 +157,4 @@ static const GPIO GPIO_LED_RED =					(GPIO) {GPIOB, 1, 14, 0};
 static const GPIO GPIO_LED_GREEN = 					(GPIO) {GPIOB, 1, 0, 0};
 static const GPIO GPIO_LED_BLUE =					(GPIO) {GPIOB, 1, 7, 0};
 
-#endif /* MAPPING_H */
+#endif /* __MAPPING_H__ */

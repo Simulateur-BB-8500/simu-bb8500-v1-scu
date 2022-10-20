@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef SW4_H
-#define SW4_H
+#ifndef __SW4_H__
+#define __SW4_H__
 
 #include "gpio.h"
 
@@ -18,7 +18,7 @@ typedef enum {
 	SW4_P1,
 	SW4_P2,
 	SW4_P3
-} SW4_State;
+} SW4_state_t;
 
 // Internal state machine.
 typedef enum {
@@ -30,20 +30,20 @@ typedef enum {
 	SW4_STATE_CONFIRM_P2,
 	SW4_STATE_P3,
 	SW4_STATE_CONFIRM_P3
-} SW4_InternalState;
+} SW4_internal_state_t;
 
 typedef struct {
 	unsigned int voltage; // Current voltage measured by ADC.
-	SW4_InternalState internal_state; // Current state in SW4 state machine.
-	SW4_State state; // State after anti-bouncing (used in higher levels).
+	SW4_internal_state_t internal_state; // Current state in SW4 state machine.
+	SW4_state_t state; // State after anti-bouncing (used in higher levels).
 	unsigned int debouncing_ms; // Delay before validating states (in ms).
 	unsigned int confirm_start_time;
-} SW4_Context;
+} SW4_context_t;
 
 /*** SW4 functions ***/
 
-void SW4_Init(SW4_Context* sw4, const GPIO* gpio, unsigned int debouncing_ms);
-void SW4_SetVoltageMv(SW4_Context* sw4, unsigned int voltage_mv);
-void SW4_UpdateState(SW4_Context* sw4);
+void SW4_init(SW4_context_t* sw4, const GPIO* gpio, unsigned int debouncing_ms);
+void SW4_set_voltage_mv(SW4_context_t* sw4, unsigned int voltage_mv);
+void SW4_update_state(SW4_context_t* sw4);
 
-#endif /* SW4_H */
+#endif /* __SW4_H__ */

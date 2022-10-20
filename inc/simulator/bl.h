@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef BL_H
-#define BL_H
+#ifndef __BL_H__
+#define __BL_H__
 
 /*** BL functions ***/
 
-void BL_Init(void);
-void BL_Task(void);
+void BL_init(void);
+void BL_task(void);
 
-#endif /* BL_H */
+#endif /* __BL_H__ */

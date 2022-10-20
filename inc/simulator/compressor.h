@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef COMPRESSOR_H
-#define COMPRESSOR_H
+#ifndef __COMPRESSOR_H__
+#define __COMPRESSOR_H__
 
 /*** COMPRESSOR functions ***/
 
-void COMPRESSOR_Init(void);
-void COMPRESSOR_Task(void);
+void COMPRESSOR_init(void);
+void COMPRESSOR_task(void);
 
-#endif /* COMPRESSOR_H */
+#endif /* __COMPRESSOR_H__ */

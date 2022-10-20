@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef BPGD_H
-#define BPGD_H
+#ifndef __BPGD_H__
+#define __BPGD_H__
 
 /*** BPGD functions ***/
 
-void BPGD_Init(void);
-void BPGD_Task(void);
+void BPGD_init(void);
+void BPGD_task(void);
 
-#endif /* BPGD_H */
+#endif /* __BPGD_H__ */

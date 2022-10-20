@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef ZSUR_H
-#define ZSUR_H
+#ifndef __ZSUR_H__
+#define __ZSUR_H__
 
 /*** ZSUR functions ***/
 
-void ZSUR_Init(void);
-void ZSUR_Task(void);
+void ZSUR_init(void);
+void ZSUR_task(void);
 
-#endif /* ZSUR_H */
+#endif /* __ZSUR_H__ */

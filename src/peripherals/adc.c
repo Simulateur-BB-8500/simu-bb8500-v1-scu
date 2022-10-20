@@ -99,7 +99,7 @@ static unsigned int ADC1_GetVoltageMv(void) {
  * @param:	None.
  * @return: None.
  */
-void ADC1_Init(void) {
+void ADC1_init(void) {
 	// Init context */
 	adc_state = ADC_STATE_OFF;
 	// Enable peripheral clock */
@@ -130,7 +130,7 @@ void ADC1_Init(void) {
  * @param:	None.
  * @return:	None.
  */
-void ADC1_Task(void) {
+void ADC1_task(void) {
 	unsigned int adc_result_mv = 0;
 	switch (adc_state) {
 	case ADC_STATE_OFF:
@@ -147,7 +147,7 @@ void ADC1_Task(void) {
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to ZPT module.
 			adc_result_mv = ADC1_GetVoltageMv();
-			ZPT_SetVoltageMv(adc_result_mv);
+			ZPT_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
 			ADC1_SetChannel(ADC_CHANNEL_S);
 			ADC1_StartConversion();
@@ -159,7 +159,7 @@ void ADC1_Task(void) {
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to S module.
 			adc_result_mv = ADC1_GetVoltageMv();
-			WHISTLE_SetVoltageMv(adc_result_mv);
+			WHISTLE_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
 			ADC1_SetChannel(ADC_CHANNEL_ZLFR);
 			ADC1_StartConversion();
@@ -182,7 +182,7 @@ void ADC1_Task(void) {
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to MPINV module.
 			adc_result_mv = ADC1_GetVoltageMv();
-			MPINV_SetVoltageMv(adc_result_mv);
+			MPINV_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
 			ADC1_SetChannel(ADC_CHANNEL_PBL2);
 			ADC1_StartConversion();
@@ -194,7 +194,7 @@ void ADC1_Task(void) {
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to MPINV module.
 			adc_result_mv = ADC1_GetVoltageMv();
-			PBL2_SetVoltageMv(adc_result_mv);
+			PBL2_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
 			ADC1_SetChannel(ADC_CHANNEL_FPB);
 			ADC1_StartConversion();
@@ -206,7 +206,7 @@ void ADC1_Task(void) {
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to FPB module.
 			adc_result_mv = ADC1_GetVoltageMv();
-			FPB_SetVoltageMv(adc_result_mv);
+			FPB_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
 			ADC1_SetChannel(ADC_CHANNEL_FD);
 			ADC1_StartConversion();
@@ -218,7 +218,7 @@ void ADC1_Task(void) {
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to FD module.
 			adc_result_mv = ADC1_GetVoltageMv();
-			FD_SetVoltageMv(adc_result_mv);
+			FD_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
 			ADC1_SetChannel(ADC_CHANNEL_AM);
 			ADC1_StartConversion();

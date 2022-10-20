@@ -15,13 +15,13 @@
 /*** MPINV local structures ***/
 
 typedef struct {
-	SW3_Context sw3;
-	SW3_State previous_state;
-} MPINV_Context;
+	SW3_context_t sw3;
+	SW3_state_t previous_state;
+} MPINV_context_t;
 
 /*** MPINV local global variables ***/
 
-static MPINV_Context mpinv_ctx;
+static MPINV_context_t mpinv_ctx;
 
 /*** MPINV functions ***/
 
@@ -29,9 +29,9 @@ static MPINV_Context mpinv_ctx;
  * @param:	None.
  * @return:	None.
  */
-void MPINV_Init(void) {
+void MPINV_init(void) {
 	// Init GPIO.
-	SW3_Init(&mpinv_ctx.sw3, &GPIO_MPINV, 100);
+	SW3_init(&mpinv_ctx.sw3, &GPIO_MPINV, 100);
 	mpinv_ctx.previous_state = SW3_NEUTRAL;
 }
 
@@ -39,17 +39,17 @@ void MPINV_Init(void) {
  * @param new_voltage:	New voltage measured.
  * @return:				None.
  */
-void MPINV_SetVoltageMv(unsigned int mpinv_voltage_mv) {
-	SW3_SetVoltageMv(&mpinv_ctx.sw3, mpinv_voltage_mv);
+void MPINV_set_voltage_mv(unsigned int mpinv_voltage_mv) {
+	SW3_set_voltage_mv(&mpinv_ctx.sw3, mpinv_voltage_mv);
 }
 
 /* MAIN ROUTINE OF MPINV MODULE.
  * @param:	None.
  * @return:	None.
  */
-void MPINV_Task(void) {
+void MPINV_task(void) {
 	// Update current state.
-	SW3_UpdateState(&mpinv_ctx.sw3);
+	SW3_update_state(&mpinv_ctx.sw3);
 	// Perform actions according to state.
 	switch (mpinv_ctx.sw3.state) {
 	case SW3_BACK:

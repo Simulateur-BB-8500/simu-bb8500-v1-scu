@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef GPIO_REG_H
-#define GPIO_REG_H
+#ifndef __GPIO_REG_H__
+#define __GPIO_REG_H__
 
 /*** GPIOx registers ***/
 
@@ -21,21 +21,21 @@ typedef struct {
 	volatile unsigned int LCKR;     	// GPIO port configuration lock register.
 	volatile unsigned int AFRL;   	// GPIO alternate function low register.
 	volatile unsigned int AFRH;   	// GPIO alternate function high register.
-} GPIO_BaseAddress;
+} GPIO_base_address_t;
 
 /*** GPIOx base addresses ***/
 
-#define GPIOA	((GPIO_BaseAddress*) ((unsigned int) 0x40020000))
-#define GPIOB	((GPIO_BaseAddress*) ((unsigned int) 0x40020400))
-#define GPIOC	((GPIO_BaseAddress*) ((unsigned int) 0x40020800))
-#define GPIOD	((GPIO_BaseAddress*) ((unsigned int) 0x40020C00))
-#define GPIOE	((GPIO_BaseAddress*) ((unsigned int) 0x40021000))
-#define GPIOF	((GPIO_BaseAddress*) ((unsigned int) 0x40021400))
-#define GPIOG	((GPIO_BaseAddress*) ((unsigned int) 0x40021800))
-#define GPIOH	((GPIO_BaseAddress*) ((unsigned int) 0x40021C00))
-#define GPIOI	((GPIO_BaseAddress*) ((unsigned int) 0x40022000))
-#define GPIOJ	((GPIO_BaseAddress*) ((unsigned int) 0x40022400))
-#define GPIOK	((GPIO_BaseAddress*) ((unsigned int) 0x40022800))
+#define GPIOA	((GPIO_base_address_t*) ((unsigned int) 0x40020000))
+#define GPIOB	((GPIO_base_address_t*) ((unsigned int) 0x40020400))
+#define GPIOC	((GPIO_base_address_t*) ((unsigned int) 0x40020800))
+#define GPIOD	((GPIO_base_address_t*) ((unsigned int) 0x40020C00))
+#define GPIOE	((GPIO_base_address_t*) ((unsigned int) 0x40021000))
+#define GPIOF	((GPIO_base_address_t*) ((unsigned int) 0x40021400))
+#define GPIOG	((GPIO_base_address_t*) ((unsigned int) 0x40021800))
+#define GPIOH	((GPIO_base_address_t*) ((unsigned int) 0x40021C00))
+#define GPIOI	((GPIO_base_address_t*) ((unsigned int) 0x40022000))
+#define GPIOJ	((GPIO_base_address_t*) ((unsigned int) 0x40022400))
+#define GPIOK	((GPIO_base_address_t*) ((unsigned int) 0x40022800))
 
 /*** GPIOx #define ***/
 
@@ -43,4 +43,4 @@ typedef struct {
 #define AF_PER_GPIO 16 // Each GPIO has 16 alternate functions.
 #define AFRH_OFFSET 8 // Limit between AFRL and AFRH registers.
 
-#endif /* GPIO_REG_H */
+#endif /* __GPIO_REG_H__ */

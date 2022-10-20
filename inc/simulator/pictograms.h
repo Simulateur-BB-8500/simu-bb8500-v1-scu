@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef PICTOGRAMS_H
-#define PICTOGRAMS_H
+#ifndef __PICTOGRAMS_H__
+#define __PICTOGRAMS_H__
 
 /*** PICTOGRAMS functions ***/
 
-void PICTOGRAMS_Init(void);
-void PICTOGRAMS_Task(void);
+void PICTOGRAMS_init(void);
+void PICTOGRAMS_task(void);
 
-#endif /* PICTOGRAMS_H */
+#endif /* __PICTOGRAMS_H__ */

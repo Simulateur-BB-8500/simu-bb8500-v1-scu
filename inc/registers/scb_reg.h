@@ -1,12 +1,12 @@
 /*
  * scb_reg.h
  *
- *  Created on: 25 déc. 2021
- *      Author: Ludovic
+ *  Created on: 25 dec. 2021
+ *      Author: Ludo
  */
 
-#ifndef SCB_REG_H
-#define SCB_REG_H_
+#ifndef __SCB_REG_H__
+#define __SCB_REG_H___
 
 /*** SCB registers ***/
 
@@ -25,10 +25,10 @@ typedef struct {
 	volatile unsigned int HFSR;		// SCB hard fault status register.
 	volatile unsigned int MMAR;		// SCB memory manage fault address register.
 	volatile unsigned int BFAR;		// SCB bus fault address register.
-} SCB_BaseAddress;
+} SCB_base_address_t;
 
 /*** SCB base address ***/
 
-#define SCB		((SCB_BaseAddress*) ((unsigned int) 0xE000ED00))
+#define SCB		((SCB_base_address_t*) ((unsigned int) 0xE000ED00))
 
-#endif /* SCB_REG_H */
+#endif /* __SCB_REG_H__ */

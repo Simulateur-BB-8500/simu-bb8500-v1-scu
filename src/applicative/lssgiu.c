@@ -75,7 +75,7 @@ void LSSGIU_Init(void) {
 	lssgiu_ctx.rx_write_idx = 0;
 	lssgiu_ctx.rx_read_idx = 0;
 	// Enable USART interrupt.
-	NVIC_EnableInterrupt(NVIC_IT_USART1);
+	NVIC_enable_interrupt(NVIC_INTERRUPT_USART1);
 }
 
 /* FILL LSSGIU BUFFER (CALLED BY USART2 INTERRUPT HANDLER).
@@ -98,12 +98,12 @@ void LSSGIU_FillRxBuffer(unsigned char ls_cmd) {
 void LSSGIU_Send(unsigned char ls_cmd) {
 #ifdef DEBUG
 	char str_value[16];
-	STRING_ConvertValue(ls_cmd, STRING_FORMAT_DECIMAL, 0, str_value);
-	USART1_SendString("\nLSSGIU command = ");
-	USART1_SendString(str_value);
-	USART1_SendString("\n");
+	STRING_value_to_string(ls_cmd, STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_send_string("\nLSSGIU command = ");
+	USART1_send_string(str_value);
+	USART1_send_string("\n");
 #else
-	USART1_SendByte(ls_cmd);
+	USART1_send_byte(ls_cmd);
 #endif
 }
 

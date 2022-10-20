@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef RCC_REG_H
-#define RCC_REG_H
+#ifndef __RCC_REG_H__
+#define __RCC_REG_H__
 
 /*** RCC registers ***/
 
@@ -48,10 +48,10 @@ typedef struct {
 	volatile unsigned int PLLSAICFGR;	// RCC PLLSAI configuration register.
 	volatile unsigned int DKCFGR1;		// RCC Dedicated Clocks configuration register 1.
 	volatile unsigned int DKCFGR2;		// RCC Dedicated Clocks configuration register 2.
-} RCC_BaseAddress;
+} RCC_base_address_t;
 
 /*** RCC base address ***/
 
-#define RCC		((RCC_BaseAddress*) ((unsigned int) 0x40023800))
+#define RCC		((RCC_base_address_t*) ((unsigned int) 0x40023800))
 
-#endif /* RCC_REG_H */
+#endif /* __RCC_REG_H__ */

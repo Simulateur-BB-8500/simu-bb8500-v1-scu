@@ -25,21 +25,21 @@
 
 typedef struct {
 	// GPIOs.
-	SW2_Context zero;
-	SW2_Context t_more;
+	SW2_context_t zero;
+	SW2_context_t t_more;
 	unsigned char t_more_on;
-	SW2_Context t_less;
+	SW2_context_t t_less;
 	unsigned char t_less_on;
-	SW2_Context t_fast;
-	SW2_Context preparation;
+	SW2_context_t t_fast;
+	SW2_context_t preparation;
 	unsigned char preparation_on;
-	SW2_Context f_more;
+	SW2_context_t f_more;
 	unsigned char f_more_on;
-	SW2_Context f_less;
+	SW2_context_t f_less;
 	unsigned char f_less_on;
-	SW2_Context f_fast;
+	SW2_context_t f_fast;
 	unsigned char f_fast_on;
-	SW2_Context transition;
+	SW2_context_t transition;
 	unsigned char transition_on;
 	// Rheostat management.
 	unsigned char gear_count;
@@ -90,25 +90,25 @@ static void MP_DecreaseGear(void) {
  * @param:	None.
  * @return:	None.
  */
-void MP_Init(void) {
+void MP_init(void) {
 	// Init GPIOs.
-	SW2_Init(&mp_ctx.zero, &GPIO_MP_0, 1, 100); // MP_0 active high.
-	SW2_Init(&mp_ctx.t_more, &GPIO_MP_TM, 1, 100); // MP_TP active high.
+	SW2_init(&mp_ctx.zero, &GPIO_MP_0, 1, 100); // MP_0 active high.
+	SW2_init(&mp_ctx.t_more, &GPIO_MP_TM, 1, 100); // MP_TP active high.
 	mp_ctx.t_more_on = 0;
-	SW2_Init(&mp_ctx.t_less, &GPIO_MP_TL, 1, 100); // MP_TM active high.
+	SW2_init(&mp_ctx.t_less, &GPIO_MP_TL, 1, 100); // MP_TM active high.
 	mp_ctx.t_less_on = 0;
-	SW2_Init(&mp_ctx.t_fast, &GPIO_MP_TF, 1, 100); // MP_PR active high.
-	SW2_Init(&mp_ctx.preparation, &GPIO_MP_P, 1, 100); // MP_P active high.
+	SW2_init(&mp_ctx.t_fast, &GPIO_MP_TF, 1, 100); // MP_PR active high.
+	SW2_init(&mp_ctx.preparation, &GPIO_MP_P, 1, 100); // MP_P active high.
 	mp_ctx.preparation_on = 0;
-	SW2_Init(&mp_ctx.f_more, &GPIO_MP_FM, 1, 100); // MP_FP active high.
+	SW2_init(&mp_ctx.f_more, &GPIO_MP_FM, 1, 100); // MP_FP active high.
 	mp_ctx.f_more_on = 0;
-	SW2_Init(&mp_ctx.f_less, &GPIO_MP_FL, 1, 100); // MP_FM active high.
+	SW2_init(&mp_ctx.f_less, &GPIO_MP_FL, 1, 100); // MP_FM active high.
 	mp_ctx.f_less_on = 0;
-	SW2_Init(&mp_ctx.f_fast, &GPIO_MP_FF, 1, 100); // MP_FR active high.
+	SW2_init(&mp_ctx.f_fast, &GPIO_MP_FF, 1, 100); // MP_FR active high.
 	mp_ctx.f_fast_on = 0;
-	SW2_Init(&mp_ctx.transition, &GPIO_MP_TR, 0, 100); // MP_TR active low.
+	SW2_init(&mp_ctx.transition, &GPIO_MP_TR, 0, 100); // MP_TR active low.
 	mp_ctx.transition_on = 0;
-	GPIO_Configure(&GPIO_MP_SH_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_MP_SH_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
 	mp_ctx.gear_count = 0;
 	mp_ctx.gear_switch_next_time = 0;
@@ -121,24 +121,24 @@ void MP_Init(void) {
  * @param:	None.
  * @return:	None.
  */
-void MP_Task(void) {
+void MP_task(void) {
 	// Update global context.
 	lsmcu_ctx.rheostat_0 = (mp_ctx.gear_count == 0) ? 1 : 0;
 	// MP.0.
-	SW2_UpdateState(&mp_ctx.zero);
+	SW2_update_state(&mp_ctx.zero);
 	if (mp_ctx.zero.state == SW2_ON) {
 		// Decrease gear count until 0.
-		if ((mp_ctx.gear_count > 0) && (TIM2_GetMs() > (mp_ctx.gear_switch_next_time + MP_T_LESS_PERIOD_MS))) {
+		if ((mp_ctx.gear_count > 0) && (TIM2_get_milliseconds() > (mp_ctx.gear_switch_next_time + MP_T_LESS_PERIOD_MS))) {
 			MP_DecreaseGear();
 			//if (mp_ctx.gear_count == 0) {
 				//LSSGIU_Send(LSMCU_OUT_MP_0);
 			//}
 			// Update next time.
-			mp_ctx.gear_switch_next_time = TIM2_GetMs() + MP_T_LESS_PERIOD_MS;
+			mp_ctx.gear_switch_next_time = TIM2_get_milliseconds() + MP_T_LESS_PERIOD_MS;
 		}
 	}
 	// MP.T+.
-	SW2_UpdateState(&mp_ctx.t_more);
+	SW2_update_state(&mp_ctx.t_more);
 	if (mp_ctx.t_more.state == SW2_ON) {
 		// Send command on change.
 		if (mp_ctx.t_more_on == 0) {
@@ -150,7 +150,7 @@ void MP_Task(void) {
 		mp_ctx.t_more_on = 0;
 	}
 	// MP.T-.
-	SW2_UpdateState(&mp_ctx.t_less);
+	SW2_update_state(&mp_ctx.t_less);
 	if (mp_ctx.t_less.state == SW2_ON) {
 		// Send command on change.
 		if (mp_ctx.t_less_on == 0) {
@@ -162,13 +162,13 @@ void MP_Task(void) {
 		mp_ctx.t_less_on = 0;
 	}
 	// MP.PR
-	SW2_UpdateState(&mp_ctx.t_fast);
+	SW2_update_state(&mp_ctx.t_fast);
 	if (mp_ctx.t_fast.state == SW2_ON) {
 		// Increase gear count until maximum.
-		if ((mp_ctx.gear_count < MP_GEAR_MAX) && (TIM2_GetMs() > (mp_ctx.gear_switch_next_time + MP_T_MORE_PERIOD_MS))) {
+		if ((mp_ctx.gear_count < MP_GEAR_MAX) && (TIM2_get_milliseconds() > (mp_ctx.gear_switch_next_time + MP_T_MORE_PERIOD_MS))) {
 			MP_IncreaseGear();
 			// Update next time.
-			mp_ctx.gear_switch_next_time = TIM2_GetMs() + MP_T_MORE_PERIOD_MS;
+			mp_ctx.gear_switch_next_time = TIM2_get_milliseconds() + MP_T_MORE_PERIOD_MS;
 		}
 	}
 }

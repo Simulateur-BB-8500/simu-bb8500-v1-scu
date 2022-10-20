@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef ZBA_H
-#define ZBA_H
+#ifndef __ZBA_H__
+#define __ZBA_H__
 
 /*** ZBA functions ***/
 
-void ZBA_Init(void);
-void ZBA_Task(void);
+void ZBA_init(void);
+void ZBA_task(void);
 
-#endif /* ZBA_H */
+#endif /* __ZBA_H__ */

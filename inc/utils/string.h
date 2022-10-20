@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef STRING_H
-#define STRING_H
+#ifndef __STRING_H__
+#define __STRING_H__
 
 #include "mode.h"
 
@@ -22,21 +22,21 @@
 /*** STRING structures ***/
 
 typedef enum {
-	STRING_FORMAT_BINARY,
+	STRING_FORMAT_BOOLEAN,
 	STRING_FORMAT_HEXADECIMAL,
 	STRING_FORMAT_DECIMAL,
 	STRING_FORMAT_ASCII
-} STRING_Format;
+} STRING_format_t;
 
 /*** STRING functions ***/
 
-unsigned char STRING_AsciiToHexa(char ascii_code);
-char STRING_DecimalToAscii(unsigned char decimal_digit);
-char STRING_HexaToAscii(unsigned char hexa_digit);
-unsigned char STRING_IsHexaChar(char ascii_code);
-unsigned char STRING_IsDecimalChar(char ascii_code);
-void STRING_ConvertValue(int value, STRING_Format format, unsigned char print_prefix, char* string);
+unsigned char STRING_char_to_value(char ascii_code);
+char STRING_decimal_to_ascii(unsigned char decimal_digit);
+char STRING_hexa_to_ascii(unsigned char hexa_digit);
+unsigned char STRING_is_hexadecimal_char(char ascii_code);
+unsigned char STRING_is_decimal_char(char ascii_code);
+void STRING_value_to_string(int value, STRING_format_t format, unsigned char print_prefix, char* string);
 
 #endif
 
-#endif /* STRING_H */
+#endif /* __STRING_H__ */

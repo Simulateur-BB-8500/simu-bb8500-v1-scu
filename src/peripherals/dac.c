@@ -24,9 +24,9 @@
  * @param: 	None.
  * @return: None.
  */
-void DAC_Init(void) {
+void DAC_init(void) {
 	// Configure analog GPIOs.
-	GPIO_Configure(&GPIO_AM, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_DOWN);
+	GPIO_configure(&GPIO_AM, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_DOWN);
 	// Enable peripheral clock.
 	RCC -> APB1ENR |= (0b1 << 29); // DACEN='1'.
 	// Configure peripheral.
@@ -42,7 +42,7 @@ void DAC_Init(void) {
  * @param voltage: 	Output voltage expressed in mV (between 0 and VCC_MV).
  * @return: 		None.
  */
-void DAC_SetVoltageMv(unsigned int voltage_mv) {
+void DAC_set_voltage_mv(unsigned int voltage_mv) {
 	// Ensure new voltage is reachable.
 	unsigned int real_voltage_mv = voltage_mv;
 	if (real_voltage_mv < 0) {
@@ -58,7 +58,7 @@ void DAC_SetVoltageMv(unsigned int voltage_mv) {
  * @param:			None.
  * @return voltage:	Current output voltage expressed in mV (between 0 and VCC_MV).
  */
-unsigned int DAC_GetVoltageMv(void) {
+unsigned int DAC_get_voltage_mv(void) {
 	unsigned int voltage_mv = ((DAC -> DOR1) * ADC_VCC_DEFAULT_MV) / (DAC_FULL_SCALE);
 	return voltage_mv;
 }

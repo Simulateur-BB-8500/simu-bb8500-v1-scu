@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef MANOMETERS_H
-#define MANOMETERS_H
+#ifndef __MANOMETERS_H__
+#define __MANOMETERS_H__
 
 #include "mode.h"
 #include "step_motor.h"
@@ -15,7 +15,7 @@
 
 typedef struct {
 	volatile unsigned char enable;
-	STEP_MOTOR_Context* step_motor;
+	STEP_MOTOR_context_t* step_motor;
 	unsigned int pressure_limit_decibars; // Maximum operation pressure.
 	unsigned int pressure_max_decibars; // Maximum pressure displayed on the dial.
 	unsigned int pressure_max_steps; // Number of steps required to display the maximum pressure of the dial.
@@ -25,19 +25,19 @@ typedef struct {
 	unsigned int step_it_period_min; // Determines the maximum speed of the step_motor.
 	volatile unsigned int step_it_count; // Expressed in hundreds of us (number of timer interrupt calls).
 	volatile unsigned int step_it_period; // Expressed in hundreds of us.
-} MANOMETER_Context;
+} MANOMETER_context_t;
 
 /*** MANOMETERS functions ***/
 
-void MANOMETER_InitAll(void);
-void MANOMETER_ManagePowerAll(void);
-void MANOMETER_SetPressure(MANOMETER_Context* manometer, unsigned int pressure_decibars);
-unsigned int MANOMETER_GetPressure(MANOMETER_Context* manometer);
-void MANOMETER_NeedleStart(MANOMETER_Context* manometer);
-void MANOMETER_NeedleStop(MANOMETER_Context* manometer);
-void MANOMETER_NeedleTask(MANOMETER_Context* manometer);
+void MANOMETER_init_all(void);
+void MANOMETER_manage_power_all(void);
+void MANOMETER_set_pressure(MANOMETER_context_t* manometer, unsigned int pressure_decibars);
+unsigned int MANOMETER_get_pressure(MANOMETER_context_t* manometer);
+void MANOMETER_needle_start(MANOMETER_context_t* manometer);
+void MANOMETER_needle_stop(MANOMETER_context_t* manometer);
+void MANOMETER_needle_task(MANOMETER_context_t* manometer);
 #ifdef DEBUG
-void MANOMETER_PrintData(void);
+void MANOMETER_print_data(void);
 #endif
 
-#endif /* MANOMETERS_H */
+#endif /* __MANOMETERS_H__ */

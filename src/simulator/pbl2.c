@@ -25,7 +25,7 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** PBL2 local global variables ***/
 
-static SW4_Context pbl2_sw4;
+static SW4_context_t pbl2_sw4;
 
 /*** PBL2 functions ***/
 
@@ -33,9 +33,9 @@ static SW4_Context pbl2_sw4;
  * @param:	None.
  * @return:	None.
  */
-void PBL2_Init(void) {
+void PBL2_init(void) {
 	// Init GPIO.
-	SW4_Init(&pbl2_sw4, &GPIO_PBL2, 500);
+	SW4_init(&pbl2_sw4, &GPIO_PBL2, 500);
 	// Init global context.
 	lsmcu_ctx.pbl2_on = 0;
 }
@@ -44,17 +44,17 @@ void PBL2_Init(void) {
  * @param new_voltage:	New voltage measured.
  * @return:				None.
  */
-void PBL2_SetVoltageMv(unsigned int pbl2_voltage_mv) {
-	SW4_SetVoltageMv(&pbl2_sw4, pbl2_voltage_mv);
+void PBL2_set_voltage_mv(unsigned int pbl2_voltage_mv) {
+	SW4_set_voltage_mv(&pbl2_sw4, pbl2_voltage_mv);
 }
 
 /* MAIN ROUTINE OF PBL2 MODULE.
  * @param:	None.
  * @return:	None.
  */
-void PBL2_Task(void) {
+void PBL2_task(void) {
 	// Update current state.
-	SW4_UpdateState(&pbl2_sw4);
+	SW4_update_state(&pbl2_sw4);
 	// Perform actions according to state.
 	switch (pbl2_sw4.state) {
 	case SW4_P0:
@@ -63,10 +63,10 @@ void PBL2_Task(void) {
 			// Send command on change.
 			LSSGIU_Send(LSMCU_OUT_FPB_OFF);
 			// Empty CG and RE.
-			MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, 0);
-			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cg);
-			MANOMETER_SetPressure(lsmcu_ctx.manometer_re, 0);
-			MANOMETER_NeedleStart(lsmcu_ctx.manometer_re);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0);
+			MANOMETER_needle_start(lsmcu_ctx.manometer_cg);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0);
+			MANOMETER_needle_start(lsmcu_ctx.manometer_re);
 			// Update global context.
 			lsmcu_ctx.pbl2_on = 0;
 		}
@@ -76,14 +76,14 @@ void PBL2_Task(void) {
 		break;
 	case SW4_P2:
 		// Service.
-		if ((lsmcu_ctx.pbl2_on == 0) && (MANOMETER_GetPressure(lsmcu_ctx.manometer_cp) > PBL2_MIN_CP_PRESSURE_DECIBARS)) {
+		if ((lsmcu_ctx.pbl2_on == 0) && (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > PBL2_MIN_CP_PRESSURE_DECIBARS)) {
 			// Send command on change.
 			LSSGIU_Send(LSMCU_OUT_FPB_ON);
 			// Start CG and RE manometers.
-			MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_DECIBARS);
-			MANOMETER_NeedleStart(lsmcu_ctx.manometer_cg);
-			MANOMETER_SetPressure(lsmcu_ctx.manometer_re, PBL2_ON_CG_PRESSURE_DECIBARS);
-			MANOMETER_NeedleStart(lsmcu_ctx.manometer_re);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_DECIBARS);
+			MANOMETER_needle_start(lsmcu_ctx.manometer_cg);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, PBL2_ON_CG_PRESSURE_DECIBARS);
+			MANOMETER_needle_start(lsmcu_ctx.manometer_re);
 			// Update global context.
 			lsmcu_ctx.pbl2_on = 1;
 		}

@@ -18,7 +18,7 @@
  * @param power:	Desired power.
  * @return result:	Result of computation.
  */
-unsigned int MATH_Pow10(unsigned char power) {
+unsigned int MATH_pow_10(unsigned char power) {
 	unsigned int result = 0;
 	unsigned int pow10_buf[MATH_DECIMAL_MAX_DIGITS] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 	if (power < MATH_DECIMAL_MAX_DIGITS) {
@@ -32,7 +32,7 @@ unsigned int MATH_Pow10(unsigned char power) {
  * @param data_length:	Input buffer length.
  * @return average: 	Average value of the input buffer.
  */
-unsigned int MATH_ComputeAverage(unsigned int* data, unsigned char data_length) {
+unsigned int MATH_average(unsigned int* data, unsigned char data_length) {
 	// Local variables.
 	unsigned char idx = 0;
 	unsigned int average = 0;
@@ -49,7 +49,7 @@ unsigned int MATH_ComputeAverage(unsigned int* data, unsigned char data_length) 
  * @param average_length:	Number of center elements taken for final average.
  * @return filter_out:		Output value of the median filter.
  */
-unsigned int MATH_ComputeMedianFilter(unsigned int* data, unsigned char median_length, unsigned char average_length) {
+unsigned int MATH_median_filter(unsigned int* data, unsigned char median_length, unsigned char average_length) {
 	// Local variables.
 	unsigned int local_buf[MATH_MEDIAN_FILTER_LENGTH_MAX];
 	unsigned char buffer_sorted = 0;
@@ -88,7 +88,7 @@ unsigned int MATH_ComputeMedianFilter(unsigned int* data, unsigned char median_l
 			end_idx = (median_length - 1);
 		}
 		// Compute average.
-		filter_out = MATH_ComputeAverage(&(data[start_idx]), (end_idx - start_idx + 1));
+		filter_out = MATH_average(&(data[start_idx]), (end_idx - start_idx + 1));
 	}
 	else {
 		// Return median value.

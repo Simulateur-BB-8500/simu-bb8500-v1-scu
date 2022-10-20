@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef NVIC_REG_H
-#define NVIC_REG_H
+#ifndef __NVIC_REG_H__
+#define __NVIC_REG_H__
 
 /*** NVIC registers ***/
 
@@ -24,10 +24,10 @@ typedef struct {
 	volatile unsigned int IPR[60];		// Interrupt priority registers 0 to 59.
 	unsigned int RESERVED5[644];		// Reserved 0xE000E4F0.
 	volatile unsigned int STIR;    		// Interrupt software trigger register.
-} NVIC_BaseAddress;
+} NVIC_base_address_t;
 
 /*** NVIC base address ***/
 
-#define NVIC	((NVIC_BaseAddress*) ((unsigned int) 0xE000E100))
+#define NVIC	((NVIC_base_address_t*) ((unsigned int) 0xE000E100))
 
-#endif /* NVIC_REG_H */
+#endif /* __NVIC_REG_H__ */

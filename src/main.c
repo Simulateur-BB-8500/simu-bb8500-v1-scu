@@ -56,71 +56,71 @@ int main(void) {
 	char str_value[16];
 	unsigned int print_timestamp = 0;
 	// Init Peripherals.
-	NVIC_Init();
-	RCC_Init();
-	GPIO_Init();
-	TIM2_Init(); // Time keeper.
-	TIM5_Init(); // Tachro.
-	TIM6_Init(); // KVB sweep.
-	TIM7_Init(); // Manometers.
-	TIM8_Init(); // LVAL PWM.
-	ADC1_Init();
-	DAC_Init();
-	USART1_Init();
+	NVIC_init();
+	RCC_init();
+	GPIO_init();
+	TIM2_init(); // Time keeper.
+	TIM5_init(); // Tachro.
+	TIM6_init(); // KVB sweep.
+	TIM7_init(); // Manometers.
+	TIM8_init(); // LVAL PWM.
+	ADC1_init();
+	DAC_init();
+	USART1_init();
 	// Init communication interface.
 	LSSGIU_Init();
 	// Init simulator modules.
-	BELL_Init();
-	BL_Init();
-	BPGD_Init();
-	COMPRESSOR_Init();
-	FD_Init();
-	FPB_Init();
-	KVB_Init();
-	MANOMETER_InitAll();
-	MP_Init();
-	MPINV_Init();
-	PICTOGRAMS_Init();
-	PBL2_Init();
-	TCH_Init();
-	URGENCY_Init();
-	VACMA_Init();
-	WHISTLE_Init();
-	ZBA_Init();
-	ZLFR_Init();
-	ZPT_Init();
-	ZSUR_Init();
+	BELL_init();
+	BL_init();
+	BPGD_init();
+	COMPRESSOR_init();
+	FD_init();
+	FPB_init();
+	KVB_init();
+	MANOMETER_init_all();
+	MP_init();
+	MPINV_init();
+	PICTOGRAMS_init();
+	PBL2_init();
+	TCH_init();
+	URGENCY_init();
+	VACMA_init();
+	WHISTLE_init();
+	ZBA_init();
+	ZLFR_init();
+	ZPT_init();
+	ZSUR_init();
 	// Main loop.
 	while (1) {
 		// Peripherals tasks.
-		ADC1_Task();
+		ADC1_task();
 		// Communication tasks.
 		LSSGIU_Task();
 		// Simulator tasks.
-		BELL_Task();
-		BL_Task();
-		BPGD_Task();
-		COMPRESSOR_Task();
-		FD_Task();
-		FPB_Task();
-		KVB_Task();
-		MANOMETER_ManagePowerAll();
-		MP_Task();
-		MPINV_Task();
-		PBL2_Task();
-		PICTOGRAMS_Task();
-		TCH_Task();
-		URGENCY_Task();
-		VACMA_Task();
-		WHISTLE_Task();
-		ZBA_Task();
-		ZPT_Task();
-		ZSUR_Task();
+		BELL_task();
+		BL_task();
+		BPGD_task();
+		COMPRESSOR_task();
+		FD_task();
+		FPB_task();
+		KVB_task();
+		MANOMETER_manage_power_all();
+		MP_task();
+		MPINV_task();
+		PBL2_task();
+		PICTOGRAMS_task();
+		TCH_task();
+		URGENCY_task();
+		VACMA_task();
+		WHISTLE_task();
+		ZBA_task();
+		ZPT_task();
+		ZSUR_task();
 #ifdef DEBUG
 		// Print manometers pressure.
-		if (TIM2_GetMs() > (print_timestamp + 1000)) {
-			MANOMETER_PrintData();
-			print_timestamp = TIM2_GetMs();
+		if (TIM2_get_milliseconds() > (print_timestamp + 1000)) {
+			MANOMETER_print_data();
+			print_timestamp = TIM2_get_milliseconds();
 		}
 #endif
 	}

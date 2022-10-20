@@ -5,13 +5,13 @@
  *      Author: Ludo
  */
 
-#ifndef MPINV_H
-#define MPINV_H
+#ifndef __MPINV_H__
+#define __MPINV_H__
 
 /*** MPINV functions ***/
 
-void MPINV_Init(void);
-void MPINV_SetVoltageMv(unsigned int mpinv_voltage_mv);
-void MPINV_Task(void);
+void MPINV_init(void);
+void MPINV_set_voltage_mv(unsigned int mpinv_voltage_mv);
+void MPINV_task(void);
 
-#endif /* MPINV_H */
+#endif /* __MPINV_H__ */

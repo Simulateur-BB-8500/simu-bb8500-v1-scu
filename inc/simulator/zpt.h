@@ -5,13 +5,13 @@
  *      Author: Ludo
  */
 
-#ifndef ZPT_H
-#define ZPT_H
+#ifndef __ZPT_H__
+#define __ZPT_H__
 
 /*** ZPT functions ***/
 
-void ZPT_Init(void);
-void ZPT_SetVoltageMv(unsigned int zpt_voltage_mv);
-void ZPT_Task(void);
+void ZPT_init(void);
+void ZPT_set_voltage_mv(unsigned int zpt_voltage_mv);
+void ZPT_task(void);
 
-#endif /* ZPT_H */
+#endif /* __ZPT_H__ */

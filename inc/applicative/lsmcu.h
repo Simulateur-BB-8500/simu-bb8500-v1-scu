@@ -26,11 +26,11 @@ typedef struct {
 	unsigned char series_traction;
 	unsigned char pbl2_on;
 	unsigned char urgency;
-	MANOMETER_Context* manometer_cp;
-	MANOMETER_Context* manometer_re;
-	MANOMETER_Context* manometer_cg;
-	MANOMETER_Context* manometer_cf1;
-	MANOMETER_Context* manometer_cf2;
+	MANOMETER_context_t* manometer_cp;
+	MANOMETER_context_t* manometer_re;
+	MANOMETER_context_t* manometer_cg;
+	MANOMETER_context_t* manometer_cf1;
+	MANOMETER_context_t* manometer_cf2;
 } LSMCU_Context;
 
 #endif /* LSMCU_H */

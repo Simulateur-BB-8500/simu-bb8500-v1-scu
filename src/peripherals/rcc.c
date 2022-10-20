@@ -24,7 +24,7 @@ static unsigned int rcc_clock_frequency[RCC_CLOCK_LAST] = {RCC_HSI_FREQUENCY_KHZ
  * @param: None.
  * @return: None.
  */
-void RCC_Init(void) {
+void RCC_init(void) {
 	// Peripherals clock prescalers:
 	// HPRE = 1 -> HCLK = SYSCLK = 100MHz (max 216).
 	// PPRE1 = 4 -> PCLK1 = HCLK/4 = 25MHz (max 54).
@@ -47,7 +47,7 @@ void RCC_Init(void) {
 	while (((RCC -> CR) & (0b1 << 25)) == 0);
 	// Increase flash latency according to new system clock frequency (see p.74 of RM0385 datasheet).
 	// HCLK = SYSCLK = 100MHz -> flash latency must be set to 3 wait states (WS).
-	FLASH_SetLatency(3);
+	FLASH_set_latency(3);
 	// Switch to PLLCLK.
 	RCC -> CFGR |= (0b10 << 0); // SW='10'.
 	while (((RCC -> CFGR) & (0b11 << 0)) != 0b10); // // Wait for clock switch (SWS='00').
@@ -66,7 +66,7 @@ void RCC_Init(void) {
  * @param rcc_clock:	RCC clock source.
  * @return freq_khz:	RCC clock frequency in kHz.
  */
-unsigned int RCC_GetClockFrequency(RCC_Clock rcc_clock) {
+unsigned int RCC_get_clock_frequency(RCC_clock_t rcc_clock) {
 	// Local variables.
 	unsigned int freq_khz = 0;
 	// Check parameter.

@@ -17,7 +17,7 @@
 /*** URGENCY local structures ***/
 
 typedef struct {
-	SW2_Context bpurg;
+	SW2_context_t bpurg;
 	unsigned char previous_state;
 } URGENCY_Context;
 
@@ -35,9 +35,9 @@ static URGENCY_Context urgency_ctx;
  * @param:	None.
  * @return:	None.
  */
-void URGENCY_Init(void) {
+void URGENCY_init(void) {
 	// Init GPIO.
-	SW2_Init(&urgency_ctx.bpurg, &GPIO_BPURG, 0, 100); // URGENCY active low.
+	SW2_init(&urgency_ctx.bpurg, &GPIO_BPURG, 0, 100); // URGENCY active low.
 	// Init context.
 	urgency_ctx.previous_state = 0;
 	lsmcu_ctx.urgency = 0;
@@ -47,9 +47,9 @@ void URGENCY_Init(void) {
  * @param:	None.
  * @return:	None.
  */
-void URGENCY_Task(void) {
+void URGENCY_task(void) {
 	// Update BPURG state.
-	SW2_UpdateState(&urgency_ctx.bpurg);
+	SW2_update_state(&urgency_ctx.bpurg);
 	if (urgency_ctx.bpurg.state == SW2_ON) {
 		// Update global context.
 		lsmcu_ctx.urgency = 1;
@@ -57,10 +57,10 @@ void URGENCY_Task(void) {
 	// Check global flag.
 	if ((lsmcu_ctx.urgency != 0) && (urgency_ctx.previous_state == 0)) {
 		// Trigger urgency brake.
-		MANOMETER_SetPressure(lsmcu_ctx.manometer_cg, 0);
-		MANOMETER_SetPressure(lsmcu_ctx.manometer_re, 0);
-		MANOMETER_SetPressure(lsmcu_ctx.manometer_cf1, (lsmcu_ctx.manometer_cf1) -> pressure_limit_decibars);
-		MANOMETER_SetPressure(lsmcu_ctx.manometer_cf2, (lsmcu_ctx.manometer_cf2) -> pressure_limit_decibars);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, (lsmcu_ctx.manometer_cf1) -> pressure_limit_decibars);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, (lsmcu_ctx.manometer_cf2) -> pressure_limit_decibars);
 		// Open DJ.
 		lsmcu_ctx.dj_locked = 0;
 		// Send sound command.

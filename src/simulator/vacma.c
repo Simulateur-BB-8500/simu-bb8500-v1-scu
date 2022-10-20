@@ -32,8 +32,8 @@ typedef enum {
 
 typedef struct {
 	// Inputs.
-	SW2_Context bl_zva;
-	SW2_Context mp_va;
+	SW2_context_t bl_zva;
+	SW2_context_t mp_va;
 	// State machine.
 	VACMA_State state;
 	unsigned int switch_state_time; // In ms.
@@ -53,14 +53,14 @@ static VACMA_Context vacma_ctx;
  * @param:	None.
  * @return:	None.
  */
-void VACMA_Init(void) {
+void VACMA_init(void) {
 	// Init GPIOs.
-	SW2_Init(&vacma_ctx.bl_zva, &GPIO_BL_ZVA, 0, 100); // MP_0 active low.
-	SW2_Init(&vacma_ctx.mp_va, &GPIO_MP_VA, 0, 100); // MP_0 active low.
-	GPIO_Configure(&GPIO_VACMA_HOLD_ALARM, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_VACMA_RELEASED_ALARM, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-	GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+	SW2_init(&vacma_ctx.bl_zva, &GPIO_BL_ZVA, 0, 100); // MP_0 active low.
+	SW2_init(&vacma_ctx.mp_va, &GPIO_MP_VA, 0, 100); // MP_0 active low.
+	GPIO_configure(&GPIO_VACMA_HOLD_ALARM, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_VACMA_RELEASED_ALARM, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+	GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
 	// Init context.
 	vacma_ctx.state = VACMA_STATE_OFF;
 	vacma_ctx.switch_state_time = 0;
@@ -70,10 +70,10 @@ void VACMA_Init(void) {
  * @param:	None.
  * @return:	None.
  */
-void VACMA_Task(void) {
+void VACMA_task(void) {
 	// Update inputs.
-	SW2_UpdateState(&vacma_ctx.bl_zva);
-	SW2_UpdateState(&vacma_ctx.mp_va);
+	SW2_update_state(&vacma_ctx.bl_zva);
+	SW2_update_state(&vacma_ctx.mp_va);
 	// Perform state machine.
 	switch (vacma_ctx.state) {
 	case VACMA_STATE_OFF:
@@ -86,26 +86,26 @@ void VACMA_Task(void) {
 			else {
 				vacma_ctx.state = VACMA_STATE_RELEASED;
 			}
-			vacma_ctx.switch_state_time = TIM2_GetMs();
+			vacma_ctx.switch_state_time = TIM2_get_milliseconds();
 		}
 		break;
 	case VACMA_STATE_HOLD:
 		if ((lsmcu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
 			// Disable VACMA.
-			GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-			GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+			GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+			GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
 			vacma_ctx.state = VACMA_STATE_OFF;
 		}
 		else {
-			if (TIM2_GetMs() > (vacma_ctx.switch_state_time + VACMA_HOLD_ALARM_START_MS)) {
+			if (TIM2_get_milliseconds() > (vacma_ctx.switch_state_time + VACMA_HOLD_ALARM_START_MS)) {
 				// Trigger hold alarm.
-				GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 1);
-				vacma_ctx.switch_state_time = TIM2_GetMs();
+				GPIO_write(&GPIO_VACMA_HOLD_ALARM, 1);
+				vacma_ctx.switch_state_time = TIM2_get_milliseconds();
 				vacma_ctx.state = VACMA_STATE_HOLD_ALARM;
 			}
 			else {
 				if (vacma_ctx.mp_va.state == SW2_OFF) {
-					vacma_ctx.switch_state_time = TIM2_GetMs();
+					vacma_ctx.switch_state_time = TIM2_get_milliseconds();
 					vacma_ctx.state = VACMA_STATE_RELEASED;
 				}
 			}
@@ -114,23 +114,23 @@ void VACMA_Task(void) {
 	case VACMA_STATE_HOLD_ALARM:
 		if ((lsmcu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
 			// Disable VACMA.
-			GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-			GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+			GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+			GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
 			vacma_ctx.state = VACMA_STATE_OFF;
 		}
 		else {
-			if (TIM2_GetMs() > (vacma_ctx.switch_state_time + VACMA_ALARM_DURATION_MS)) {
+			if (TIM2_get_milliseconds() > (vacma_ctx.switch_state_time + VACMA_ALARM_DURATION_MS)) {
 				// Trigger urgency brake.
-				GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-				GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+				GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+				GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
 				lsmcu_ctx.urgency = 1;
 				vacma_ctx.state = VACMA_STATE_URGENCY;
 			}
 			else {
 				if (vacma_ctx.mp_va.state == SW2_OFF) {
-					GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-					GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
-					vacma_ctx.switch_state_time = TIM2_GetMs();
+					GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+					GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
+					vacma_ctx.switch_state_time = TIM2_get_milliseconds();
 					vacma_ctx.state = VACMA_STATE_RELEASED;
 				}
 			}
@@ -139,20 +139,20 @@ void VACMA_Task(void) {
 	case VACMA_STATE_RELEASED:
 		if ((lsmcu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
 			// Disable VACMA.
-			GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-			GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+			GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+			GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
 			vacma_ctx.state = VACMA_STATE_OFF;
 		}
 		else {
-			if (TIM2_GetMs() > (vacma_ctx.switch_state_time + VACMA_RELEASED_ALARM_START_MS)) {
+			if (TIM2_get_milliseconds() > (vacma_ctx.switch_state_time + VACMA_RELEASED_ALARM_START_MS)) {
 				// Trigger released alarm.
-				GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 1);
-				vacma_ctx.switch_state_time = TIM2_GetMs();
+				GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 1);
+				vacma_ctx.switch_state_time = TIM2_get_milliseconds();
 				vacma_ctx.state = VACMA_STATE_RELEASED_ALARM;
 			}
 			else {
 				if (vacma_ctx.mp_va.state == SW2_ON) {
-					vacma_ctx.switch_state_time = TIM2_GetMs();
+					vacma_ctx.switch_state_time = TIM2_get_milliseconds();
 					vacma_ctx.state = VACMA_STATE_HOLD;
 				}
 			}
@@ -161,23 +161,23 @@ void VACMA_Task(void) {
 	case VACMA_STATE_RELEASED_ALARM:
 		if ((lsmcu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
 			// Disable VACMA.
-			GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-			GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+			GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+			GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
 			vacma_ctx.state = VACMA_STATE_OFF;
 		}
 		else {
-			if (TIM2_GetMs() > (vacma_ctx.switch_state_time + VACMA_ALARM_DURATION_MS)) {
+			if (TIM2_get_milliseconds() > (vacma_ctx.switch_state_time + VACMA_ALARM_DURATION_MS)) {
 				// Trigger urgency brake.
-				GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-				GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
+				GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+				GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
 				lsmcu_ctx.urgency = 1;
 				vacma_ctx.state = VACMA_STATE_URGENCY;
 			}
 			else {
 				if (vacma_ctx.mp_va.state == SW2_ON) {
-					GPIO_Write(&GPIO_VACMA_HOLD_ALARM, 0);
-					GPIO_Write(&GPIO_VACMA_RELEASED_ALARM, 0);
-					vacma_ctx.switch_state_time = TIM2_GetMs();
+					GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
+					GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
+					vacma_ctx.switch_state_time = TIM2_get_milliseconds();
 					vacma_ctx.state = VACMA_STATE_HOLD;
 				}
 			}

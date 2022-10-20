@@ -23,20 +23,20 @@
 
 /*** MANOMETER external global variables ***/
 
-extern STEP_MOTOR_Context step_motor_cp;
-extern STEP_MOTOR_Context step_motor_re;
-extern STEP_MOTOR_Context step_motor_cg;
-extern STEP_MOTOR_Context step_motor_cf1;
-extern STEP_MOTOR_Context step_motor_cf2;
+extern STEP_MOTOR_context_t step_motor_cp;
+extern STEP_MOTOR_context_t step_motor_re;
+extern STEP_MOTOR_context_t step_motor_cg;
+extern STEP_MOTOR_context_t step_motor_cf1;
+extern STEP_MOTOR_context_t step_motor_cf2;
 extern LSMCU_Context lsmcu_ctx;
 
 /*** MANOMETER local global variables ***/
 
-static MANOMETER_Context manometer_cp = {0, &step_motor_cp, 95, 100, 3072, 20, 0, 0, 100, 0, 0};
-static MANOMETER_Context manometer_re = {0, &step_motor_re, 50, 100, 3072, 20, 0, 0, 100, 0, 0};
-static MANOMETER_Context manometer_cg = {0, &step_motor_cg, 54, 100, 3072, 20, 0, 0, 100, 0, 0};
-static MANOMETER_Context manometer_cf1 = {0, &step_motor_cf1, 41, 60, 3072, 20, 0, 0, 100, 0, 0};
-static MANOMETER_Context manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cp = {0, &step_motor_cp, 95, 100, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_re = {0, &step_motor_re, 50, 100, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cg = {0, &step_motor_cg, 54, 100, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cf1 = {0, &step_motor_cf1, 41, 60, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20, 0, 0, 100, 0, 0};
 
 /*** MANOMETER local functions ***/
 
@@ -46,9 +46,9 @@ static MANOMETER_Context manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20, 
  */
 static void MANOMETER_PowerOnAll(void) {
 	// Turn step motors on.
-	GPIO_Write(&GPIO_MANOMETER_POWER_ENABLE, 1);
+	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 1);
 	// Start timer.
-	TIM7_Start();
+	TIM7_start();
 }
 
 /* POWER MANOMETER DRIVERS.
@@ -57,16 +57,16 @@ static void MANOMETER_PowerOnAll(void) {
  */
 static void MANOMETER_PowerOffAll(void) {
 	// Turn step motors on.
-	GPIO_Write(&GPIO_MANOMETER_POWER_ENABLE, 0);
+	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 0);
 	// Stop timer.
-	TIM7_Stop();
+	TIM7_stop();
 }
 
 /* CHECK IF A GIVEN NEEDLE IS MOVING.
  * @param:			None.
  * @eturn moving:	'1' if the manometer needle is currently moving (target not reached), '0' otherwise.
  */
-static unsigned char MANOMETER_NeedleIsMoving(MANOMETER_Context* manometer) {
+static unsigned char MANOMETER_NeedleIsMoving(MANOMETER_context_t* manometer) {
 	unsigned char moving = 0;
 	if (((manometer -> step_motor) -> step) != (manometer -> step_target)) {
 		moving = 1;
@@ -80,15 +80,15 @@ static unsigned char MANOMETER_NeedleIsMoving(MANOMETER_Context* manometer) {
  * @param:	None.
  * @return:	None.
  */
-void MANOMETER_InitAll(void) {
+void MANOMETER_init_all(void) {
 	// Init GPIOs.
-	GPIO_Configure(&GPIO_MANOMETER_POWER_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_MANOMETER_POWER_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init step motors.
-	STEP_MOTOR_Init(manometer_cp.step_motor);
-	STEP_MOTOR_Init(manometer_cg.step_motor);
-	STEP_MOTOR_Init(manometer_re.step_motor);
-	STEP_MOTOR_Init(manometer_cf1.step_motor);
-	STEP_MOTOR_Init(manometer_cf2.step_motor);
+	STEP_MOTOR_init(manometer_cp.step_motor);
+	STEP_MOTOR_init(manometer_cg.step_motor);
+	STEP_MOTOR_init(manometer_re.step_motor);
+	STEP_MOTOR_init(manometer_cf1.step_motor);
+	STEP_MOTOR_init(manometer_cf2.step_motor);
 	// Link to global context.
 	lsmcu_ctx.manometer_cp = &manometer_cp;
 	lsmcu_ctx.manometer_re = &manometer_re;
@@ -101,7 +101,7 @@ void MANOMETER_InitAll(void) {
  * @param:	None.
  * @return:	None.
  */
-void MANOMETER_ManagePowerAll(void) {
+void MANOMETER_manage_power_all(void) {
 	// Check all manometer.
 	if ((MANOMETER_NeedleIsMoving(&manometer_cp) == 0) &&
 		(MANOMETER_NeedleIsMoving(&manometer_re) == 0) &&
@@ -121,7 +121,7 @@ void MANOMETER_ManagePowerAll(void) {
  * @param manometer:			Manometer to control.
  * @param pressure_decibars:	New pressure expressed in decibars.
  */
-void MANOMETER_SetPressure(MANOMETER_Context* manometer, unsigned int pressure_decibars) {
+void MANOMETER_set_pressure(MANOMETER_context_t* manometer, unsigned int pressure_decibars) {
 	// Update target step.
 	manometer -> step_target = ((manometer -> pressure_max_steps) * pressure_decibars) / (manometer -> pressure_max_decibars);
 }
@@ -130,7 +130,7 @@ void MANOMETER_SetPressure(MANOMETER_Context* manometer, unsigned int pressure_d
  * @param manometer:			Manometer to analyze.
  * @return pressure_decibars:	Current pressure displayed by the manometer in decibars.
  */
-unsigned int MANOMETER_GetPressure(MANOMETER_Context* manometer) {
+unsigned int MANOMETER_get_pressure(MANOMETER_context_t* manometer) {
 	unsigned int pressure_decibars = (((manometer -> step_motor) -> step) * (manometer -> pressure_max_decibars)) / (manometer -> pressure_max_steps);
 	return pressure_decibars;
 }
@@ -139,7 +139,7 @@ unsigned int MANOMETER_GetPressure(MANOMETER_Context* manometer) {
  * @param manometer:	Manometer to control.
  * @return:		None.
  */
-void MANOMETER_NeedleStart(MANOMETER_Context* manometer) {
+void MANOMETER_needle_start(MANOMETER_context_t* manometer) {
 	// Enable movement.
 	manometer -> enable = 1;
 	// Store current position as start step.
@@ -150,7 +150,7 @@ void MANOMETER_NeedleStart(MANOMETER_Context* manometer) {
  * @param manometer:	Manometer to control.
  * @return:		None.
  */
-void MANOMETER_NeedleStop(MANOMETER_Context* manometer) {
+void MANOMETER_needle_stop(MANOMETER_context_t* manometer) {
 	// Disable movement.
 	manometer -> enable = 0;
 	// Update target to perform inertia.
@@ -176,7 +176,7 @@ void MANOMETER_NeedleStop(MANOMETER_Context* manometer) {
  * @param:	None.
  * @return:	None.
  */
-void MANOMETER_NeedleTask(MANOMETER_Context* manometer) {
+void MANOMETER_needle_task(MANOMETER_context_t* manometer) {
 	// Movement feedback loop.
 	manometer -> step_it_count++;
 	unsigned int current_step = ((manometer -> step_motor) -> step);
@@ -186,11 +186,11 @@ void MANOMETER_NeedleTask(MANOMETER_Context* manometer) {
 		manometer -> step_it_count = 0;
 		// Up direction.
 		if (current_step < (manometer -> step_target)) {
-			STEP_MOTOR_Up(manometer -> step_motor);
+			STEP_MOTOR_up(manometer -> step_motor);
 		}
 		// Down direction.
 		if (current_step > (manometer -> step_target)) {
-			STEP_MOTOR_Down(manometer -> step_motor);
+			STEP_MOTOR_down(manometer -> step_motor);
 		}
 	}
 	// Compute next period.
@@ -229,25 +229,25 @@ void MANOMETER_NeedleTask(MANOMETER_Context* manometer) {
  * @param:	None.
  * @return:	None.
  */
-void MANOMETER_PrintData(void) {
+void MANOMETER_print_data(void) {
 	// Local variables.
 	char str_value[16];
 	// Print all pressure values.
-	USART1_SendString("\nCP  = ");
-	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_cp), STRING_FORMAT_DECIMAL, 0, str_value);
-	USART1_SendString(str_value);
-	USART1_SendString("\nRE  = ");
-	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_re), STRING_FORMAT_DECIMAL, 0, str_value);
-	USART1_SendString(str_value);
-	USART1_SendString("\nCG  = ");
-	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_cg), STRING_FORMAT_DECIMAL, 0, str_value);
-	USART1_SendString(str_value);
-	USART1_SendString("\nCF1 = ");
-	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_cf1), STRING_FORMAT_DECIMAL, 0, str_value);
-	USART1_SendString(str_value);
-	USART1_SendString("\nCF2 = ");
-	STRING_ConvertValue(MANOMETER_GetPressure(lsmcu_ctx.manometer_cf2), STRING_FORMAT_DECIMAL, 0, str_value);
-	USART1_SendString(str_value);
-	USART1_SendString("\n");
+	USART1_send_string("\nCP  = ");
+	STRING_value_to_string(MANOMETER_get_pressure(lsmcu_ctx.manometer_cp), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_send_string(str_value);
+	USART1_send_string("\nRE  = ");
+	STRING_value_to_string(MANOMETER_get_pressure(lsmcu_ctx.manometer_re), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_send_string(str_value);
+	USART1_send_string("\nCG  = ");
+	STRING_value_to_string(MANOMETER_get_pressure(lsmcu_ctx.manometer_cg), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_send_string(str_value);
+	USART1_send_string("\nCF1 = ");
+	STRING_value_to_string(MANOMETER_get_pressure(lsmcu_ctx.manometer_cf1), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_send_string(str_value);
+	USART1_send_string("\nCF2 = ");
+	STRING_value_to_string(MANOMETER_get_pressure(lsmcu_ctx.manometer_cf2), STRING_FORMAT_DECIMAL, 0, str_value);
+	USART1_send_string(str_value);
+	USART1_send_string("\n");
 }
 #endif

@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef TCH_H
-#define TCH_H
+#ifndef __TCH_H__
+#define __TCH_H__
 
 /*** TACHRO macros ***/
 
@@ -15,7 +15,7 @@
 
 /*** TACHRO functions ***/
 
-void TCH_Init(void);
-void TCH_Task(void);
+void TCH_init(void);
+void TCH_task(void);
 
-#endif /* TCH_H */
+#endif /* __TCH_H__ */

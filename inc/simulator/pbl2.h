@@ -5,13 +5,13 @@
  *      Author: Ludo
  */
 
-#ifndef PBL2_H
-#define PBL2_H
+#ifndef __PBL2_H__
+#define __PBL2_H__
 
 /*** PBL2 functions ***/
 
-void PBL2_Init(void);
-void PBL2_SetVoltageMv(unsigned int pbl2_voltage_mv);
-void PBL2_Task(void);
+void PBL2_init(void);
+void PBL2_set_voltage_mv(unsigned int pbl2_voltage_mv);
+void PBL2_task(void);
 
-#endif /* APPLICATIVE_PBL2_H_ */
+#endif /* APPLICATIVE___PBL2_H___ */

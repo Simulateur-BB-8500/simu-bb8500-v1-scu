@@ -25,7 +25,7 @@
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a neutral position, '0' otherwise.
  */
-static unsigned char SW3_VoltageIsNeutral(SW3_Context* sw3) {
+static unsigned char SW3_VoltageIsNeutral(SW3_context_t* sw3) {
 	unsigned char result = 0;
 	if (((sw3 -> voltage) > SW3_BACK_THRESHOLD_HIGH) && ((sw3 -> voltage) < SW3_FRONT_THRESHOLD_LOW)) {
 		result = 1;
@@ -37,7 +37,7 @@ static unsigned char SW3_VoltageIsNeutral(SW3_Context* sw3) {
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a back position, '0' otherwise.
  */
-static unsigned char SW3_VoltageIsBack(SW3_Context* sw3) {
+static unsigned char SW3_VoltageIsBack(SW3_context_t* sw3) {
 	unsigned char result = 0;
 	if ((sw3 -> voltage) < SW3_BACK_THRESHOLD_LOW) {
 		result = 1;
@@ -49,7 +49,7 @@ static unsigned char SW3_VoltageIsBack(SW3_Context* sw3) {
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a front position, '0' otherwise.
  */
-static unsigned char SW3_VoltageIsFront(SW3_Context* sw3) {
+static unsigned char SW3_VoltageIsFront(SW3_context_t* sw3) {
 	unsigned char result = 0;
 	if ((sw3 -> voltage) > SW3_FRONT_THRESHOLD_HIGH) {
 		result = 1;
@@ -65,9 +65,9 @@ static unsigned char SW3_VoltageIsFront(SW3_Context* sw3) {
  * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
  * @return:					None.
  */
-void SW3_Init(SW3_Context* sw3, const GPIO* gpio, unsigned int debouncing_ms) {
+void SW3_init(SW3_context_t* sw3, const GPIO* gpio, unsigned int debouncing_ms) {
 	// Init GPIO.
-	GPIO_Configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
 	(sw3 -> voltage) = (ADC_VCC_DEFAULT_MV / 2); // Neutral = Vcc/2.
 	(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
@@ -80,7 +80,7 @@ void SW3_Init(SW3_Context* sw3, const GPIO* gpio, unsigned int debouncing_ms) {
  * @param sw3:			The switch to set.
  * @param newVoltage:	New voltage measured by ADC.
  */
-void SW3_SetVoltageMv(SW3_Context* sw3, unsigned int voltage_mv) {
+void SW3_set_voltage_mv(SW3_context_t* sw3, unsigned int voltage_mv) {
 	(sw3 -> voltage) = voltage_mv;
 }
 
@@ -88,7 +88,7 @@ void SW3_SetVoltageMv(SW3_Context* sw3, unsigned int voltage_mv) {
  * @param sw3:	The switch to analyse.
  * @return:		None.
  */
-void SW3_UpdateState(SW3_Context* sw3) {
+void SW3_update_state(SW3_context_t* sw3) {
 	switch((sw3 -> internal_state)) {
 	case SW3_STATE_CONFIRM_NEUTRAL:
 		// Check previous state.
@@ -103,10 +103,10 @@ void SW3_UpdateState(SW3_Context* sw3) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_FRONT;
 					// Reset confirm start time.
-					(sw3 -> confirm_start_time) = TIM2_GetMs();
+					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsNeutral(sw3)) && (TIM2_GetMs() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((SW3_VoltageIsNeutral(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// NEUTRAL position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
 					}
@@ -123,10 +123,10 @@ void SW3_UpdateState(SW3_Context* sw3) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_BACK;
 					// Reset confirm start time.
-					(sw3 -> confirm_start_time) = TIM2_GetMs();
+					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsNeutral(sw3)) && (TIM2_GetMs() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((SW3_VoltageIsNeutral(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// NEUTRAL position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
 					}
@@ -143,13 +143,13 @@ void SW3_UpdateState(SW3_Context* sw3) {
 		if (SW3_VoltageIsBack(sw3)) {
 			(sw3 -> internal_state) = SW3_STATE_CONFIRM_BACK;
 			// Reset confirm start time.
-			(sw3 -> confirm_start_time) = TIM2_GetMs();
+			(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
 			if (SW3_VoltageIsFront(sw3)) {
 				(sw3 -> internal_state) = SW3_STATE_CONFIRM_FRONT;
 				// Reset confirm start time.
-				(sw3 -> confirm_start_time) = TIM2_GetMs();
+				(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 			}
 		}
 		break;
@@ -166,10 +166,10 @@ void SW3_UpdateState(SW3_Context* sw3) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_FRONT;
 					// Reset confirm start time.
-					(sw3 -> confirm_start_time) = TIM2_GetMs();
+					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsBack(sw3)) && (TIM2_GetMs() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((SW3_VoltageIsBack(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// BACK position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_BACK;
 					}
@@ -186,10 +186,10 @@ void SW3_UpdateState(SW3_Context* sw3) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_NEUTRAL;
 					// Reset confirm start time.
-					(sw3 -> confirm_start_time) = TIM2_GetMs();
+					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsBack(sw3)) && (TIM2_GetMs() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((SW3_VoltageIsBack(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// BACK position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_BACK;
 					}
@@ -206,13 +206,13 @@ void SW3_UpdateState(SW3_Context* sw3) {
 		if (SW3_VoltageIsNeutral(sw3)) {
 			(sw3 -> internal_state) = SW3_STATE_CONFIRM_NEUTRAL;
 			// Reset confirm start time.
-			(sw3 -> confirm_start_time) = TIM2_GetMs();
+			(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
 			if (SW3_VoltageIsFront(sw3)) {
 				(sw3 -> internal_state) = SW3_STATE_CONFIRM_FRONT;
 				// Reset confirm start time.
-				(sw3 -> confirm_start_time) = TIM2_GetMs();
+				(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 			}
 		}
 		break;
@@ -229,10 +229,10 @@ void SW3_UpdateState(SW3_Context* sw3) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_NEUTRAL;
 					// Reset confirm start time.
-					(sw3 -> confirm_start_time) = TIM2_GetMs();
+					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsFront(sw3)) && (TIM2_GetMs() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((SW3_VoltageIsFront(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// FRONT position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_FRONT;
 					}
@@ -249,10 +249,10 @@ void SW3_UpdateState(SW3_Context* sw3) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_BACK;
 					// Reset confirm start time.
-					(sw3 -> confirm_start_time) = TIM2_GetMs();
+					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsFront(sw3)) && (TIM2_GetMs() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((SW3_VoltageIsFront(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// FRONT position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_FRONT;
 					}
@@ -269,13 +269,13 @@ void SW3_UpdateState(SW3_Context* sw3) {
 		if (SW3_VoltageIsNeutral(sw3)) {
 			(sw3 -> internal_state) = SW3_STATE_CONFIRM_NEUTRAL;
 			// Reset confirm start time.
-			(sw3 -> confirm_start_time) = TIM2_GetMs();
+			(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
 			if (SW3_VoltageIsBack(sw3)) {
 				(sw3 -> internal_state) = SW3_STATE_CONFIRM_BACK;
 				// Reset confirm start time.
-				(sw3 -> confirm_start_time) = TIM2_GetMs();
+				(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 			}
 		}
 		break;

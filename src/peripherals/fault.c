@@ -29,7 +29,7 @@ void __attribute__((optimize("-O0"))) HardFault_Handler(void) {
  * @param:	None.
  * @return:	None.
  */
-void MemManage_Handler(void) {
+void __attribute__((optimize("-O0"))) MemManage_Handler(void) {
 	// Trigger software reset.
 	SCB -> AIRCR = 0x05FA0000 | ((SCB -> AIRCR) & 0x0000FFFF) | (0b1 << 2);
 }

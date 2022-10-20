@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef SW2_H
-#define SW2_H
+#ifndef __SW2_H__
+#define __SW2_H__
 
 #include "gpio.h"
 
@@ -16,7 +16,7 @@
 typedef enum {
 	SW2_OFF = 0,
 	SW2_ON
-} SW2_State;
+} SW2_state_t;
 
 // Internal state machine.
 typedef enum {
@@ -24,21 +24,21 @@ typedef enum {
 	SW2_STATE_CONFIRM_ON,
 	SW2_STATE_ON,
 	SW2_STATE_CONFIRM_OFF
-} SW2_InternalState;
+} SW2_internal_state_t;
 
 // SW2 structure.
 typedef struct {
 	const GPIO* gpio;
 	unsigned char active_state; // Depends on switch wiring.
-	SW2_InternalState internal_state; // Current state in SW2 state machine.
-	SW2_State state; // State after anti-bouncing (used in higher levels).
+	SW2_internal_state_t internal_state; // Current state in SW2 state machine.
+	SW2_state_t state; // State after anti-bouncing (used in higher levels).
 	unsigned int debouncing_ms; // Delay before validating ON/OFF state (in ms).
 	unsigned int confirm_start_time;
-} SW2_Context;
+} SW2_context_t;
 
 /*** SW2 functions ***/
 
-void SW2_Init(SW2_Context* sw2, const GPIO* gpio, unsigned char active_state, unsigned int debouncing_ms);
-void SW2_UpdateState(SW2_Context* sw2);
+void SW2_init(SW2_context_t* sw2, const GPIO* gpio, unsigned char active_state, unsigned int debouncing_ms);
+void SW2_update_state(SW2_context_t* sw2);
 
-#endif /* SW2_H */
+#endif /* __SW2_H__ */

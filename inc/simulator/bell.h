@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef BELL_H
-#define BELL_H
+#ifndef __BELL_H__
+#define __BELL_H__
 
 /*** BELL functions ***/
 
-void BELL_Init(void);
-void BELL_Task(void);
+void BELL_init(void);
+void BELL_task(void);
 
-#endif /* BELL_H_ */
+#endif /* __BELL_H___ */

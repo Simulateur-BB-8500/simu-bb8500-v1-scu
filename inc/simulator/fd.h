@@ -5,13 +5,13 @@
  *      Author: Ludo
  */
 
-#ifndef FD_H
-#define FD_H
+#ifndef __FD_H__
+#define __FD_H__
 
 /*** FD functions ***/
 
-void FD_Init(void);
-void FD_SetVoltageMv(unsigned int fd_voltage_mv);
-void FD_Task(void);
+void FD_init(void);
+void FD_set_voltage_mv(unsigned int fd_voltage_mv);
+void FD_task(void);
 
-#endif /* FD_H */
+#endif /* __FD_H__ */

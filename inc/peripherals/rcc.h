@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef RCC_H
-#define RCC_H
+#ifndef __RCC_H__
+#define __RCC_H__
 
 /*** RCC structures ***/
 
@@ -15,7 +15,7 @@ typedef enum {
 	RCC_CLOCK_PCLK1,
 	RCC_CLOCK_PCLK2,
 	RCC_CLOCK_LAST
-} RCC_Clock;
+} RCC_clock_t;
 
 /*** RCC macros ***/
 
@@ -24,7 +24,7 @@ typedef enum {
 
 /*** RCC functions ***/
 
-void RCC_Init(void);
-unsigned int RCC_GetClockFrequency(RCC_Clock rcc_clock);
+void RCC_init(void);
+unsigned int RCC_get_clock_frequency(RCC_clock_t rcc_clock);
 
-#endif /* RCC_H */
+#endif /* __RCC_H__ */

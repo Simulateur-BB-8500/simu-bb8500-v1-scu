@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef STEP_MOTOR_H
-#define STEP_MOTOR_H
+#ifndef __STEP_MOTOR_H__
+#define __STEP_MOTOR_H__
 
 #include "gpio.h"
 
@@ -16,12 +16,12 @@ typedef struct {
 	const GPIO* gpio_1;
 	const GPIO* gpio_2;
 	volatile unsigned int step;
-} STEP_MOTOR_Context;
+} STEP_MOTOR_context_t;
 
 /*** STEP_MOTOR functions ***/
 
-void STEP_MOTOR_Init(STEP_MOTOR_Context* step_motor);
-void STEP_MOTOR_Up(STEP_MOTOR_Context* step_motor);
-void STEP_MOTOR_Down(STEP_MOTOR_Context* step_motor);
+void STEP_MOTOR_init(STEP_MOTOR_context_t* step_motor);
+void STEP_MOTOR_up(STEP_MOTOR_context_t* step_motor);
+void STEP_MOTOR_down(STEP_MOTOR_context_t* step_motor);
 
-#endif /* STEP_MOTOR_H */
+#endif /* __STEP_MOTOR_H__ */

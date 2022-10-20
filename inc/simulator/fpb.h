@@ -5,13 +5,13 @@
  *      Author: Ludo
  */
 
-#ifndef FPB_H
-#define FPB_H
+#ifndef __FPB_H__
+#define __FPB_H__
 
 /*** FPB functions ***/
 
-void FPB_Init(void);
-void FPB_SetVoltageMv(unsigned int fpb_voltage_mv);
-void FPB_Task(void);
+void FPB_init(void);
+void FPB_set_voltage_mv(unsigned int fpb_voltage_mv);
+void FPB_task(void);
 
-#endif /* FPB_H */
+#endif /* __FPB_H__ */

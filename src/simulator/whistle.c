@@ -15,8 +15,8 @@
 /*** WHISTLE local structures ***/
 
 typedef struct {
-	SW3_Context sw3;
-	SW3_State previous_state;
+	SW3_context_t sw3;
+	SW3_state_t previous_state;
 } WHISTLE_Context;
 
 /*** WHISTLE local global variables ***/
@@ -29,9 +29,9 @@ static WHISTLE_Context whistle_ctx;
  * @param:	None.
  * @return:	None.
  */
-void WHISTLE_Init(void) {
+void WHISTLE_init(void) {
 	// Init GPIO.
-	SW3_Init(&whistle_ctx.sw3, &GPIO_WHISTLE, 100);
+	SW3_init(&whistle_ctx.sw3, &GPIO_WHISTLE, 100);
 	whistle_ctx.previous_state = SW3_NEUTRAL;
 }
 
@@ -39,17 +39,17 @@ void WHISTLE_Init(void) {
  * @param whistle_voltage_mv:	New voltage measured.
  * @return:				None.
  */
-void WHISTLE_SetVoltageMv(unsigned int whistle_voltage_mv) {
-	SW3_SetVoltageMv(&whistle_ctx.sw3, whistle_voltage_mv);
+void WHISTLE_set_voltage_mv(unsigned int whistle_voltage_mv) {
+	SW3_set_voltage_mv(&whistle_ctx.sw3, whistle_voltage_mv);
 }
 
 /* MAIN ROUTINE OF WHISTLE MODULE.
  * @param:	None.
  * @return:	None.
  */
-void WHISTLE_Task(void) {
+void WHISTLE_task(void) {
 	// Update current state.
-	SW3_UpdateState(&whistle_ctx.sw3);
+	SW3_update_state(&whistle_ctx.sw3);
 	// Perform actions according to state.
 	switch (whistle_ctx.sw3.state) {
 	case SW3_BACK:

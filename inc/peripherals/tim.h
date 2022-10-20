@@ -5,38 +5,38 @@
  *      Author: Ludo
  */
 
-#ifndef TIM_H
-#define TIM_H
+#ifndef __TIM_H__
+#define __TIM_H__
 
 /*** TIM functions ***/
 
 // Milliseconds count.
-void TIM2_Init(void);
-unsigned int TIM2_GetMs(void);
-void TIM2_DelayMs(unsigned ms_to_wait);
+void TIM2_init(void);
+unsigned int TIM2_get_milliseconds(void);
+void TIM2_delay_milliseconds(unsigned ms_to_wait);
 
 // Tachro step timer
-void TIM5_Init(void);
-void TIM5_Start(void);
-void TIM5_Stop(void);
-void TIM5_SetDelayUs(unsigned int arr_value);
-unsigned char TIM5_GetUifFlag(void);
-void TIM5_ClearUifFlag(void);
+void TIM5_init(void);
+void TIM5_start(void);
+void TIM5_stop(void);
+void TIM5_set_delay_microseconds(unsigned int arr_value);
+unsigned char TIM5_get_uif_flag(void);
+void TIM5_clear_uif_flag(void);
 
 // KVB.
-void TIM6_Init(void);
-void TIM6_Start(void);
-void TIM6_Stop(void);
+void TIM6_init(void);
+void TIM6_start(void);
+void TIM6_stop(void);
 
 // Manometers.
-void TIM7_Init(void);
-void TIM7_Start(void);
-void TIM7_Stop(void);
+void TIM7_init(void);
+void TIM7_start(void);
+void TIM7_stop(void);
 
 // LVAL PWM.
-void TIM8_Init(void);
-void TIM8_SetDutyCycle(unsigned char duty_cycle);
-void TIM8_Start(void);
-void TIM8_Stop(void);
+void TIM8_init(void);
+void TIM8_set_duty_cycle(unsigned char duty_cycle);
+void TIM8_start(void);
+void TIM8_stop(void);
 
-#endif /* TIM_H */
+#endif /* __TIM_H__ */

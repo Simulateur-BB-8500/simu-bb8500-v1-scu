@@ -60,17 +60,17 @@ typedef enum {
 } KVB_State;
 
 // KVB context.
-typedef struct KVB_Context {
+typedef struct KVB_context_t {
 	// State machine.
 	KVB_State state;
 	unsigned int state_switch_time_ms;
 	// Buttons.
-	SW2_Context bpval;
-	SW2_Context bpmv;
-	SW2_Context bpfc;
-	SW2_Context bpat;
-	SW2_Context bpsf;
-	SW2_Context acsf;
+	SW2_context_t bpval;
+	SW2_context_t bpmv;
+	SW2_context_t bpfc;
+	SW2_context_t bpat;
+	SW2_context_t bpsf;
+	SW2_context_t acsf;
 	// Each display state is coded in a byte: <dot G F E D B C B A>.
 	// A '1' bit means the segment is on, a '0' means the segment is off.
 	unsigned char ascii_buf[KVB_NUMBER_OF_DISPLAYS];
@@ -81,7 +81,7 @@ typedef struct KVB_Context {
 	unsigned char lval_blink_enable;
 	unsigned char lval_blinking;
 	unsigned char lssf_blink_enable;
-} KVB_Context;
+} KVB_context_t;
 
 /*** KVB external global variables ***/
 
@@ -89,7 +89,7 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** KVB local global variables ***/
 
-static KVB_Context kvb_ctx;
+static KVB_context_t kvb_ctx;
 static const GPIO* segment_gpio_buf[KVB_NUMBER_OF_SEGMENTS] = {&GPIO_KVB_ZSA, &GPIO_KVB_ZSB, &GPIO_KVB_ZSC, &GPIO_KVB_ZSD, &GPIO_KVB_ZSE, &GPIO_KVB_ZSF, &GPIO_KVB_ZSG, &GPIO_KVB_ZDOT};
 static const GPIO* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_ZJG, &GPIO_KVB_ZJC, &GPIO_KVB_ZJD, &GPIO_KVB_ZVG, &GPIO_KVB_ZVC, &GPIO_KVB_ZVD};
 
@@ -206,7 +206,7 @@ static unsigned char KVB_AsciiTo7Segments(unsigned char ascii) {
  */
 static void KVB_BlinkLVAL(void) {
 	// TBC: add time offset to start at 0%.
-	unsigned int t = TIM2_GetMs() % KVB_LVAL_BLINK_PERIOD_MS;
+	unsigned int t = TIM2_get_milliseconds() % KVB_LVAL_BLINK_PERIOD_MS;
 	unsigned int lvalDutyCycle = 0;
 	// Triangle wave equation.
 	if (t <= (KVB_LVAL_BLINK_PERIOD_MS / 2)) {
@@ -216,7 +216,7 @@ static void KVB_BlinkLVAL(void) {
 		lvalDutyCycle = 200 - ((200 * t) / KVB_LVAL_BLINK_PERIOD_MS);
 	}
 	// Set duty cycle.
-	TIM8_SetDutyCycle(lvalDutyCycle);
+	TIM8_set_duty_cycle(lvalDutyCycle);
 }
 
 /* COMPUTE THE DUTY CYCLE TO MAKE LVAL BLINK.
@@ -225,13 +225,13 @@ static void KVB_BlinkLVAL(void) {
  */
 static void KVB_BlinkLSSF(void) {
 	// TBC: add time offset to start at 0.
-	unsigned int t = TIM2_GetMs() % KVB_LSSF_BLINK_PERIOD_MS;
+	unsigned int t = TIM2_get_milliseconds() % KVB_LSSF_BLINK_PERIOD_MS;
 	// Square wave equation.
 	if (t <= (KVB_LSSF_BLINK_PERIOD_MS / 2)) {
-		GPIO_Write(&GPIO_KVB_LSSF, 0);
+		GPIO_write(&GPIO_KVB_LSSF, 0);
 	}
 	else {
-		GPIO_Write(&GPIO_KVB_LSSF, 1);
+		GPIO_write(&GPIO_KVB_LSSF, 1);
 	}
 }
 
@@ -259,7 +259,7 @@ static void KVB_Display(unsigned char* display) {
 		kvb_ctx.segment_buf[charIndex] = KVB_AsciiTo7Segments(kvb_ctx.ascii_buf[charIndex]);
 	}
 	// Start sweep timer.
-	TIM6_Start();
+	TIM6_start();
 }
 
 /* TURN ALL KVB DISPLAYS OFF.
@@ -270,15 +270,15 @@ static void KVB_DisplayOff(void) {
 	unsigned int i = 0;
 	// Flush buffers and switch off GPIOs.
 	for (i=0 ; i<KVB_NUMBER_OF_DISPLAYS ; i++) {
-		GPIO_Write(display_gpio_buf[i], 0);
+		GPIO_write(display_gpio_buf[i], 0);
 		kvb_ctx.ascii_buf[i] = 0;
 		kvb_ctx.segment_buf[i] = 0;
 	}
 	for (i=0 ; i<KVB_NUMBER_OF_SEGMENTS ; i++) {
-		GPIO_Write(segment_gpio_buf[i], 0);
+		GPIO_write(segment_gpio_buf[i], 0);
 	}
 	// Stop sweep timer.
-	TIM6_Stop();
+	TIM6_stop();
 }
 
 /* TURN ALL KVB LIGHTS OFF.
@@ -296,26 +296,26 @@ static void KVB_LightsOff(void) {
  * @param:	None.
  * @return:	None.
  */
-void KVB_Init(void) {
+void KVB_init(void) {
 	// Init 7-segments displays.
 	unsigned int idx = 0;
-	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_Configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_Configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init lights (exceptv LVAL configured in TIM8 driver).
-	GPIO_Configure(&GPIO_KVB_LMV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_KVB_LFC, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_KVB_LV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_KVB_LFU, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_KVB_LPE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_KVB_LPS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LMV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LFC, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LFU, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LPE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LPS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init buttons.
-	SW2_Init(&kvb_ctx.bpval, &GPIO_KVB_BPVAL, 0, 100); // BPVAL active low.
-	SW2_Init(&kvb_ctx.bpmv, &GPIO_KVB_BPVAL, 0, 100); // BPMV active low.
-	SW2_Init(&kvb_ctx.bpfc, &GPIO_KVB_BPVAL, 0, 100); // BPFC active low.
-	SW2_Init(&kvb_ctx.bpat, &GPIO_KVB_BPVAL, 0, 100); // BPAT active low.
-	SW2_Init(&kvb_ctx.bpsf, &GPIO_KVB_BPVAL, 0, 100); // BPSF active low.
-	SW2_Init(&kvb_ctx.acsf, &GPIO_KVB_BPVAL, 0, 100); // ACSF active low.
+	SW2_init(&kvb_ctx.bpval, &GPIO_KVB_BPVAL, 0, 100); // BPVAL active low.
+	SW2_init(&kvb_ctx.bpmv, &GPIO_KVB_BPVAL, 0, 100); // BPMV active low.
+	SW2_init(&kvb_ctx.bpfc, &GPIO_KVB_BPVAL, 0, 100); // BPFC active low.
+	SW2_init(&kvb_ctx.bpat, &GPIO_KVB_BPVAL, 0, 100); // BPAT active low.
+	SW2_init(&kvb_ctx.bpsf, &GPIO_KVB_BPVAL, 0, 100); // BPSF active low.
+	SW2_init(&kvb_ctx.acsf, &GPIO_KVB_BPVAL, 0, 100); // ACSF active low.
 	// Init context.
 	kvb_ctx.state = KVB_STATE_OFF;
 	kvb_ctx.state_switch_time_ms = 0;
@@ -336,9 +336,9 @@ void KVB_Init(void) {
  * @param:	None.
  * @return:	None.
  */
-void KVB_Sweep(void) {
+void KVB_sweep(void) {
 	// Switch off previous display.
-	GPIO_Write(display_gpio_buf[kvb_ctx.display_idx], 0);
+	GPIO_write(display_gpio_buf[kvb_ctx.display_idx], 0);
 	// Increment and manage index.
 	kvb_ctx.display_idx++;
 	if (kvb_ctx.display_idx > (KVB_NUMBER_OF_DISPLAYS-1)) {
@@ -348,10 +348,10 @@ void KVB_Sweep(void) {
 	if (kvb_ctx.segment_buf[kvb_ctx.display_idx] != 0) {
 		// Switch on and off the segments of the current display.
 		for (kvb_ctx.segment_idx=0 ; kvb_ctx.segment_idx<KVB_NUMBER_OF_SEGMENTS ; kvb_ctx.segment_idx++) {
-			GPIO_Write(segment_gpio_buf[kvb_ctx.segment_idx], kvb_ctx.segment_buf[kvb_ctx.display_idx] & (0b1 << kvb_ctx.segment_idx));
+			GPIO_write(segment_gpio_buf[kvb_ctx.segment_idx], kvb_ctx.segment_buf[kvb_ctx.display_idx] & (0b1 << kvb_ctx.segment_idx));
 		}
 		// Finally switch on current display.
-		GPIO_Write(display_gpio_buf[kvb_ctx.display_idx], 1);
+		GPIO_write(display_gpio_buf[kvb_ctx.display_idx], 1);
 	}
 }
 
@@ -359,14 +359,14 @@ void KVB_Sweep(void) {
  * @param:	None.
  * @return:	None.
  */
-void KVB_Task(void) {
+void KVB_task(void) {
 	// Update buttons state.
-	SW2_UpdateState(&kvb_ctx.bpval);
-	SW2_UpdateState(&kvb_ctx.bpmv);
-	SW2_UpdateState(&kvb_ctx.bpfc);
-	SW2_UpdateState(&kvb_ctx.bpat);
-	SW2_UpdateState(&kvb_ctx.bpsf);
-	SW2_UpdateState(&kvb_ctx.acsf);
+	SW2_update_state(&kvb_ctx.bpval);
+	SW2_update_state(&kvb_ctx.bpmv);
+	SW2_update_state(&kvb_ctx.bpfc);
+	SW2_update_state(&kvb_ctx.bpat);
+	SW2_update_state(&kvb_ctx.bpsf);
+	SW2_update_state(&kvb_ctx.acsf);
 	// Perform internal state machine.
 	switch (kvb_ctx.state) {
 	case KVB_STATE_OFF:
@@ -375,40 +375,40 @@ void KVB_Task(void) {
 			KVB_Display(KVB_YG_PA400);
 			kvb_ctx.lssf_blink_enable = 1;
 			kvb_ctx.state = KVB_STATE_PA400;
-			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
 		break;
 	case KVB_STATE_PA400:
 		// Wait PA400 display duration.
-		if (TIM2_GetMs() > (kvb_ctx.state_switch_time_ms + KVB_PA400_DURATION_MS)) {
+		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_PA400_DURATION_MS)) {
 			KVB_DisplayOff();
 			kvb_ctx.state = KVB_STATE_PA400_OFF;
-			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
 		break;
 	case KVB_STATE_PA400_OFF:
 		// Wait transition duration.
-		if (TIM2_GetMs() > (kvb_ctx.state_switch_time_ms + KVB_PA400_OFF_DURATION_MS)) {
+		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_PA400_OFF_DURATION_MS)) {
 			KVB_Display(KVB_YG_UC512);
 			kvb_ctx.state = KVB_STATE_UC512;
-			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
 		break;
 	case KVB_STATE_UC512:
 		// Wait for UC512 display duration.
-		if (TIM2_GetMs() > (kvb_ctx.state_switch_time_ms + KVB_UC512_DURATION_MS)) {
+		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_UC512_DURATION_MS)) {
 			KVB_Display(KVB_YG_888);
 			kvb_ctx.lssf_blink_enable = 1;
 			kvb_ctx.state = KVB_STATE_888888;
-			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
 		break;
 	case KVB_STATE_888888:
 		// Wait for 888888 display duration.
-		if (TIM2_GetMs() > (kvb_ctx.state_switch_time_ms + KVB_888888_DURATION_MS)) {
+		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_888888_DURATION_MS)) {
 			KVB_DisplayOff();
 			kvb_ctx.state = KVB_STATE_WAIT_VALIDATION;
-			kvb_ctx.state_switch_time_ms = TIM2_GetMs();
+			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
 		break;
 	case KVB_STATE_WAIT_VALIDATION:

@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef VACMA_H
-#define VACMA_H
+#ifndef __VACMA_H__
+#define __VACMA_H__
 
 /*** VACMA functions ***/
 
-void VACMA_Init(void);
-void VACMA_Task(void);
+void VACMA_init(void);
+void VACMA_task(void);
 
-#endif /* VACMA_H */
+#endif /* __VACMA_H__ */

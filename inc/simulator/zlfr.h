@@ -5,11 +5,11 @@
  *      Author: Ludo
  */
 
-#ifndef ZLFR_H
-#define ZLFR_H
+#ifndef __ZLFR_H__
+#define __ZLFR_H__
 
 /*** ZLFR functions ***/
 
-void ZLFR_Init(void);
+void ZLFR_init(void);
 
-#endif /* ZLFR_H */
+#endif /* __ZLFR_H__ */

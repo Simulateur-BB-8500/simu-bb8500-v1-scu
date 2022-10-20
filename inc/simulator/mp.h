@@ -5,12 +5,12 @@
  *      Author: Ludo
  */
 
-#ifndef MP_H
-#define MP_H
+#ifndef __MP_H__
+#define __MP_H__
 
 /*** MP functions ***/
 
-void MP_Init(void);
-void MP_Task(void);
+void MP_init(void);
+void MP_task(void);
 
-#endif /* MP_H */
+#endif /* __MP_H__ */
