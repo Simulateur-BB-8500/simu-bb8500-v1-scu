@@ -1,3 +1,10 @@
+/*
+ * lsmcu_hw1-1.ld
+ *
+ *  Created on: 5 sep. 2017
+ *      Author: ARM
+ */
+
 /* Linker script to configure memory regions. */
 MEMORY
 {

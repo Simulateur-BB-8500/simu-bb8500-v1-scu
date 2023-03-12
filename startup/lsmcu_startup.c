@@ -1,38 +1,11 @@
-/* File: startup_ARMCM7.c
- * Purpose: startup file for Cortex-M7 devices.
- *          Should be used with GCC 'GNU Tools ARM Embedded'
- * Version: V1.01
- * Date: 22 August 2014
+/*
+ * lsmcu_startup.c
  *
+ *  Created on: 5 sep. 2017
+ *      Author: ARM
  */
-/* Copyright (c) 2011 - 2014 ARM LIMITED
-   All rights reserved.
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
-   - Redistributions of source code must retain the above copyright
-     notice, this list of conditions and the following disclaimer.
-   - Redistributions in binary form must reproduce the above copyright
-     notice, this list of conditions and the following disclaimer in the
-     documentation and/or other materials provided with the distribution.
-   - Neither the name of ARM nor the names of its contributors may be used
-     to endorse or promote products derived from this software without
-     specific prior written permission.
-   *
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-   ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
-   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-   POSSIBILITY OF SUCH DAMAGE.
-   ---------------------------------------------------------------------------*/
 
-#include <stdint.h>
-
+#include "types.h"
 
 /*----------------------------------------------------------------------------
   Linker generated Symbols
@@ -40,10 +13,12 @@
 extern uint32_t __etext;
 extern uint32_t __data_start__;
 extern uint32_t __data_end__;
+#ifdef __STARTUP_COPY_MULTIPLE
 extern uint32_t __copy_table_start__;
 extern uint32_t __copy_table_end__;
 extern uint32_t __zero_table_start__;
 extern uint32_t __zero_table_end__;
+#endif
 extern uint32_t __bss_start__;
 extern uint32_t __bss_end__;
 extern uint32_t __StackTop;
@@ -52,7 +27,6 @@ extern uint32_t __StackTop;
   Exception / Interrupt Handler Function Prototype
  *----------------------------------------------------------------------------*/
 typedef void( *pFunc )( void );
-
 
 /*----------------------------------------------------------------------------
   External References
@@ -64,32 +38,29 @@ extern int  __START(void) __attribute__((noreturn));    /* main entry point */
 #endif
 
 #ifndef __NO_SYSTEM_INIT
-extern void SystemInit (void);            /* CMSIS System Initialization      */
+extern void SystemInit (void);							/* CMSIS System Initialization */
 #endif
-
 
 /*----------------------------------------------------------------------------
   Internal References
  *----------------------------------------------------------------------------*/
-void Default_Handler(void);                          /* Default empty handler */
-void Reset_Handler(void);                            /* Reset Handler */
-
+void Default_Handler(void);								/* Default empty handler */
+void Reset_Handler(void);								/* Reset Handler */
 
 /*----------------------------------------------------------------------------
   User Initial Stack & Heap
  *----------------------------------------------------------------------------*/
 #ifndef __STACK_SIZE
-  #define	__STACK_SIZE  0x00000400
+#define	__STACK_SIZE	0x00000400
 #endif
 static uint8_t stack[__STACK_SIZE] __attribute__ ((aligned(8), used, section(".stack")));
 
 #ifndef __HEAP_SIZE
-  #define	__HEAP_SIZE   0x00000C00
+#define	__HEAP_SIZE		0x00000C00
 #endif
 #if __HEAP_SIZE > 0
 static uint8_t heap[__HEAP_SIZE]   __attribute__ ((aligned(8), used, section(".heap")));
 #endif
-
 
 /*----------------------------------------------------------------------------
   Exception / Interrupt Handler
@@ -321,7 +292,6 @@ const pFunc __Vectors[] __attribute__ ((section(".vectors"))) = {
   SDMMC2_IRQHandler,            			/* SDMMC2 global interrupt                                             */
 };
 
-
 /*----------------------------------------------------------------------------
   Reset Handler called on controller reset
  *----------------------------------------------------------------------------*/
@@ -411,7 +381,7 @@ void Reset_Handler(void) {
   pDest = &__bss_start__;
 
   for ( ; pDest < &__bss_end__ ; ) {
-    *pDest++ = 0ul;
+    *pDest++ = 0UL;
   }
 #endif /* __STARTUP_CLEAR_BSS_MULTIPLE || __STARTUP_CLEAR_BSS */
 
@@ -423,14 +393,14 @@ void Reset_Handler(void) {
 #define __START _start
 #endif
 	__START();
-
 }
-
 
 /*----------------------------------------------------------------------------
   Default Handler for Exceptions / Interrupts
  *----------------------------------------------------------------------------*/
 void Default_Handler(void) {
-
-	while(1);
+	// Enter sleep mode.
+	while (1) {
+		__asm volatile ("wfi");
+	}
 }
