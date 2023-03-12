@@ -25,10 +25,10 @@ typedef struct {
 	volatile unsigned int HFSR;		// SCB hard fault status register.
 	volatile unsigned int MMAR;		// SCB memory manage fault address register.
 	volatile unsigned int BFAR;		// SCB bus fault address register.
-} SCB_base_address_t;
+} SCB_registers_t;
 
 /*** SCB base address ***/
 
-#define SCB		((SCB_base_address_t*) ((unsigned int) 0xE000ED00))
+#define SCB		((SCB_registers_t*) ((unsigned int) 0xE000ED00))
 
 #endif /* __SCB_REG_H__ */

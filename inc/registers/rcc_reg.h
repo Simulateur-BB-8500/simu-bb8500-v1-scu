@@ -48,10 +48,10 @@ typedef struct {
 	volatile unsigned int PLLSAICFGR;	// RCC PLLSAI configuration register.
 	volatile unsigned int DKCFGR1;		// RCC Dedicated Clocks configuration register 1.
 	volatile unsigned int DKCFGR2;		// RCC Dedicated Clocks configuration register 2.
-} RCC_base_address_t;
+} RCC_registers_t;
 
 /*** RCC base address ***/
 
-#define RCC		((RCC_base_address_t*) ((unsigned int) 0x40023800))
+#define RCC		((RCC_registers_t*) ((unsigned int) 0x40023800))
 
 #endif /* __RCC_REG_H__ */

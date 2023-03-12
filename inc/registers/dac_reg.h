@@ -25,10 +25,10 @@ typedef struct {
 	unsigned int DOR1;    				// DAC channel 1 data output register.
 	unsigned int DOR2;    				// DAC channel 2 data output register.
 	volatile unsigned int SR;    		// DAC status register.
-} DAC_base_address_t;
+} DAC_registers_t;
 
 /*** DAC base addresses ***/
 
-#define DAC	((DAC_base_address_t*) ((unsigned int) 0x40007400))
+#define DAC	((DAC_registers_t*) ((unsigned int) 0x40007400))
 
 #endif /* __DAC_REG_H__ */

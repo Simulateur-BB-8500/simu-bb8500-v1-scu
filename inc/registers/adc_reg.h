@@ -31,7 +31,7 @@ typedef struct {
 	volatile unsigned int JDR3;    	// ADC injected data register 3.
 	volatile unsigned int JDR4;    	// ADC injected data register 4.
 	volatile unsigned int DR;    	// ADC regular data register.
-} ADC_base_address_t;
+} ADC_registers_t;
 
 /*** Common ADC registers ***/
 
@@ -43,9 +43,9 @@ typedef struct {
 
 /*** ADC base addresses ***/
 
-#define ADC1	((ADC_base_address_t*) ((unsigned int) 0x40012000))
-#define ADC2	((ADC_base_address_t*) ((unsigned int) 0x40012100))
-#define ADC3	((ADC_base_address_t*) ((unsigned int) 0x40012200))
+#define ADC1	((ADC_registers_t*) ((unsigned int) 0x40012000))
+#define ADC2	((ADC_registers_t*) ((unsigned int) 0x40012100))
+#define ADC3	((ADC_registers_t*) ((unsigned int) 0x40012200))
 #define ADCCR	((ADCCR_BaseAddress*) ((unsigned int) 0x40012300))
 
 #endif /* __ADC_REG_H__ */

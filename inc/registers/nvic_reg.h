@@ -24,10 +24,10 @@ typedef struct {
 	volatile unsigned int IPR[60];		// Interrupt priority registers 0 to 59.
 	unsigned int RESERVED5[644];		// Reserved 0xE000E4F0.
 	volatile unsigned int STIR;    		// Interrupt software trigger register.
-} NVIC_base_address_t;
+} NVIC_registers_t;
 
 /*** NVIC base address ***/
 
-#define NVIC	((NVIC_base_address_t*) ((unsigned int) 0xE000E100))
+#define NVIC	((NVIC_registers_t*) ((unsigned int) 0xE000E100))
 
 #endif /* __NVIC_REG_H__ */

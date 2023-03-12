@@ -21,21 +21,21 @@ typedef struct {
 	volatile unsigned int LCKR;     	// GPIO port configuration lock register.
 	volatile unsigned int AFRL;   	// GPIO alternate function low register.
 	volatile unsigned int AFRH;   	// GPIO alternate function high register.
-} GPIO_base_address_t;
+} GPIO_registers_t;
 
 /*** GPIOx base addresses ***/
 
-#define GPIOA	((GPIO_base_address_t*) ((unsigned int) 0x40020000))
-#define GPIOB	((GPIO_base_address_t*) ((unsigned int) 0x40020400))
-#define GPIOC	((GPIO_base_address_t*) ((unsigned int) 0x40020800))
-#define GPIOD	((GPIO_base_address_t*) ((unsigned int) 0x40020C00))
-#define GPIOE	((GPIO_base_address_t*) ((unsigned int) 0x40021000))
-#define GPIOF	((GPIO_base_address_t*) ((unsigned int) 0x40021400))
-#define GPIOG	((GPIO_base_address_t*) ((unsigned int) 0x40021800))
-#define GPIOH	((GPIO_base_address_t*) ((unsigned int) 0x40021C00))
-#define GPIOI	((GPIO_base_address_t*) ((unsigned int) 0x40022000))
-#define GPIOJ	((GPIO_base_address_t*) ((unsigned int) 0x40022400))
-#define GPIOK	((GPIO_base_address_t*) ((unsigned int) 0x40022800))
+#define GPIOA	((GPIO_registers_t*) ((unsigned int) 0x40020000))
+#define GPIOB	((GPIO_registers_t*) ((unsigned int) 0x40020400))
+#define GPIOC	((GPIO_registers_t*) ((unsigned int) 0x40020800))
+#define GPIOD	((GPIO_registers_t*) ((unsigned int) 0x40020C00))
+#define GPIOE	((GPIO_registers_t*) ((unsigned int) 0x40021000))
+#define GPIOF	((GPIO_registers_t*) ((unsigned int) 0x40021400))
+#define GPIOG	((GPIO_registers_t*) ((unsigned int) 0x40021800))
+#define GPIOH	((GPIO_registers_t*) ((unsigned int) 0x40021C00))
+#define GPIOI	((GPIO_registers_t*) ((unsigned int) 0x40022000))
+#define GPIOJ	((GPIO_registers_t*) ((unsigned int) 0x40022400))
+#define GPIOK	((GPIO_registers_t*) ((unsigned int) 0x40022800))
 
 /*** GPIOx #define ***/
 

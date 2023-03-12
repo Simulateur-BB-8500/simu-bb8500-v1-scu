@@ -18,10 +18,10 @@ typedef struct {
 	volatile unsigned int CR;    	// FLASH interface control register.
 	volatile unsigned int OPTCR;    // FLASH interface option control register.
 	volatile unsigned int OPTCR1;	// FLASH interface option control register.
-} FLASH_base_address_t;
+} FLASH_registers_t;
 
 /*** FLASH interface base address ***/
 
-#define FLASH	((FLASH_base_address_t*) ((unsigned int) 0x40023C00))
+#define FLASH	((FLASH_registers_t*) ((unsigned int) 0x40023C00))
 
 #endif /* __FLASH_REG_H__ */

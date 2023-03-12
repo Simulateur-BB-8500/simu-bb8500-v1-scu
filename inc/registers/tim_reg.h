@@ -35,26 +35,26 @@ typedef struct {
 	volatile unsigned int CCMR3O;   // Output capture/compare mode register 3 (!).
 	volatile unsigned int CCR5;    	// Capture/compare register 5 (!).
 	volatile unsigned int CCR6;    	// Capture/compare register 6 (!).
-} TIM_base_address_t;
+} TIM_registers_t;
 
 /* Registers marked (!) are not mapped in all peripherals.
 When accessing those registers in a generic function, the timer number has to be check before. */
 
 /*** TIMx base addresses ***/
 
-#define TIM1	((TIM_base_address_t*) ((unsigned int) 0x40010000))
-#define TIM2	((TIM_base_address_t*) ((unsigned int) 0x40000000))
-#define TIM3	((TIM_base_address_t*) ((unsigned int) 0x40000400))
-#define TIM4	((TIM_base_address_t*) ((unsigned int) 0x40000800))
-#define TIM5	((TIM_base_address_t*) ((unsigned int) 0x40000C00))
-#define TIM6	((TIM_base_address_t*) ((unsigned int) 0x40001000))
-#define TIM7	((TIM_base_address_t*) ((unsigned int) 0x40001400))
-#define TIM8	((TIM_base_address_t*) ((unsigned int) 0x40010400))
-#define TIM9	((TIM_base_address_t*) ((unsigned int) 0x40014000))
-#define TIM10	((TIM_base_address_t*) ((unsigned int) 0x40014400))
-#define TIM11	((TIM_base_address_t*) ((unsigned int) 0x40014800))
-#define TIM12	((TIM_base_address_t*) ((unsigned int) 0x40001800))
-#define TIM13	((TIM_base_address_t*) ((unsigned int) 0x40001C00))
-#define TIM14	((TIM_base_address_t*) ((unsigned int) 0x40002000))
+#define TIM1	((TIM_registers_t*) ((unsigned int) 0x40010000))
+#define TIM2	((TIM_registers_t*) ((unsigned int) 0x40000000))
+#define TIM3	((TIM_registers_t*) ((unsigned int) 0x40000400))
+#define TIM4	((TIM_registers_t*) ((unsigned int) 0x40000800))
+#define TIM5	((TIM_registers_t*) ((unsigned int) 0x40000C00))
+#define TIM6	((TIM_registers_t*) ((unsigned int) 0x40001000))
+#define TIM7	((TIM_registers_t*) ((unsigned int) 0x40001400))
+#define TIM8	((TIM_registers_t*) ((unsigned int) 0x40010400))
+#define TIM9	((TIM_registers_t*) ((unsigned int) 0x40014000))
+#define TIM10	((TIM_registers_t*) ((unsigned int) 0x40014400))
+#define TIM11	((TIM_registers_t*) ((unsigned int) 0x40014800))
+#define TIM12	((TIM_registers_t*) ((unsigned int) 0x40001800))
+#define TIM13	((TIM_registers_t*) ((unsigned int) 0x40001C00))
+#define TIM14	((TIM_registers_t*) ((unsigned int) 0x40002000))
 
 #endif /* __TIM_REG_H__ */
