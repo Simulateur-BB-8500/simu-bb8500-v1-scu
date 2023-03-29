@@ -50,7 +50,6 @@ static const GPIO GPIO_KVB_ZSD =					(GPIO) {GPIOG, 6, 3, 0};
 static const GPIO GPIO_KVB_ZSE =					(GPIO) {GPIOG, 6, 4, 0};
 static const GPIO GPIO_KVB_ZSF =					(GPIO) {GPIOG, 6, 5, 0};
 static const GPIO GPIO_KVB_ZSG =					(GPIO) {GPIOG, 6, 6, 0};
-static const GPIO GPIO_KVB_ZDOT =					(GPIO) {GPIOG, 6, 7, 0};
 // KVB inputs.
 static const GPIO GPIO_KVB_BPVAL =					(GPIO) {GPIOF, 5, 3, 0};
 static const GPIO GPIO_KVB_BPMV	=					(GPIO) {GPIOF, 5, 4, 0};
@@ -123,14 +122,19 @@ static const GPIO GPIO_LSRH =						(GPIO) {GPIOE, 4, 4, 0};
 static const GPIO GPIO_MANOMETER_POWER_ENABLE =		(GPIO) {GPIOE, 4, 5, 0};
 static const GPIO GPIO_MCP_1 =						(GPIO) {GPIOE, 4, 6, 0};
 static const GPIO GPIO_MCP_2 =						(GPIO) {GPIOE, 4, 7, 0};
+static const GPIO GPIO_MCP_SD =						(GPIO) {GPIOC, 2, 13, 0};
 static const GPIO GPIO_MRE_1 =						(GPIO) {GPIOE, 4, 8, 0};
 static const GPIO GPIO_MRE_2 =						(GPIO) {GPIOE, 4, 9, 0};
+static const GPIO GPIO_MRE_SD =						(GPIO) {GPIOF, 5, 0, 0};
 static const GPIO GPIO_MCG_1 =						(GPIO) {GPIOE, 4, 10, 0};
 static const GPIO GPIO_MCG_2 =						(GPIO) {GPIOE, 4, 11, 0};
+static const GPIO GPIO_MCG_SD =						(GPIO) {GPIOF, 5, 1, 0};
 static const GPIO GPIO_MCF1_1 =						(GPIO) {GPIOE, 4, 12, 0};
 static const GPIO GPIO_MCF1_2 =						(GPIO) {GPIOE, 4, 13, 0};
+static const GPIO GPIO_MCF1_SD =					(GPIO) {GPIOG, 6, 7, 0};
 static const GPIO GPIO_MCF2_1 =						(GPIO) {GPIOE, 4, 14, 0};
 static const GPIO GPIO_MCF2_2 =						(GPIO) {GPIOE, 4, 15, 0};
+static const GPIO GPIO_MCF2_SD =					(GPIO) {GPIOG, 15, 0, 0};
 // BPEV.
 static const GPIO GPIO_BPEV =						(GPIO) {GPIOC, 3, 4, 0};
 // ZLFR.
@@ -150,8 +154,6 @@ static const GPIO GPIO_TCH_INH_B =					(GPIO) {GPIOC, 2, 11, 0};
 static const GPIO GPIO_TCH_INH_C =					(GPIO) {GPIOC, 2, 12, 0};
 // RS.
 static const GPIO GPIO_RS =							(GPIO) {GPIOF, 5, 2, 0};
-// RSEC.
-static const GPIO GPIO_RSEC =						(GPIO) {GPIOC, 2, 13, 0};
 // LEDs.
 static const GPIO GPIO_LED_RED =					(GPIO) {GPIOB, 1, 14, 0};
 static const GPIO GPIO_LED_GREEN = 					(GPIO) {GPIOB, 1, 0, 0};

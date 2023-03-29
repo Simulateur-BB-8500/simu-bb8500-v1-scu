@@ -16,7 +16,7 @@
 /*** KVB local macros ***/
 
 // KVB segments.
-#define KVB_NUMBER_OF_SEGMENTS 		8 		// 7 segments + dot.
+#define KVB_NUMBER_OF_SEGMENTS 		7 		// 7 segments.
 #define KVB_NUMBER_OF_DISPLAYS 		6 		// KVB has 6 displays (3 yellow and 3 green).
 #define KVB_DISPLAY_SWEEP_MS		2 		// Display sweep period in ms.
 // LVAL.
@@ -90,7 +90,7 @@ extern LSMCU_Context lsmcu_ctx;
 /*** KVB local global variables ***/
 
 static KVB_context_t kvb_ctx;
-static const GPIO* segment_gpio_buf[KVB_NUMBER_OF_SEGMENTS] = {&GPIO_KVB_ZSA, &GPIO_KVB_ZSB, &GPIO_KVB_ZSC, &GPIO_KVB_ZSD, &GPIO_KVB_ZSE, &GPIO_KVB_ZSF, &GPIO_KVB_ZSG, &GPIO_KVB_ZDOT};
+static const GPIO* segment_gpio_buf[KVB_NUMBER_OF_SEGMENTS] = {&GPIO_KVB_ZSA, &GPIO_KVB_ZSB, &GPIO_KVB_ZSC, &GPIO_KVB_ZSD, &GPIO_KVB_ZSE, &GPIO_KVB_ZSF, &GPIO_KVB_ZSG};
 static const GPIO* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_ZJG, &GPIO_KVB_ZJC, &GPIO_KVB_ZJD, &GPIO_KVB_ZVG, &GPIO_KVB_ZVC, &GPIO_KVB_ZVD};
 
 /*** KVB local functions ***/

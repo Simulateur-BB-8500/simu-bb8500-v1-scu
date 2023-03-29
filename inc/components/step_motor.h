@@ -13,8 +13,9 @@
 /*** STEP_MOTOR structures ***/
 
 typedef struct {
-	const GPIO* gpio_1;
-	const GPIO* gpio_2;
+	const GPIO* gpio_command_1;
+	const GPIO* gpio_command_2;
+	const GPIO* gpio_stop_detection;
 	volatile unsigned int step;
 } STEP_MOTOR_context_t;
 
