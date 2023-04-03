@@ -134,7 +134,7 @@ static const GPIO GPIO_MCF1_2 =						(GPIO) {GPIOE, 4, 13, 0};
 static const GPIO GPIO_MCF1_SD =					(GPIO) {GPIOG, 6, 7, 0};
 static const GPIO GPIO_MCF2_1 =						(GPIO) {GPIOE, 4, 14, 0};
 static const GPIO GPIO_MCF2_2 =						(GPIO) {GPIOE, 4, 15, 0};
-static const GPIO GPIO_MCF2_SD =					(GPIO) {GPIOG, 15, 0, 0};
+static const GPIO GPIO_MCF2_SD =					(GPIO) {GPIOG, 6, 15, 0};
 // BPEV.
 static const GPIO GPIO_BPEV =						(GPIO) {GPIOC, 3, 4, 0};
 // ZLFR.

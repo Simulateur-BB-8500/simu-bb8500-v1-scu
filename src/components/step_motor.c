@@ -9,6 +9,7 @@
 
 #include "gpio.h"
 #include "mapping.h"
+#include "tim.h"
 
 /*** STEP_MOTOR local global variables ***/
 
@@ -30,6 +31,7 @@ static void STEP_MOTOR_calibrate(STEP_MOTOR_context_t* step_motor) {
 	// Go to stop detection.
 	while (GPIO_read(step_motor -> gpio_stop_detection) != 0) {
 		STEP_MOTOR_down(step_motor);
+		TIM2_delay_milliseconds(10);
 	}
 	// Set step to zero.
 	(step_motor -> step) = 0;

@@ -398,7 +398,8 @@ void KVB_task(void) {
 		// Wait for UC512 display duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_UC512_DURATION_MS)) {
 			KVB_Display(KVB_YG_888);
-			kvb_ctx.lssf_blink_enable = 1;
+			TIM8_start();
+			kvb_ctx.lval_blink_enable = 1;
 			kvb_ctx.state = KVB_STATE_888888;
 			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
@@ -435,6 +436,8 @@ void KVB_task(void) {
 	if (lsmcu_ctx.bl_unlocked == 0) {
 		KVB_DisplayOff();
 		KVB_LightsOff();
+		GPIO_write(&GPIO_KVB_LSSF, 0);
+		TIM8_stop();
 		kvb_ctx.state = KVB_STATE_OFF;
 	}
 	// Manage LVAL and LSSF blinking.
