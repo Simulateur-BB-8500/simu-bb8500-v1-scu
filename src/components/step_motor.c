@@ -52,8 +52,8 @@ static void _STEP_MOTOR_single_step(STEP_MOTOR_context_t* step_motor) {
 		break;
 	// 01.
 	case 1:
-		GPIO_write((step_motor -> gpio_command_1), 0);
-		GPIO_write((step_motor -> gpio_command_2), 1);
+		GPIO_write((step_motor -> gpio_command_1), 1);
+		GPIO_write((step_motor -> gpio_command_2), 0);
 		break;
 	// 11.
 	case 2:
@@ -62,8 +62,8 @@ static void _STEP_MOTOR_single_step(STEP_MOTOR_context_t* step_motor) {
 		break;
 	// 10.
 	case 3:
-		GPIO_write((step_motor -> gpio_command_1), 1);
-		GPIO_write((step_motor -> gpio_command_2), 0);
+		GPIO_write((step_motor -> gpio_command_1), 0);
+		GPIO_write((step_motor -> gpio_command_2), 1);
 		break;
 	}
 }

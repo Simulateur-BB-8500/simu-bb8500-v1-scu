@@ -31,8 +31,8 @@
 
 #define MANOMETER_STEP_IT_PERIOD_MAX	1000	// 1000 * 100us = 100ms.
 
-#define MANOMETER_PRESSURE_MAX_STEP_G1	((STEP_MOTOR_NUMBER_OF_STEPS * MANOMETER_PRESSURE_MAX_DEGREES * MANOMETER_GEAR_CENTER_Z) / (MANOMETER_GEAR_G1_Z * MANOMETER_FULL_CIRCLE_DEGREES))
-#define MANOMETER_PRESSURE_MAX_STEP_G2	((STEP_MOTOR_NUMBER_OF_STEPS * MANOMETER_PRESSURE_MAX_DEGREES * MANOMETER_GEAR_CENTER_Z) / (MANOMETER_GEAR_G2_Z * MANOMETER_FULL_CIRCLE_DEGREES))
+#define MANOMETER_PRESSURE_MAX_STEP_G1	((STEP_MOTOR_NUMBER_OF_STEPS * MANOMETER_PRESSURE_MAX_DEGREES * MANOMETER_GEAR_CENTER_Z) / (2 * MANOMETER_GEAR_G1_Z * MANOMETER_FULL_CIRCLE_DEGREES))
+#define MANOMETER_PRESSURE_MAX_STEP_G2	((STEP_MOTOR_NUMBER_OF_STEPS * MANOMETER_PRESSURE_MAX_DEGREES * MANOMETER_GEAR_CENTER_Z) / (2 * MANOMETER_GEAR_G2_Z * MANOMETER_FULL_CIRCLE_DEGREES))
 
 /*** MANOMETER external global variables ***/
 
@@ -45,11 +45,11 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** MANOMETER local global variables ***/
 
-static MANOMETER_context_t manometer_cp = {0, &step_motor_cp, 95, 100, MANOMETER_PRESSURE_MAX_STEP_G1, 20, 0, 0, 100, 0, 0};
-static MANOMETER_context_t manometer_re = {0, &step_motor_re, 50, 100, MANOMETER_PRESSURE_MAX_STEP_G2, 20, 0, 0, 100, 0, 0};
-static MANOMETER_context_t manometer_cg = {0, &step_motor_cg, 54, 100, MANOMETER_PRESSURE_MAX_STEP_G1, 20, 0, 0, 100, 0, 0};
-static MANOMETER_context_t manometer_cf1 = {0, &step_motor_cf1, 41, 60, MANOMETER_PRESSURE_MAX_STEP_G1, 20, 0, 0, 100, 0, 0};
-static MANOMETER_context_t manometer_cf2 = {0, &step_motor_cf2, 42, 60, MANOMETER_PRESSURE_MAX_STEP_G2, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cp = {0, &step_motor_cp, 95, 100, (MANOMETER_PRESSURE_MAX_STEP_G1 + 35), 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_re = {0, &step_motor_re, 50, 100, (MANOMETER_PRESSURE_MAX_STEP_G2 + 20), 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cg = {0, &step_motor_cg, 54, 100, (MANOMETER_PRESSURE_MAX_STEP_G1 + 60), 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cf1 = {0, &step_motor_cf1, 41, 60, (MANOMETER_PRESSURE_MAX_STEP_G1 + 35), 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cf2 = {0, &step_motor_cf2, 42, 60, (MANOMETER_PRESSURE_MAX_STEP_G2 + 30), 20, 0, 0, 100, 0, 0};
 
 /*** MANOMETER local functions ***/
 
@@ -97,17 +97,19 @@ void MANOMETER_init_all(void) {
 	// Init GPIOs.
 	GPIO_configure(&GPIO_MANOMETER_POWER_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init step motors.
+	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 1);
 	STEP_MOTOR_init(manometer_cp.step_motor);
 	STEP_MOTOR_init(manometer_re.step_motor);
 	STEP_MOTOR_init(manometer_cg.step_motor);
 	STEP_MOTOR_init(manometer_cf1.step_motor);
 	STEP_MOTOR_init(manometer_cf2.step_motor);
+	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 0);
 	// Link to global context.
 	lsmcu_ctx.manometer_cp = &manometer_cp;
 	lsmcu_ctx.manometer_re = &manometer_re;
 	lsmcu_ctx.manometer_cg = &manometer_cg;
 	lsmcu_ctx.manometer_cf1 = &manometer_cf1;
-	lsmcu_ctx.manometer_cf2 = &manometer_cf1;
+	lsmcu_ctx.manometer_cf2 = &manometer_cf2;
 }
 
 /* CONTROL MANOMETER POWER.
