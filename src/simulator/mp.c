@@ -61,7 +61,7 @@ static MP_Context mp_ctx;
  * @param:	None.
  * @return:	None.
  */
-static void MP_IncreaseGear(void) {
+static void _MP_increase_gear(void) {
 	// Check gear count.
 	if (mp_ctx.gear_count < MP_GEAR_MAX) {
 		// Increment gear and send command.
@@ -75,7 +75,7 @@ static void MP_IncreaseGear(void) {
  * @param:	None.
  * @return:	None.
  */
-static void MP_DecreaseGear(void) {
+static void _MP_decrease_gear(void) {
 	// Check gear count.
 	if (mp_ctx.gear_count > 0) {
 		// Decrement gear and send command.
@@ -130,7 +130,7 @@ void MP_task(void) {
 	if (mp_ctx.zero.state == SW2_ON) {
 		// Decrease gear count until 0.
 		if ((mp_ctx.gear_count > 0) && (TIM2_get_milliseconds() > (mp_ctx.gear_switch_next_time + MP_T_LESS_PERIOD_MS))) {
-			MP_DecreaseGear();
+			_MP_decrease_gear();
 			//if (mp_ctx.gear_count == 0) {
 				//LSSGIU_Send(LSMCU_OUT_MP_0);
 			//}
@@ -143,7 +143,7 @@ void MP_task(void) {
 	if (mp_ctx.t_more.state == SW2_ON) {
 		// Send command on change.
 		if (mp_ctx.t_more_on == 0) {
-			MP_IncreaseGear();
+			_MP_increase_gear();
 		}
 		mp_ctx.t_more_on = 1;
 	}
@@ -155,7 +155,7 @@ void MP_task(void) {
 	if (mp_ctx.t_less.state == SW2_ON) {
 		// Send command on change.
 		if (mp_ctx.t_less_on == 0) {
-			MP_DecreaseGear();
+			_MP_decrease_gear();
 		}
 		mp_ctx.t_less_on = 1;
 	}
@@ -167,7 +167,7 @@ void MP_task(void) {
 	if (mp_ctx.t_fast.state == SW2_ON) {
 		// Increase gear count until maximum.
 		if ((mp_ctx.gear_count < MP_GEAR_MAX) && (TIM2_get_milliseconds() > (mp_ctx.gear_switch_next_time + MP_T_MORE_PERIOD_MS))) {
-			MP_IncreaseGear();
+			_MP_increase_gear();
 			// Update next time.
 			mp_ctx.gear_switch_next_time = TIM2_get_milliseconds() + MP_T_MORE_PERIOD_MS;
 		}

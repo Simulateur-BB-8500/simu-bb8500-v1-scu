@@ -26,7 +26,7 @@ STEP_MOTOR_context_t step_motor_cf2 = {&GPIO_MCF2_1, &GPIO_MCF2_2, &GPIO_MCF2_SD
  * @param step_motor:	Step motor to control.
  * @return:				None.
  */
-static void STEP_MOTOR_calibrate(STEP_MOTOR_context_t* step_motor) {
+static void _STEP_MOTOR_calibrate(STEP_MOTOR_context_t* step_motor) {
 	// Reset step value.
 	step_motor -> step = 0xFFFFFFFF;
 	// Go to stop detection.
@@ -42,7 +42,7 @@ static void STEP_MOTOR_calibrate(STEP_MOTOR_context_t* step_motor) {
  * @param step_motor:	Step motor to control.
  * @return:				None.
  */
-static void STEP_MOTOR_SingleStep(STEP_MOTOR_context_t* step_motor) {
+static void _STEP_MOTOR_single_step(STEP_MOTOR_context_t* step_motor) {
 	// Convert step to state.
 	switch ((step_motor -> step) % 4) {
 	// 00.
@@ -80,7 +80,7 @@ void STEP_MOTOR_init(STEP_MOTOR_context_t* step_motor) {
 	GPIO_configure((step_motor -> gpio_command_2), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_configure((step_motor -> gpio_stop_detection), GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
 	// Calibration.
-	STEP_MOTOR_calibrate(step_motor);
+	_STEP_MOTOR_calibrate(step_motor);
 }
 
 /* PERFORM A MOTOR STEP UP.
@@ -90,7 +90,7 @@ void STEP_MOTOR_init(STEP_MOTOR_context_t* step_motor) {
 void STEP_MOTOR_up(STEP_MOTOR_context_t* step_motor) {
 	// Update and perform step.
 	(step_motor -> step)++;
-	STEP_MOTOR_SingleStep(step_motor);
+	_STEP_MOTOR_single_step(step_motor);
 }
 
 /* PERFORM A MOTOR STEP DOWN.
@@ -108,6 +108,6 @@ void STEP_MOTOR_down(STEP_MOTOR_context_t* step_motor) {
 		if ((step_motor -> step) > 0) {
 			(step_motor -> step)--;
 		}
-		STEP_MOTOR_SingleStep(step_motor);
+		_STEP_MOTOR_single_step(step_motor);
 	}
 }

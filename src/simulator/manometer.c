@@ -45,7 +45,7 @@ static MANOMETER_context_t manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20
  * @param:	None.
  * @return:	None.
  */
-static void MANOMETER_PowerOnAll(void) {
+static void _MANOMETER_power_on_all(void) {
 	// Turn step motors on.
 	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 1);
 	// Start timer.
@@ -56,7 +56,7 @@ static void MANOMETER_PowerOnAll(void) {
  * @param:	None.
  * @return:	None.
  */
-static void MANOMETER_PowerOffAll(void) {
+static void _MANOMETER_power_off_all(void) {
 	// Turn step motors on.
 	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 0);
 	// Stop timer.
@@ -67,7 +67,7 @@ static void MANOMETER_PowerOffAll(void) {
  * @param:			None.
  * @eturn moving:	'1' if the manometer needle is currently moving (target not reached), '0' otherwise.
  */
-static uint8_t MANOMETER_NeedleIsMoving(MANOMETER_context_t* manometer) {
+static uint8_t _MANOMETER_needle_is_moving(MANOMETER_context_t* manometer) {
 	uint8_t moving = 0;
 	if (((manometer -> step_motor) -> step) != (manometer -> step_target)) {
 		moving = 1;
@@ -104,17 +104,17 @@ void MANOMETER_init_all(void) {
  */
 void MANOMETER_manage_power_all(void) {
 	// Check all manometer.
-	if ((MANOMETER_NeedleIsMoving(&manometer_cp) == 0) &&
-		(MANOMETER_NeedleIsMoving(&manometer_re) == 0) &&
-		(MANOMETER_NeedleIsMoving(&manometer_cg) == 0) &&
-		(MANOMETER_NeedleIsMoving(&manometer_cf1) == 0) &&
-		(MANOMETER_NeedleIsMoving(&manometer_cf2) == 0)) {
+	if ((_MANOMETER_needle_is_moving(&manometer_cp) == 0) &&
+		(_MANOMETER_needle_is_moving(&manometer_re) == 0) &&
+		(_MANOMETER_needle_is_moving(&manometer_cg) == 0) &&
+		(_MANOMETER_needle_is_moving(&manometer_cf1) == 0) &&
+		(_MANOMETER_needle_is_moving(&manometer_cf2) == 0)) {
 		// Turn manometer off.
-		MANOMETER_PowerOffAll();
+		_MANOMETER_power_off_all();
 	}
 	else {
 		// Turn manometer on.
-		MANOMETER_PowerOnAll();
+		_MANOMETER_power_on_all();
 	}
 }
 

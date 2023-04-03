@@ -19,7 +19,7 @@
 // KVB segments.
 #define KVB_NUMBER_OF_SEGMENTS 		7 		// 7 segments.
 #define KVB_NUMBER_OF_DISPLAYS 		6 		// KVB has 6 displays (3 yellow and 3 green).
-#define KVB_DISPLAY_SWEEP_MS		2 		// Display sweep period in ms.
+#define _KVB_display_SWEEP_MS		2 		// Display sweep period in ms.
 // LVAL.
 #define KVB_LVAL_BLINK_PERIOD_MS	900		// Period of LVAL blinking (in ms).
 // LSSF.
@@ -101,7 +101,7 @@ static const GPIO* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_ZJG, &G
  * @param segment:	The corresponding segment configuration, coded as <dot G F E D B C B A>.
  * 					0 (all segments off) if the input character is unknown or can't be displayed with 7 segments.
  */
-static uint8_t KVB_AsciiTo7Segments(uint8_t ascii) {
+static uint8_t _KVB_ascii_to_7_segments(uint8_t ascii) {
 	uint8_t segment = 0;
 	switch (ascii) {
 	case 'b':
@@ -205,7 +205,7 @@ static uint8_t KVB_AsciiTo7Segments(uint8_t ascii) {
  * @param:	None.
  * @return:	None.
  */
-static void KVB_BlinkLVAL(void) {
+static void _KVB_blink_lval(void) {
 	// TBC: add time offset to start at 0%.
 	uint32_t t = TIM2_get_milliseconds() % KVB_LVAL_BLINK_PERIOD_MS;
 	uint32_t lvalDutyCycle = 0;
@@ -224,7 +224,7 @@ static void KVB_BlinkLVAL(void) {
  * @param:	None.
  * @return:	None.
  */
-static void KVB_BlinkLSSF(void) {
+static void _KVB_blink_lssf(void) {
 	// TBC: add time offset to start at 0.
 	uint32_t t = TIM2_get_milliseconds() % KVB_LSSF_BLINK_PERIOD_MS;
 	// Square wave equation.
@@ -240,7 +240,7 @@ static void KVB_BlinkLSSF(void) {
  * @param display:	String to display (cut if too long, padded with null character if too short).
  * @return:			None.
  */
-static void KVB_Display(uint8_t* display) {
+static void _KVB_display(uint8_t* display) {
 	uint8_t charIndex = 0;
 	// Copy message into ascii_buf.
 	while (*display) {
@@ -257,7 +257,7 @@ static void KVB_Display(uint8_t* display) {
 	}
 	// Convert ASCII characters to segment configurations.
 	for (charIndex=0 ; charIndex<KVB_NUMBER_OF_DISPLAYS ; charIndex++) {
-		kvb_ctx.segment_buf[charIndex] = KVB_AsciiTo7Segments(kvb_ctx.ascii_buf[charIndex]);
+		kvb_ctx.segment_buf[charIndex] = _KVB_ascii_to_7_segments(kvb_ctx.ascii_buf[charIndex]);
 	}
 	// Start sweep timer.
 	TIM6_start();
@@ -267,7 +267,7 @@ static void KVB_Display(uint8_t* display) {
  * @param:	None.
  * @return:	None.
  */
-static void KVB_DisplayOff(void) {
+static void _KVB_display_off(void) {
 	uint32_t i = 0;
 	// Flush buffers and switch off GPIOs.
 	for (i=0 ; i<KVB_NUMBER_OF_DISPLAYS ; i++) {
@@ -286,7 +286,7 @@ static void KVB_DisplayOff(void) {
  * @param:	None.
  * @return:	None.
  */
-static void KVB_LightsOff(void) {
+static void _KVB_lights_off(void) {
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lssf_blink_enable = 0;
 }
@@ -373,7 +373,7 @@ void KVB_task(void) {
 	case KVB_STATE_OFF:
 		if (lsmcu_ctx.bl_unlocked != 0) {
 			// Start KVB init.
-			KVB_Display(KVB_YG_PA400);
+			_KVB_display(KVB_YG_PA400);
 			kvb_ctx.lssf_blink_enable = 1;
 			kvb_ctx.state = KVB_STATE_PA400;
 			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
@@ -382,7 +382,7 @@ void KVB_task(void) {
 	case KVB_STATE_PA400:
 		// Wait PA400 display duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_PA400_DURATION_MS)) {
-			KVB_DisplayOff();
+			_KVB_display_off();
 			kvb_ctx.state = KVB_STATE_PA400_OFF;
 			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
@@ -390,7 +390,7 @@ void KVB_task(void) {
 	case KVB_STATE_PA400_OFF:
 		// Wait transition duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_PA400_OFF_DURATION_MS)) {
-			KVB_Display(KVB_YG_UC512);
+			_KVB_display(KVB_YG_UC512);
 			kvb_ctx.state = KVB_STATE_UC512;
 			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
@@ -398,7 +398,7 @@ void KVB_task(void) {
 	case KVB_STATE_UC512:
 		// Wait for UC512 display duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_UC512_DURATION_MS)) {
-			KVB_Display(KVB_YG_888);
+			_KVB_display(KVB_YG_888);
 			TIM8_start();
 			kvb_ctx.lval_blink_enable = 1;
 			kvb_ctx.state = KVB_STATE_888888;
@@ -408,7 +408,7 @@ void KVB_task(void) {
 	case KVB_STATE_888888:
 		// Wait for 888888 display duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_888888_DURATION_MS)) {
-			KVB_DisplayOff();
+			_KVB_display_off();
 			kvb_ctx.state = KVB_STATE_WAIT_VALIDATION;
 			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
@@ -435,17 +435,17 @@ void KVB_task(void) {
 	}
 	// Force OFF state if BL is locked.
 	if (lsmcu_ctx.bl_unlocked == 0) {
-		KVB_DisplayOff();
-		KVB_LightsOff();
+		_KVB_display_off();
+		_KVB_lights_off();
 		GPIO_write(&GPIO_KVB_LSSF, 0);
 		TIM8_stop();
 		kvb_ctx.state = KVB_STATE_OFF;
 	}
 	// Manage LVAL and LSSF blinking.
 	if (kvb_ctx.lssf_blink_enable != 0) {
-		KVB_BlinkLSSF();
+		_KVB_blink_lssf();
 	}
 	if (kvb_ctx.lval_blink_enable != 0) {
-		KVB_BlinkLVAL();
+		_KVB_blink_lval();
 	}
 }

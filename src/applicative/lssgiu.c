@@ -45,7 +45,7 @@ static LSSGIU_Context lssgiu_ctx;
  * @param:	None.
  * @return: None.
  */
-static void LSSGIU_Decode(void) {
+static void _LSSGIU_decode(void) {
 	// Read last command.
 	uint8_t ls_cmd = lssgiu_ctx.rx_buf[lssgiu_ctx.rx_read_idx];
 	if (ls_cmd <= LSMCU_TCH_SPEED_LAST) {
@@ -115,6 +115,6 @@ void LSSGIU_Send(uint8_t ls_cmd) {
 void LSSGIU_Task(void) {
 	// LSSGIU routine.
 	if (lssgiu_ctx.rx_read_idx != lssgiu_ctx.rx_write_idx) {
-		LSSGIU_Decode();
+		_LSSGIU_decode();
 	}
 }

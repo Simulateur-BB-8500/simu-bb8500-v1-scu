@@ -64,7 +64,7 @@ static ADC_State adc_state;
  * @param channel: 		ADC channel (x for 'ADCChannelx', 17 for 'VREF' or 18 for 'VBAT').
  * @return: 			None.
  */
-static void ADC1_SetChannel(uint8_t channel) {
+static void _ADC1_set_channel(uint8_t channel) {
 	// Ensure channel ranges between 0 and 18.
 	uint8_t local_channel = channel;
 	if (local_channel > ADC_CHANNEL_MAX) {
@@ -79,7 +79,7 @@ static void ADC1_SetChannel(uint8_t channel) {
  * @param:	None.
  * @return: None.
  */
-static void ADC1_StartConversion(void) {
+static void _ADC1_start_conversion(void) {
 	// Clear EOC flag.
 	ADC1 -> SR &= ~(0b1 << 1);
 	// Start conversion.
@@ -90,7 +90,7 @@ static void ADC1_StartConversion(void) {
  * @param:	None.
  * @return:	ADC conversion result represented in mV.
  */
-static uint32_t ADC1_GetVoltageMv(void) {
+static uint32_t _ADC1_get_voltage_mv(void) {
 	return ((ADC_VCC_DEFAULT_MV * (ADC1 -> DR)) / (ADC_FULL_SCALE));
 }
 
@@ -138,8 +138,8 @@ void ADC1_task(void) {
 		// Check ZBA.
 		if (lsmcu_ctx.zba_closed != 0) {
 			// Start first conversion.
-			ADC1_SetChannel(ADC_CHANNEL_ZPT);
-			ADC1_StartConversion();
+			_ADC1_set_channel(ADC_CHANNEL_ZPT);
+			_ADC1_start_conversion();
 			adc_state = ADC_STATE_READ_ZPT;
 		}
 		break;
@@ -147,11 +147,11 @@ void ADC1_task(void) {
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to ZPT module.
-			adc_result_mv = ADC1_GetVoltageMv();
+			adc_result_mv = _ADC1_get_voltage_mv();
 			ZPT_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
-			ADC1_SetChannel(ADC_CHANNEL_S);
-			ADC1_StartConversion();
+			_ADC1_set_channel(ADC_CHANNEL_S);
+			_ADC1_start_conversion();
 			adc_state = ADC_STATE_READ_S;
 		}
 		break;
@@ -159,22 +159,22 @@ void ADC1_task(void) {
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to S module.
-			adc_result_mv = ADC1_GetVoltageMv();
+			adc_result_mv = _ADC1_get_voltage_mv();
 			WHISTLE_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
-			ADC1_SetChannel(ADC_CHANNEL_ZLFR);
-			ADC1_StartConversion();
+			_ADC1_set_channel(ADC_CHANNEL_ZLFR);
+			_ADC1_start_conversion();
 			adc_state = ADC_STATE_READ_ZLFR;
 		}
 		break;
 	case ADC_STATE_READ_ZLFR:
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
-			adc_result_mv = ADC1_GetVoltageMv();
+			adc_result_mv = _ADC1_get_voltage_mv();
 			// TBD
 			// Start next conversion.
-			ADC1_SetChannel(ADC_CHANNEL_MPINV);
-			ADC1_StartConversion();
+			_ADC1_set_channel(ADC_CHANNEL_MPINV);
+			_ADC1_start_conversion();
 			adc_state = ADC_STATE_READ_MPINV;
 		}
 		break;
@@ -182,11 +182,11 @@ void ADC1_task(void) {
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to MPINV module.
-			adc_result_mv = ADC1_GetVoltageMv();
+			adc_result_mv = _ADC1_get_voltage_mv();
 			MPINV_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
-			ADC1_SetChannel(ADC_CHANNEL_PBL2);
-			ADC1_StartConversion();
+			_ADC1_set_channel(ADC_CHANNEL_PBL2);
+			_ADC1_start_conversion();
 			adc_state = ADC_STATE_READ_PBL2;
 		}
 		break;
@@ -194,11 +194,11 @@ void ADC1_task(void) {
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to MPINV module.
-			adc_result_mv = ADC1_GetVoltageMv();
+			adc_result_mv = _ADC1_get_voltage_mv();
 			PBL2_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
-			ADC1_SetChannel(ADC_CHANNEL_FPB);
-			ADC1_StartConversion();
+			_ADC1_set_channel(ADC_CHANNEL_FPB);
+			_ADC1_start_conversion();
 			adc_state = ADC_STATE_READ_FPB;
 		}
 		break;
@@ -206,11 +206,11 @@ void ADC1_task(void) {
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to FPB module.
-			adc_result_mv = ADC1_GetVoltageMv();
+			adc_result_mv = _ADC1_get_voltage_mv();
 			FPB_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
-			ADC1_SetChannel(ADC_CHANNEL_FD);
-			ADC1_StartConversion();
+			_ADC1_set_channel(ADC_CHANNEL_FD);
+			_ADC1_start_conversion();
 			adc_state = ADC_STATE_READ_FD;
 		}
 		break;
@@ -218,11 +218,11 @@ void ADC1_task(void) {
 		// Check end of conversion flag.
 		if (((ADC1 -> SR) & (0b1 << 1)) != 0) {
 			// Transmit voltage to FD module.
-			adc_result_mv = ADC1_GetVoltageMv();
+			adc_result_mv = _ADC1_get_voltage_mv();
 			FD_set_voltage_mv(adc_result_mv);
 			// Start next conversion.
-			ADC1_SetChannel(ADC_CHANNEL_AM);
-			ADC1_StartConversion();
+			_ADC1_set_channel(ADC_CHANNEL_AM);
+			_ADC1_start_conversion();
 			adc_state = ADC_STATE_READ_AM;
 		}
 		break;

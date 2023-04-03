@@ -71,7 +71,7 @@ static PICTOGRAMS_Context pictograms_ctx;
  * @param pictograms_state_mask:	Lights mask defined as [LSRH|LSPI|LSBA|LSPAT|LSP|LSCB|LSS|LSGR|LSDJ].
  * @return:					None.
  */
-static void PICTOGRAMS_SetState(uint32_t pictograms_state_mask) {
+static void _PICTOGRAMS_set_state(uint32_t pictograms_state_mask) {
 	// Set all lights state.
 	GPIO_write(&GPIO_LSDJ, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSDJ_BIT_INDEX)));
 	GPIO_write(&GPIO_LSGR, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSGR_BIT_INDEX)));
@@ -101,7 +101,7 @@ void PICTOGRAMS_init(void) {
 	GPIO_configure(&GPIO_LSBA, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_configure(&GPIO_LSPI, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_configure(&GPIO_LSRH, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	PICTOGRAMS_SetState(0);
+	_PICTOGRAMS_set_state(0);
 	// Init context.
 	pictograms_ctx.state = PICTOGRAMS_STATE_OFF;
 	// Init global context.
@@ -119,7 +119,7 @@ void PICTOGRAMS_task(void) {
 		// Check ZBA.
 		if (lsmcu_ctx.zba_closed != 0) {
 			// Turn LSDJ on.
-			PICTOGRAMS_SetState(0b000000001);
+			_PICTOGRAMS_set_state(0b000000001);
 			// Compute next state.
 			pictograms_ctx.switch_state_time = TIM2_get_milliseconds();
 			pictograms_ctx.state = PICTOGRAMS_STATE_ZBA_CLOSED_TRANSITION1;
@@ -128,13 +128,13 @@ void PICTOGRAMS_task(void) {
 	case PICTOGRAMS_STATE_ZBA_CLOSED_TRANSITION1:
 		if (lsmcu_ctx.zba_closed == 0) {
 			// Turn all lights off.
-			PICTOGRAMS_SetState(0);
+			_PICTOGRAMS_set_state(0);
 			pictograms_ctx.state = PICTOGRAMS_STATE_OFF;
 		}
 		else {
 			if (TIM2_get_milliseconds() > (pictograms_ctx.switch_state_time + PICTOGRAMS_ZBA_CLOSED_LSGR_DELAY_MS)) {
 				// Turn LSGR and LSBA on.
-				PICTOGRAMS_SetState(0b001000011);
+				_PICTOGRAMS_set_state(0b001000011);
 				// Compute next state.
 				pictograms_ctx.switch_state_time = TIM2_get_milliseconds();
 				pictograms_ctx.state = PICTOGRAMS_STATE_ZBA_CLOSED_TRANSITION2;
@@ -144,13 +144,13 @@ void PICTOGRAMS_task(void) {
 	case PICTOGRAMS_STATE_ZBA_CLOSED_TRANSITION2:
 		if (lsmcu_ctx.zba_closed == 0) {
 			// Turn all lights off.
-			PICTOGRAMS_SetState(0);
+			_PICTOGRAMS_set_state(0);
 			pictograms_ctx.state = PICTOGRAMS_STATE_OFF;
 		}
 		else {
 			if (TIM2_get_milliseconds() > (pictograms_ctx.switch_state_time + PICTOGRAMS_ZBA_CLOSED_LSBA_BLINK_DURATION_MS)) {
 				// Turn LSBA off.
-				PICTOGRAMS_SetState(0b000000011);
+				_PICTOGRAMS_set_state(0b000000011);
 				// Compute next state.
 				pictograms_ctx.state = PICTOGRAMS_STATE_ZBA_CLOSED;
 			}
@@ -159,13 +159,13 @@ void PICTOGRAMS_task(void) {
 	case PICTOGRAMS_STATE_ZBA_CLOSED:
 		if (lsmcu_ctx.zba_closed == 0) {
 			// Turn all lights off.
-			PICTOGRAMS_SetState(0);
+			_PICTOGRAMS_set_state(0);
 			pictograms_ctx.state = PICTOGRAMS_STATE_OFF;
 		}
 		else {
 			if (lsmcu_ctx.bl_unlocked != 0) {
 				// Turn all missing lights on.
-				PICTOGRAMS_SetState(0b111111111);
+				_PICTOGRAMS_set_state(0b111111111);
 				// Compute next state.
 				pictograms_ctx.state = PICTOGRAMS_STATE_BL_UNLOCKED;
 			}
@@ -174,20 +174,20 @@ void PICTOGRAMS_task(void) {
 	case PICTOGRAMS_STATE_BL_UNLOCKED:
 		if (lsmcu_ctx.zba_closed == 0) {
 			// Turn all lights off.
-			PICTOGRAMS_SetState(0);
+			_PICTOGRAMS_set_state(0);
 			pictograms_ctx.state = PICTOGRAMS_STATE_OFF;
 		}
 		else {
 			if (lsmcu_ctx.bl_unlocked == 0) {
 				// Turn all new lights off.
-				PICTOGRAMS_SetState(0b000000011);
+				_PICTOGRAMS_set_state(0b000000011);
 				// Come back to previous state.
 				pictograms_ctx.state = PICTOGRAMS_STATE_ZBA_CLOSED;
 			}
 			else {
 				if (lsmcu_ctx.dj_closed != 0) {
 					// Turn LSS, LSP, LSPAT, LSBA, LSPI and LSRH off.
-					PICTOGRAMS_SetState(0b000101011);
+					_PICTOGRAMS_set_state(0b000101011);
 					// Compute next state.
 					pictograms_ctx.state = PICTOGRAMS_STATE_DJ_CLOSED;
 				}
@@ -197,13 +197,13 @@ void PICTOGRAMS_task(void) {
 	case PICTOGRAMS_STATE_DJ_CLOSED:
 		if (lsmcu_ctx.zba_closed == 0) {
 			// Turn all lights off.
-			PICTOGRAMS_SetState(0);
+			_PICTOGRAMS_set_state(0);
 			pictograms_ctx.state = PICTOGRAMS_STATE_OFF;
 		}
 		else {
 			if (lsmcu_ctx.dj_closed == 0) {
 				// Come back to previous state.
-				PICTOGRAMS_SetState(0b111111111);
+				_PICTOGRAMS_set_state(0b111111111);
 				// Compute next state.
 				pictograms_ctx.state = PICTOGRAMS_STATE_BL_UNLOCKED;
 			}
@@ -220,7 +220,7 @@ void PICTOGRAMS_task(void) {
 		// Wait for locking operation.
 		if (TIM2_get_milliseconds() > (pictograms_ctx.switch_state_time + PICTOGRAMS_ZDJ_LOCKING_DURATION_MS)) {
 			// Turn LSPAT and LSCB off.
-			PICTOGRAMS_SetState(0b000000011);
+			_PICTOGRAMS_set_state(0b000000011);
 			// Compute next state.
 			pictograms_ctx.switch_state_time = TIM2_get_milliseconds();
 			pictograms_ctx.state = PICTOGRAMS_STATE_DJ_LOCKED_TRANSITION2;
@@ -230,7 +230,7 @@ void PICTOGRAMS_task(void) {
 		// Wait for LSDJ delay.
 		if (TIM2_get_milliseconds() > (pictograms_ctx.switch_state_time + PICTOGRAMS_ZDJ_LOCKING_LSDJ_DELAY_MS)) {
 			// Turn LSDJ off.
-			PICTOGRAMS_SetState(0b000000010);
+			_PICTOGRAMS_set_state(0b000000010);
 			// Compute next state.
 			pictograms_ctx.state = PICTOGRAMS_STATE_DJ_LOCKED;
 		}
@@ -261,14 +261,14 @@ void PICTOGRAMS_task(void) {
 		// Check ZBA.
 		if (lsmcu_ctx.zba_closed == 0) {
 			// Turn all lights off.
-			PICTOGRAMS_SetState(0);
+			_PICTOGRAMS_set_state(0);
 			pictograms_ctx.state = PICTOGRAMS_STATE_OFF;
 		}
 		else {
 			// Check DJ.
 			if (lsmcu_ctx.dj_closed == 0) {
 				// Come back to previous state.
-				PICTOGRAMS_SetState(0b111111111);
+				_PICTOGRAMS_set_state(0b111111111);
 				// Compute next state.
 				pictograms_ctx.state = PICTOGRAMS_STATE_BL_UNLOCKED;
 			}

@@ -26,7 +26,7 @@
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a neutral position, '0' otherwise.
  */
-static uint8_t SW3_VoltageIsNeutral(SW3_context_t* sw3) {
+static uint8_t _SW3_voltage_is_neutral(SW3_context_t* sw3) {
 	uint8_t result = 0;
 	if (((sw3 -> voltage) > SW3_BACK_THRESHOLD_HIGH) && ((sw3 -> voltage) < SW3_FRONT_THRESHOLD_LOW)) {
 		result = 1;
@@ -38,7 +38,7 @@ static uint8_t SW3_VoltageIsNeutral(SW3_context_t* sw3) {
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a back position, '0' otherwise.
  */
-static uint8_t SW3_VoltageIsBack(SW3_context_t* sw3) {
+static uint8_t _SW3_voltage_is_back(SW3_context_t* sw3) {
 	uint8_t result = 0;
 	if ((sw3 -> voltage) < SW3_BACK_THRESHOLD_LOW) {
 		result = 1;
@@ -50,7 +50,7 @@ static uint8_t SW3_VoltageIsBack(SW3_context_t* sw3) {
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a front position, '0' otherwise.
  */
-static uint8_t SW3_VoltageIsFront(SW3_context_t* sw3) {
+static uint8_t _SW3_voltage_is_front(SW3_context_t* sw3) {
 	uint8_t result = 0;
 	if ((sw3 -> voltage) > SW3_FRONT_THRESHOLD_HIGH) {
 		result = 1;
@@ -95,19 +95,19 @@ void SW3_update_state(SW3_context_t* sw3) {
 		// Check previous state.
 		switch ((sw3 -> state)) {
 		case SW3_BACK:
-			if (SW3_VoltageIsBack(sw3)) {
+			if (_SW3_voltage_is_back(sw3)) {
 				// Come back to BACK without confirmation because it's the previous confirmed state.
 				(sw3 -> internal_state) = SW3_STATE_BACK;
 			}
 			else {
-				if (SW3_VoltageIsFront(sw3)) {
+				if (_SW3_voltage_is_front(sw3)) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_FRONT;
 					// Reset confirm start time.
 					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsNeutral(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((_SW3_voltage_is_neutral(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// NEUTRAL position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
 					}
@@ -115,19 +115,19 @@ void SW3_update_state(SW3_context_t* sw3) {
 			}
 			break;
 		case SW3_FRONT:
-			if (SW3_VoltageIsFront(sw3)) {
+			if (_SW3_voltage_is_front(sw3)) {
 				// Come back to FRONT without confirmation because it's the previous confirmed state.
 				(sw3 -> internal_state) = SW3_STATE_FRONT;
 			}
 			else {
-				if (SW3_VoltageIsBack(sw3)) {
+				if (_SW3_voltage_is_back(sw3)) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_BACK;
 					// Reset confirm start time.
 					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsNeutral(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((_SW3_voltage_is_neutral(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// NEUTRAL position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
 					}
@@ -141,13 +141,13 @@ void SW3_update_state(SW3_context_t* sw3) {
 		break;
 	case SW3_STATE_NEUTRAL:
 		(sw3 -> state) = SW3_NEUTRAL; // Switch is in neutral position.
-		if (SW3_VoltageIsBack(sw3)) {
+		if (_SW3_voltage_is_back(sw3)) {
 			(sw3 -> internal_state) = SW3_STATE_CONFIRM_BACK;
 			// Reset confirm start time.
 			(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
-			if (SW3_VoltageIsFront(sw3)) {
+			if (_SW3_voltage_is_front(sw3)) {
 				(sw3 -> internal_state) = SW3_STATE_CONFIRM_FRONT;
 				// Reset confirm start time.
 				(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
@@ -158,19 +158,19 @@ void SW3_update_state(SW3_context_t* sw3) {
 		// Check previous state.
 		switch ((sw3 -> state)) {
 		case SW3_NEUTRAL:
-			if (SW3_VoltageIsNeutral(sw3)) {
+			if (_SW3_voltage_is_neutral(sw3)) {
 				// Come back to NEUTRAL without confirmation because it's the previous confirmed state.
 				(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
 			}
 			else {
-				if (SW3_VoltageIsFront(sw3)) {
+				if (_SW3_voltage_is_front(sw3)) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_FRONT;
 					// Reset confirm start time.
 					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsBack(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((_SW3_voltage_is_back(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// BACK position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_BACK;
 					}
@@ -178,19 +178,19 @@ void SW3_update_state(SW3_context_t* sw3) {
 			}
 			break;
 		case SW3_FRONT:
-			if (SW3_VoltageIsFront(sw3)) {
+			if (_SW3_voltage_is_front(sw3)) {
 				// Come back to FRONT without confirmation because it's the previous confirmed state.
 				(sw3 -> internal_state) = SW3_STATE_FRONT;
 			}
 			else {
-				if (SW3_VoltageIsNeutral(sw3)) {
+				if (_SW3_voltage_is_neutral(sw3)) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_NEUTRAL;
 					// Reset confirm start time.
 					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsBack(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((_SW3_voltage_is_back(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// BACK position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_BACK;
 					}
@@ -204,13 +204,13 @@ void SW3_update_state(SW3_context_t* sw3) {
 		break;
 	case SW3_STATE_BACK:
 		(sw3 -> state) = SW3_BACK; // Switch is in back position.
-		if (SW3_VoltageIsNeutral(sw3)) {
+		if (_SW3_voltage_is_neutral(sw3)) {
 			(sw3 -> internal_state) = SW3_STATE_CONFIRM_NEUTRAL;
 			// Reset confirm start time.
 			(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
-			if (SW3_VoltageIsFront(sw3)) {
+			if (_SW3_voltage_is_front(sw3)) {
 				(sw3 -> internal_state) = SW3_STATE_CONFIRM_FRONT;
 				// Reset confirm start time.
 				(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
@@ -221,19 +221,19 @@ void SW3_update_state(SW3_context_t* sw3) {
 		// Check previous state.
 		switch ((sw3 -> state)) {
 		case SW3_BACK:
-			if (SW3_VoltageIsBack(sw3)) {
+			if (_SW3_voltage_is_back(sw3)) {
 				// Come back to BACK without confirmation because it's the previous confirmed state.
 				(sw3 -> internal_state) = SW3_STATE_BACK;
 			}
 			else {
-				if (SW3_VoltageIsNeutral(sw3)) {
+				if (_SW3_voltage_is_neutral(sw3)) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_NEUTRAL;
 					// Reset confirm start time.
 					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsFront(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((_SW3_voltage_is_front(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// FRONT position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_FRONT;
 					}
@@ -241,19 +241,19 @@ void SW3_update_state(SW3_context_t* sw3) {
 			}
 			break;
 		case SW3_NEUTRAL:
-			if (SW3_VoltageIsNeutral(sw3)) {
+			if (_SW3_voltage_is_neutral(sw3)) {
 				// Come back to NEUTRAL without confirmation because it's the previous confirmed state.
 				(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
 			}
 			else {
-				if (SW3_VoltageIsBack(sw3)) {
+				if (_SW3_voltage_is_back(sw3)) {
 					// New state to confirm.
 					(sw3 -> internal_state) = SW3_STATE_CONFIRM_BACK;
 					// Reset confirm start time.
 					(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if ((SW3_VoltageIsFront(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
+					if ((_SW3_voltage_is_front(sw3)) && (TIM2_get_milliseconds() > ((sw3 -> confirm_start_time)) + (sw3 -> debouncing_ms))) {
 						// FRONT position confirmed.
 						(sw3 -> internal_state) = SW3_STATE_FRONT;
 					}
@@ -267,13 +267,13 @@ void SW3_update_state(SW3_context_t* sw3) {
 		break;
 	case SW3_STATE_FRONT:
 		(sw3 -> state) = SW3_FRONT; // Switch is in front position.
-		if (SW3_VoltageIsNeutral(sw3)) {
+		if (_SW3_voltage_is_neutral(sw3)) {
 			(sw3 -> internal_state) = SW3_STATE_CONFIRM_NEUTRAL;
 			// Reset confirm start time.
 			(sw3 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
-			if (SW3_VoltageIsBack(sw3)) {
+			if (_SW3_voltage_is_back(sw3)) {
 				(sw3 -> internal_state) = SW3_STATE_CONFIRM_BACK;
 				// Reset confirm start time.
 				(sw3 -> confirm_start_time) = TIM2_get_milliseconds();

@@ -28,7 +28,7 @@
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P0 position, '0' otherwise.
  */
-static uint8_t SW4_VoltageIsP0(SW4_context_t* sw4) {
+static uint8_t _SW4_voltage_is_p0(SW4_context_t* sw4) {
 	uint8_t result = 0;
 	if ((sw4 -> voltage) < SW4_P0P1_THRESHOLD_LOW) {
 		result = 1;
@@ -40,7 +40,7 @@ static uint8_t SW4_VoltageIsP0(SW4_context_t* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P1 position, '0' otherwise.
  */
-static uint8_t SW4_VoltageIsP1(SW4_context_t* sw4) {
+static uint8_t _SW4_voltage_is_p1(SW4_context_t* sw4) {
 	uint8_t result = 0;
 	if (((sw4 -> voltage) > SW4_P0P1_THRESHOLD_HIGH) && ((sw4 -> voltage) < SW4_P1P2_THRESHOLD_LOW)) {
 		result = 1;
@@ -52,7 +52,7 @@ static uint8_t SW4_VoltageIsP1(SW4_context_t* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P2 position, '0' otherwise.
  */
-static uint8_t SW4_VoltageIsP2(SW4_context_t* sw4) {
+static uint8_t _SW4_voltage_is_p2(SW4_context_t* sw4) {
 	uint8_t result = 0;
 	if (((sw4 -> voltage) > SW4_P1P2_THRESHOLD_HIGH) && ((sw4 -> voltage) < SW4_P2P3_THRESHOLD_LOW)) {
 		result = 1;
@@ -64,7 +64,7 @@ static uint8_t SW4_VoltageIsP2(SW4_context_t* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P3 position, '0' otherwise.
  */
-static uint8_t SW4_VoltageIsP3(SW4_context_t* sw4) {
+static uint8_t _SW4_voltage_is_p3(SW4_context_t* sw4) {
 	uint8_t result = 0;
 	if ((sw4 -> voltage) > SW4_P2P3_THRESHOLD_HIGH) {
 		result = 1;
@@ -109,26 +109,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 		// Check previous state.
 		switch ((sw4 -> state)) {
 		case SW4_P1:
-			if (SW4_VoltageIsP1(sw4)) {
+			if (_SW4_voltage_is_p1(sw4)) {
 				// Come back to P1 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P1;
 			}
 			else {
-				if (SW4_VoltageIsP2(sw4)) {
+				if (_SW4_voltage_is_p2(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP3(sw4)) {
+					if (_SW4_voltage_is_p3(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP0(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p0(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P0 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P0;
 						}
@@ -137,26 +137,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 			}
 			break;
 		case SW4_P2:
-			if (SW4_VoltageIsP2(sw4)) {
+			if (_SW4_voltage_is_p2(sw4)) {
 				// Come back to P2 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P2;
 			}
 			else {
-				if (SW4_VoltageIsP1(sw4)) {
+				if (_SW4_voltage_is_p1(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP3(sw4)) {
+					if (_SW4_voltage_is_p3(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP0(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p0(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P0 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P0;
 						}
@@ -165,26 +165,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 			}
 			break;
 		case SW4_P3:
-			if (SW4_VoltageIsP3(sw4)) {
+			if (_SW4_voltage_is_p3(sw4)) {
 				// Come back to P3 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P3;
 			}
 			else {
-				if (SW4_VoltageIsP1(sw4)) {
+				if (_SW4_voltage_is_p1(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP2(sw4)) {
+					if (_SW4_voltage_is_p2(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP0(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p0(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P0 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P0;
 						}
@@ -199,19 +199,19 @@ void SW4_update_state(SW4_context_t* sw4) {
 		break;
 	case SW4_STATE_P0:
 		(sw4 -> state) = SW4_P0; // Switch is in P0 position.
-		if (SW4_VoltageIsP1(sw4)) {
+		if (_SW4_voltage_is_p1(sw4)) {
 			(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 			// Reset confirm start time.
 			(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
-			if (SW4_VoltageIsP2(sw4)) {
+			if (_SW4_voltage_is_p2(sw4)) {
 				(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 				// Reset confirm start time.
 				(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 			}
 			else {
-				if (SW4_VoltageIsP3(sw4)) {
+				if (_SW4_voltage_is_p3(sw4)) {
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
@@ -223,26 +223,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 		// Check previous state.
 		switch ((sw4 -> state)) {
 		case SW4_P0:
-			if (SW4_VoltageIsP0(sw4)) {
+			if (_SW4_voltage_is_p0(sw4)) {
 				// Come back to P0 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P0;
 			}
 			else {
-				if (SW4_VoltageIsP2(sw4)) {
+				if (_SW4_voltage_is_p2(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP3(sw4)) {
+					if (_SW4_voltage_is_p3(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP1(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p1(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P1 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P1;
 						}
@@ -251,26 +251,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 			}
 			break;
 		case SW4_P2:
-			if (SW4_VoltageIsP2(sw4)) {
+			if (_SW4_voltage_is_p2(sw4)) {
 				// Come back to P2 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P2;
 			}
 			else {
-				if (SW4_VoltageIsP0(sw4)) {
+				if (_SW4_voltage_is_p0(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP3(sw4)) {
+					if (_SW4_voltage_is_p3(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP1(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p1(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P1 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P1;
 						}
@@ -279,26 +279,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 			}
 			break;
 		case SW4_P3:
-			if (SW4_VoltageIsP3(sw4)) {
+			if (_SW4_voltage_is_p3(sw4)) {
 				// Come back to P3 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P3;
 			}
 			else {
-				if (SW4_VoltageIsP0(sw4)) {
+				if (_SW4_voltage_is_p0(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP2(sw4)) {
+					if (_SW4_voltage_is_p2(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP1(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p1(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P1 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P1;
 						}
@@ -313,19 +313,19 @@ void SW4_update_state(SW4_context_t* sw4) {
 		break;
 	case SW4_STATE_P1:
 		(sw4 -> state) = SW4_P1; // Switch is in P1 position.
-		if (SW4_VoltageIsP0(sw4)) {
+		if (_SW4_voltage_is_p0(sw4)) {
 			(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 			// Reset confirm start time.
 			(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
-			if (SW4_VoltageIsP2(sw4)) {
+			if (_SW4_voltage_is_p2(sw4)) {
 				(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 				// Reset confirm start time.
 				(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 			}
 			else {
-				if (SW4_VoltageIsP3(sw4)) {
+				if (_SW4_voltage_is_p3(sw4)) {
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
@@ -337,26 +337,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 		// Check previous state.
 		switch ((sw4 -> state)) {
 		case SW4_P0:
-			if (SW4_VoltageIsP0(sw4)) {
+			if (_SW4_voltage_is_p0(sw4)) {
 				// Come back to P0 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P0;
 			}
 			else {
-				if (SW4_VoltageIsP1(sw4)) {
+				if (_SW4_voltage_is_p1(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP3(sw4)) {
+					if (_SW4_voltage_is_p3(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP2(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p2(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P2 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P2;
 						}
@@ -365,26 +365,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 			}
 			break;
 		case SW4_P1:
-			if (SW4_VoltageIsP1(sw4)) {
+			if (_SW4_voltage_is_p1(sw4)) {
 				// Come back to P2 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P1;
 			}
 			else {
-				if (SW4_VoltageIsP0(sw4)) {
+				if (_SW4_voltage_is_p0(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP3(sw4)) {
+					if (_SW4_voltage_is_p3(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP2(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p2(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P2 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P2;
 						}
@@ -393,26 +393,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 			}
 			break;
 		case SW4_P3:
-			if (SW4_VoltageIsP3(sw4)) {
+			if (_SW4_voltage_is_p3(sw4)) {
 				// Come back to P3 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P3;
 			}
 			else {
-				if (SW4_VoltageIsP1(sw4)) {
+				if (_SW4_voltage_is_p1(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP0(sw4)) {
+					if (_SW4_voltage_is_p0(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP2(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p2(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P2 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P2;
 						}
@@ -427,19 +427,19 @@ void SW4_update_state(SW4_context_t* sw4) {
 		break;
 	case SW4_STATE_P2:
 		(sw4 -> state) = SW4_P2; // Switch is in P2 position.
-		if (SW4_VoltageIsP0(sw4)) {
+		if (_SW4_voltage_is_p0(sw4)) {
 			(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 			// Reset confirm start time.
 			(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
-			if (SW4_VoltageIsP1(sw4)) {
+			if (_SW4_voltage_is_p1(sw4)) {
 				(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 				// Reset confirm start time.
 				(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 			}
 			else {
-				if (SW4_VoltageIsP3(sw4)) {
+				if (_SW4_voltage_is_p3(sw4)) {
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P3;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
@@ -451,26 +451,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 		// Check previous state.
 		switch ((sw4 -> state)) {
 		case SW4_P0:
-			if (SW4_VoltageIsP0(sw4)) {
+			if (_SW4_voltage_is_p0(sw4)) {
 				// Come back to P1 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P0;
 			}
 			else {
-				if (SW4_VoltageIsP1(sw4)) {
+				if (_SW4_voltage_is_p1(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP2(sw4)) {
+					if (_SW4_voltage_is_p2(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP3(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p3(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P3 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P3;
 						}
@@ -479,26 +479,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 			}
 			break;
 		case SW4_P1:
-			if (SW4_VoltageIsP1(sw4)) {
+			if (_SW4_voltage_is_p1(sw4)) {
 				// Come back to P1 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P1;
 			}
 			else {
-				if (SW4_VoltageIsP0(sw4)) {
+				if (_SW4_voltage_is_p0(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP2(sw4)) {
+					if (_SW4_voltage_is_p2(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP3(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p3(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P3 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P3;
 						}
@@ -507,26 +507,26 @@ void SW4_update_state(SW4_context_t* sw4) {
 			}
 			break;
 		case SW4_P2:
-			if (SW4_VoltageIsP2(sw4)) {
+			if (_SW4_voltage_is_p2(sw4)) {
 				// Come back to P2 without confirmation because it's the previous confirmed state.
 				(sw4 -> internal_state) = SW4_STATE_P2;
 			}
 			else {
-				if (SW4_VoltageIsP0(sw4)) {
+				if (_SW4_voltage_is_p0(sw4)) {
 					// New state to confirm.
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 				}
 				else {
-					if (SW4_VoltageIsP1(sw4)) {
+					if (_SW4_voltage_is_p1(sw4)) {
 						// New state to confirm.
 						(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 						// Reset confirm start time.
 						(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 					}
 					else {
-						if ((SW4_VoltageIsP3(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
+						if ((_SW4_voltage_is_p3(sw4)) && (TIM2_get_milliseconds() > ((sw4 -> confirm_start_time)) + (sw4 -> debouncing_ms))) {
 							// P3 position confirmed.
 							(sw4 -> internal_state) = SW4_STATE_P3;
 						}
@@ -541,19 +541,19 @@ void SW4_update_state(SW4_context_t* sw4) {
 		break;
 	case SW4_STATE_P3:
 		(sw4 -> state) = SW4_P3; // Switch is in P3 position.
-		if (SW4_VoltageIsP0(sw4)) {
+		if (_SW4_voltage_is_p0(sw4)) {
 			(sw4 -> internal_state) = SW4_STATE_CONFIRM_P0;
 			// Reset confirm start time.
 			(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 		}
 		else {
-			if (SW4_VoltageIsP1(sw4)) {
+			if (_SW4_voltage_is_p1(sw4)) {
 				(sw4 -> internal_state) = SW4_STATE_CONFIRM_P1;
 				// Reset confirm start time.
 				(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
 			}
 			else {
-				if (SW4_VoltageIsP2(sw4)) {
+				if (_SW4_voltage_is_p2(sw4)) {
 					(sw4 -> internal_state) = SW4_STATE_CONFIRM_P2;
 					// Reset confirm start time.
 					(sw4 -> confirm_start_time) = TIM2_get_milliseconds();
