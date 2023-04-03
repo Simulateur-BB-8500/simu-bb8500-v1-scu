@@ -12,6 +12,7 @@
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
+#include "types.h"
 
 /*** KVB local macros ***/
 
@@ -24,20 +25,20 @@
 // LSSF.
 #define KVB_LSSF_BLINK_PERIOD_MS	333		// Period of LSSF blinking (in ms).
 // Display messages.
-#define KVB_YG_PA400				((unsigned char*) "PA 400")
-#define KVB_YG_UC512				((unsigned char*) "UC 512")
-#define KVB_YG_888					((unsigned char*) "888888")
-#define KVB_YG_DASH					((unsigned char*) "------")
-#define KVB_G_B						((unsigned char*) "    b ")
-#define KVB_Y_B						((unsigned char*) " b    ")
-#define KVB_G_P						((unsigned char*) "    P ")
-#define KVB_Y_P						((unsigned char*) " P    ")
-#define KVB_G_L						((unsigned char*) "    L ")
-#define KVB_Y_L						((unsigned char*) " L    ")
-#define KVB_G_00					((unsigned char*) "    00")
-#define KVB_Y_00					((unsigned char*) " 00   ")
-#define KVB_G_000					((unsigned char*) "   000")
-#define KVB_Y_000					((unsigned char*) "000   ")
+#define KVB_YG_PA400				((uint8_t*) "PA 400")
+#define KVB_YG_UC512				((uint8_t*) "UC 512")
+#define KVB_YG_888					((uint8_t*) "888888")
+#define KVB_YG_DASH					((uint8_t*) "------")
+#define KVB_G_B						((uint8_t*) "    b ")
+#define KVB_Y_B						((uint8_t*) " b    ")
+#define KVB_G_P						((uint8_t*) "    P ")
+#define KVB_Y_P						((uint8_t*) " P    ")
+#define KVB_G_L						((uint8_t*) "    L ")
+#define KVB_Y_L						((uint8_t*) " L    ")
+#define KVB_G_00					((uint8_t*) "    00")
+#define KVB_Y_00					((uint8_t*) " 00   ")
+#define KVB_G_000					((uint8_t*) "   000")
+#define KVB_Y_000					((uint8_t*) "000   ")
 // Initialization screens duration.
 #define KVB_PA400_DURATION_MS		2000
 #define KVB_PA400_OFF_DURATION_MS	2000
@@ -63,7 +64,7 @@ typedef enum {
 typedef struct KVB_context_t {
 	// State machine.
 	KVB_State state;
-	unsigned int state_switch_time_ms;
+	uint32_t state_switch_time_ms;
 	// Buttons.
 	SW2_context_t bpval;
 	SW2_context_t bpmv;
@@ -73,14 +74,14 @@ typedef struct KVB_context_t {
 	SW2_context_t acsf;
 	// Each display state is coded in a byte: <dot G F E D B C B A>.
 	// A '1' bit means the segment is on, a '0' means the segment is off.
-	unsigned char ascii_buf[KVB_NUMBER_OF_DISPLAYS];
-	unsigned char segment_buf[KVB_NUMBER_OF_DISPLAYS];
-	unsigned char segment_idx; // A to dot.
-	unsigned char display_idx; // Yellow left to green right.
+	uint8_t ascii_buf[KVB_NUMBER_OF_DISPLAYS];
+	uint8_t segment_buf[KVB_NUMBER_OF_DISPLAYS];
+	uint8_t segment_idx; // A to dot.
+	uint8_t display_idx; // Yellow left to green right.
 	// Flags to enable LVAL and LSSF blinking.
-	unsigned char lval_blink_enable;
-	unsigned char lval_blinking;
-	unsigned char lssf_blink_enable;
+	uint8_t lval_blink_enable;
+	uint8_t lval_blinking;
+	uint8_t lssf_blink_enable;
 } KVB_context_t;
 
 /*** KVB external global variables ***/
@@ -100,8 +101,8 @@ static const GPIO* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_ZJG, &G
  * @param segment:	The corresponding segment configuration, coded as <dot G F E D B C B A>.
  * 					0 (all segments off) if the input character is unknown or can't be displayed with 7 segments.
  */
-static unsigned char KVB_AsciiTo7Segments(unsigned char ascii) {
-	unsigned char segment = 0;
+static uint8_t KVB_AsciiTo7Segments(uint8_t ascii) {
+	uint8_t segment = 0;
 	switch (ascii) {
 	case 'b':
 		segment = 0b01111100;
@@ -206,8 +207,8 @@ static unsigned char KVB_AsciiTo7Segments(unsigned char ascii) {
  */
 static void KVB_BlinkLVAL(void) {
 	// TBC: add time offset to start at 0%.
-	unsigned int t = TIM2_get_milliseconds() % KVB_LVAL_BLINK_PERIOD_MS;
-	unsigned int lvalDutyCycle = 0;
+	uint32_t t = TIM2_get_milliseconds() % KVB_LVAL_BLINK_PERIOD_MS;
+	uint32_t lvalDutyCycle = 0;
 	// Triangle wave equation.
 	if (t <= (KVB_LVAL_BLINK_PERIOD_MS / 2)) {
 		lvalDutyCycle = (200 * t) / KVB_LVAL_BLINK_PERIOD_MS;
@@ -225,7 +226,7 @@ static void KVB_BlinkLVAL(void) {
  */
 static void KVB_BlinkLSSF(void) {
 	// TBC: add time offset to start at 0.
-	unsigned int t = TIM2_get_milliseconds() % KVB_LSSF_BLINK_PERIOD_MS;
+	uint32_t t = TIM2_get_milliseconds() % KVB_LSSF_BLINK_PERIOD_MS;
 	// Square wave equation.
 	if (t <= (KVB_LSSF_BLINK_PERIOD_MS / 2)) {
 		GPIO_write(&GPIO_KVB_LSSF, 0);
@@ -239,8 +240,8 @@ static void KVB_BlinkLSSF(void) {
  * @param display:	String to display (cut if too long, padded with null character if too short).
  * @return:			None.
  */
-static void KVB_Display(unsigned char* display) {
-	unsigned char charIndex = 0;
+static void KVB_Display(uint8_t* display) {
+	uint8_t charIndex = 0;
 	// Copy message into ascii_buf.
 	while (*display) {
 		kvb_ctx.ascii_buf[charIndex] = *display++;
@@ -267,7 +268,7 @@ static void KVB_Display(unsigned char* display) {
  * @return:	None.
  */
 static void KVB_DisplayOff(void) {
-	unsigned int i = 0;
+	uint32_t i = 0;
 	// Flush buffers and switch off GPIOs.
 	for (i=0 ; i<KVB_NUMBER_OF_DISPLAYS ; i++) {
 		GPIO_write(display_gpio_buf[i], 0);
@@ -298,7 +299,7 @@ static void KVB_LightsOff(void) {
  */
 void KVB_init(void) {
 	// Init 7-segments displays.
-	unsigned int idx = 0;
+	uint32_t idx = 0;
 	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init lights (exceptv LVAL configured in TIM8 driver).

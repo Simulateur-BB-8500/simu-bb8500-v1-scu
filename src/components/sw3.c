@@ -10,6 +10,7 @@
 #include "adc.h"
 #include "gpio.h"
 #include "tim.h"
+#include "types.h"
 
 /*** SW3 local macros ***/
 
@@ -25,8 +26,8 @@
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a neutral position, '0' otherwise.
  */
-static unsigned char SW3_VoltageIsNeutral(SW3_context_t* sw3) {
-	unsigned char result = 0;
+static uint8_t SW3_VoltageIsNeutral(SW3_context_t* sw3) {
+	uint8_t result = 0;
 	if (((sw3 -> voltage) > SW3_BACK_THRESHOLD_HIGH) && ((sw3 -> voltage) < SW3_FRONT_THRESHOLD_LOW)) {
 		result = 1;
 	}
@@ -37,8 +38,8 @@ static unsigned char SW3_VoltageIsNeutral(SW3_context_t* sw3) {
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a back position, '0' otherwise.
  */
-static unsigned char SW3_VoltageIsBack(SW3_context_t* sw3) {
-	unsigned char result = 0;
+static uint8_t SW3_VoltageIsBack(SW3_context_t* sw3) {
+	uint8_t result = 0;
 	if ((sw3 -> voltage) < SW3_BACK_THRESHOLD_LOW) {
 		result = 1;
 	}
@@ -49,8 +50,8 @@ static unsigned char SW3_VoltageIsBack(SW3_context_t* sw3) {
  * @param sw3:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a front position, '0' otherwise.
  */
-static unsigned char SW3_VoltageIsFront(SW3_context_t* sw3) {
-	unsigned char result = 0;
+static uint8_t SW3_VoltageIsFront(SW3_context_t* sw3) {
+	uint8_t result = 0;
 	if ((sw3 -> voltage) > SW3_FRONT_THRESHOLD_HIGH) {
 		result = 1;
 	}
@@ -65,7 +66,7 @@ static unsigned char SW3_VoltageIsFront(SW3_context_t* sw3) {
  * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
  * @return:					None.
  */
-void SW3_init(SW3_context_t* sw3, const GPIO* gpio, unsigned int debouncing_ms) {
+void SW3_init(SW3_context_t* sw3, const GPIO* gpio, uint32_t debouncing_ms) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
@@ -80,7 +81,7 @@ void SW3_init(SW3_context_t* sw3, const GPIO* gpio, unsigned int debouncing_ms) 
  * @param sw3:			The switch to set.
  * @param newVoltage:	New voltage measured by ADC.
  */
-void SW3_set_voltage_mv(SW3_context_t* sw3, unsigned int voltage_mv) {
+void SW3_set_voltage_mv(SW3_context_t* sw3, uint32_t voltage_mv) {
 	(sw3 -> voltage) = voltage_mv;
 }
 

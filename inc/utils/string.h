@@ -9,6 +9,7 @@
 #define __STRING_H__
 
 #include "mode.h"
+#include "types.h"
 
 #ifdef DEBUG
 
@@ -30,13 +31,13 @@ typedef enum {
 
 /*** STRING functions ***/
 
-unsigned char STRING_char_to_value(char ascii_code);
-char STRING_decimal_to_ascii(unsigned char decimal_digit);
-char STRING_hexa_to_ascii(unsigned char hexa_digit);
-unsigned char STRING_is_hexadecimal_char(char ascii_code);
-unsigned char STRING_is_decimal_char(char ascii_code);
-void STRING_value_to_string(int value, STRING_format_t format, unsigned char print_prefix, char* string);
+uint8_t STRING_char_to_value(char_t ascii_code);
+char_t STRING_decimal_to_ascii(uint8_t decimal_digit);
+char_t STRING_hexa_to_ascii(uint8_t hexa_digit);
+uint8_t STRING_is_hexadecimal_char(char_t ascii_code);
+uint8_t STRING_is_decimal_char(char_t ascii_code);
+void STRING_value_to_string(int32_t value, STRING_format_t format, uint8_t print_prefix, char_t* string);
 
-#endif
+#endif /* DEBUG */
 
 #endif /* __STRING_H__ */

@@ -12,6 +12,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw4.h"
+#include "types.h"
 
 /*** ZPT local structures ***/
 
@@ -55,7 +56,7 @@ void ZPT_init(void) {
  * @param new_voltage:	New voltage measured.
  * @return:				None.
  */
-void ZPT_set_voltage_mv(unsigned int zpt_voltage_mv) {
+void ZPT_set_voltage_mv(uint32_t zpt_voltage_mv) {
 	SW4_set_voltage_mv(&zpt_ctx.sw4, zpt_voltage_mv);
 }
 

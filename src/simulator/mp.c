@@ -13,6 +13,7 @@
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
+#include "types.h"
 #include "usart.h"
 
 /*** MP local macros ***/
@@ -27,22 +28,22 @@ typedef struct {
 	// GPIOs.
 	SW2_context_t zero;
 	SW2_context_t t_more;
-	unsigned char t_more_on;
+	uint8_t t_more_on;
 	SW2_context_t t_less;
-	unsigned char t_less_on;
+	uint8_t t_less_on;
 	SW2_context_t t_fast;
 	SW2_context_t preparation;
-	unsigned char preparation_on;
+	uint8_t preparation_on;
 	SW2_context_t f_more;
-	unsigned char f_more_on;
+	uint8_t f_more_on;
 	SW2_context_t f_less;
-	unsigned char f_less_on;
+	uint8_t f_less_on;
 	SW2_context_t f_fast;
-	unsigned char f_fast_on;
+	uint8_t f_fast_on;
 	SW2_context_t transition;
-	unsigned char transition_on;
+	uint8_t transition_on;
 	// Rheostat management.
-	unsigned char gear_count;
+	uint8_t gear_count;
 	unsigned long gear_switch_next_time;
 } MP_Context;
 

@@ -13,6 +13,7 @@
 #include "manometer.h"
 #include "mapping.h"
 #include "sw3.h"
+#include "types.h"
 
 /*** FPB local macros ***/
 
@@ -49,7 +50,7 @@ void FPB_init(void) {
  * @param new_voltage:	New voltage measured.
  * @return:				None.
  */
-void FPB_set_voltage_mv(unsigned int fpb_voltage_mv) {
+void FPB_set_voltage_mv(uint32_t fpb_voltage_mv) {
 	SW3_set_voltage_mv(&fpb_ctx.sw3, fpb_voltage_mv);
 }
 

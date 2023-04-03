@@ -12,6 +12,7 @@
 #include "manometer.h"
 #include "mapping.h"
 #include "sw2.h"
+#include "types.h"
 
 /*** COMPRESSOR macros ***/
 
@@ -35,7 +36,7 @@ typedef struct {
 	SW2_context_t zcd;
 	// State machine.
 	COMPRESSOR_State state;
-	unsigned char sound_auto_off; // Set when off command is not required.
+	uint8_t sound_auto_off; // Set when off command is not required.
 } COMPRESSOR_context_t;
 
 /*** COMPRESSOR external global variables ***/

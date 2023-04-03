@@ -12,6 +12,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw4.h"
+#include "types.h"
 
 /*** PBL2 local macros ***/
 
@@ -44,7 +45,7 @@ void PBL2_init(void) {
  * @param new_voltage:	New voltage measured.
  * @return:				None.
  */
-void PBL2_set_voltage_mv(unsigned int pbl2_voltage_mv) {
+void PBL2_set_voltage_mv(uint32_t pbl2_voltage_mv) {
 	SW4_set_voltage_mv(&pbl2_sw4, pbl2_voltage_mv);
 }
 

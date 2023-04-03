@@ -9,23 +9,24 @@
 #define LSMCU_H
 
 #include "manometer.h"
+#include "types.h"
 
 /*** LSMCU structure ***/
 
 typedef struct {
-	unsigned char zba_closed;
-	unsigned char bl_unlocked;
-	unsigned char zpt_raised;
-	unsigned char dj_closed;
-	unsigned char dj_locked;
-	unsigned char compressor_on;
-	unsigned char speed_kmh;
-	unsigned char speed_limit_kmh;
-	unsigned char rheostat_0;
-	unsigned char lsrh_blink_request;
-	unsigned char series_traction;
-	unsigned char pbl2_on;
-	unsigned char urgency;
+	uint8_t zba_closed;
+	uint8_t bl_unlocked;
+	uint8_t zpt_raised;
+	uint8_t dj_closed;
+	uint8_t dj_locked;
+	uint8_t compressor_on;
+	uint8_t speed_kmh;
+	uint8_t speed_limit_kmh;
+	uint8_t rheostat_0;
+	uint8_t lsrh_blink_request;
+	uint8_t series_traction;
+	uint8_t pbl2_on;
+	uint8_t urgency;
 	MANOMETER_context_t* manometer_cp;
 	MANOMETER_context_t* manometer_re;
 	MANOMETER_context_t* manometer_cg;

@@ -12,6 +12,7 @@
 #include "mode.h"
 #include "step_motor.h"
 #include "tim.h"
+#include "types.h"
 #ifdef DEBUG
 #include "string.h"
 #include "usart.h"
@@ -66,8 +67,8 @@ static void MANOMETER_PowerOffAll(void) {
  * @param:			None.
  * @eturn moving:	'1' if the manometer needle is currently moving (target not reached), '0' otherwise.
  */
-static unsigned char MANOMETER_NeedleIsMoving(MANOMETER_context_t* manometer) {
-	unsigned char moving = 0;
+static uint8_t MANOMETER_NeedleIsMoving(MANOMETER_context_t* manometer) {
+	uint8_t moving = 0;
 	if (((manometer -> step_motor) -> step) != (manometer -> step_target)) {
 		moving = 1;
 	}
@@ -121,7 +122,7 @@ void MANOMETER_manage_power_all(void) {
  * @param manometer:			Manometer to control.
  * @param pressure_decibars:	New pressure expressed in decibars.
  */
-void MANOMETER_set_pressure(MANOMETER_context_t* manometer, unsigned int pressure_decibars) {
+void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_decibars) {
 	// Update target step.
 	manometer -> step_target = ((manometer -> pressure_max_steps) * pressure_decibars) / (manometer -> pressure_max_decibars);
 }
@@ -130,8 +131,8 @@ void MANOMETER_set_pressure(MANOMETER_context_t* manometer, unsigned int pressur
  * @param manometer:			Manometer to analyze.
  * @return pressure_decibars:	Current pressure displayed by the manometer in decibars.
  */
-unsigned int MANOMETER_get_pressure(MANOMETER_context_t* manometer) {
-	unsigned int pressure_decibars = (((manometer -> step_motor) -> step) * (manometer -> pressure_max_decibars)) / (manometer -> pressure_max_steps);
+uint32_t MANOMETER_get_pressure(MANOMETER_context_t* manometer) {
+	uint32_t pressure_decibars = (((manometer -> step_motor) -> step) * (manometer -> pressure_max_decibars)) / (manometer -> pressure_max_steps);
 	return pressure_decibars;
 }
 
@@ -179,7 +180,7 @@ void MANOMETER_needle_stop(MANOMETER_context_t* manometer) {
 void MANOMETER_needle_task(MANOMETER_context_t* manometer) {
 	// Movement feedback loop.
 	manometer -> step_it_count++;
-	unsigned int current_step = ((manometer -> step_motor) -> step);
+	uint32_t current_step = ((manometer -> step_motor) -> step);
 	// ChecK if the period was reached.
 	if ((manometer -> step_it_count) >= (manometer -> step_it_period)) {
 		// Reset interrupt count.
@@ -196,8 +197,8 @@ void MANOMETER_needle_task(MANOMETER_context_t* manometer) {
 	// Compute next period.
 	if (current_step != (manometer -> step_target)) {
 		// Get absolute distances between start, target and current steps.
-		unsigned int delta_start = 0;
-		unsigned int delta_target = 0;
+		uint32_t delta_start = 0;
+		uint32_t delta_target = 0;
 		// Up direction.
 		if (current_step < (manometer -> step_target)) {
 			delta_start = current_step - (manometer -> step_start);

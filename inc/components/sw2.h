@@ -9,6 +9,7 @@
 #define __SW2_H__
 
 #include "gpio.h"
+#include "types.h"
 
 /*** SW2 structures ***/
 
@@ -29,16 +30,16 @@ typedef enum {
 // SW2 structure.
 typedef struct {
 	const GPIO* gpio;
-	unsigned char active_state; // Depends on switch wiring.
+	uint8_t active_state; // Depends on switch wiring.
 	SW2_internal_state_t internal_state; // Current state in SW2 state machine.
 	SW2_state_t state; // State after anti-bouncing (used in higher levels).
-	unsigned int debouncing_ms; // Delay before validating ON/OFF state (in ms).
-	unsigned int confirm_start_time;
+	uint32_t debouncing_ms; // Delay before validating ON/OFF state (in ms).
+	uint32_t confirm_start_time;
 } SW2_context_t;
 
 /*** SW2 functions ***/
 
-void SW2_init(SW2_context_t* sw2, const GPIO* gpio, unsigned char active_state, unsigned int debouncing_ms);
+void SW2_init(SW2_context_t* sw2, const GPIO* gpio, uint8_t active_state, uint32_t debouncing_ms);
 void SW2_update_state(SW2_context_t* sw2);
 
 #endif /* __SW2_H__ */

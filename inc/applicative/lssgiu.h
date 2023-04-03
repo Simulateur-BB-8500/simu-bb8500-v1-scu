@@ -9,6 +9,7 @@
 #define LSSGIU_H
 
 #include "tch.h"
+#include "types.h"
 
 /*** LSSGIU structures ***/
 
@@ -85,8 +86,8 @@ typedef enum {
 /*** LSSGIU functions ***/
 
 void LSSGIU_Init(void);
-void LSSGIU_FillRxBuffer(unsigned char ls_cmd);
-void LSSGIU_Send(unsigned char ls_cmd);
+void LSSGIU_FillRxBuffer(uint8_t ls_cmd);
+void LSSGIU_Send(uint8_t ls_cmd);
 void LSSGIU_Task(void);
 
 #endif /* LSSGIU_H */

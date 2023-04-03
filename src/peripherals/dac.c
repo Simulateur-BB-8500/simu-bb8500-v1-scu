@@ -12,6 +12,7 @@
 #include "gpio.h"
 #include "mapping.h"
 #include "rcc_reg.h"
+#include "types.h"
 
 /*** DAC local macros ***/
 
@@ -42,9 +43,9 @@ void DAC_init(void) {
  * @param voltage: 	Output voltage expressed in mV (between 0 and VCC_MV).
  * @return: 		None.
  */
-void DAC_set_voltage_mv(unsigned int voltage_mv) {
+void DAC_set_voltage_mv(uint32_t voltage_mv) {
 	// Ensure new voltage is reachable.
-	unsigned int real_voltage_mv = voltage_mv;
+	uint32_t real_voltage_mv = voltage_mv;
 	if (real_voltage_mv < 0) {
 		real_voltage_mv = 0;
 	}
@@ -58,7 +59,7 @@ void DAC_set_voltage_mv(unsigned int voltage_mv) {
  * @param:			None.
  * @return voltage:	Current output voltage expressed in mV (between 0 and VCC_MV).
  */
-unsigned int DAC_get_voltage_mv(void) {
-	unsigned int voltage_mv = ((DAC -> DOR1) * ADC_VCC_DEFAULT_MV) / (DAC_FULL_SCALE);
+uint32_t DAC_get_voltage_mv(void) {
+	uint32_t voltage_mv = ((DAC -> DOR1) * ADC_VCC_DEFAULT_MV) / (DAC_FULL_SCALE);
 	return voltage_mv;
 }

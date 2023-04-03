@@ -9,6 +9,7 @@
 #define __SW3_H__
 
 #include "gpio.h"
+#include "types.h"
 
 /*** 3-poles switch structures ***/
 
@@ -31,17 +32,17 @@ typedef enum {
 
 // SW3 structure.
 typedef struct {
-	unsigned int voltage; // Current voltage measured by ADC.
+	uint32_t voltage; // Current voltage measured by ADC.
 	SW3_internal_state_t internal_state; // Current state in SW3 internal state machine.
 	SW3_state_t state; // State after anti-bouncing (used in higher levels).
-	unsigned int debouncing_ms; // Delay before validating states (in ms).
-	unsigned int confirm_start_time;
+	uint32_t debouncing_ms; // Delay before validating states (in ms).
+	uint32_t confirm_start_time;
 } SW3_context_t;
 
 /*** 3-poles switch functions ***/
 
-void SW3_init(SW3_context_t* sw3, const GPIO* gpio, unsigned int debouncing_ms);
-void SW3_set_voltage_mv(SW3_context_t* sw3, unsigned int voltage_mv);
+void SW3_init(SW3_context_t* sw3, const GPIO* gpio, uint32_t debouncing_ms);
+void SW3_set_voltage_mv(SW3_context_t* sw3, uint32_t voltage_mv);
 void SW3_update_state(SW3_context_t* sw3);
 
 #endif /* __SW3_H__ */

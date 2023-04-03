@@ -11,6 +11,7 @@
 #include "mapping.h"
 #include "rcc.h"
 #include "rcc_reg.h"
+#include "types.h"
 
 /*** GPIO local macros ***/
 
@@ -140,7 +141,7 @@ static void _GPIO_set_pull_resistor(const GPIO* gpio, GPIO_pull_resistor_t pull_
  * @param alternate_function: 	Alternate function number (0 to 15).
  * @return: 			None.
  */
-static void _GPIO_set_alternate_function(const GPIO* gpio, unsigned int alternate_function) {
+static void _GPIO_set_alternate_function(const GPIO* gpio, uint32_t alternate_function) {
 	// Clamp AF number.
 	alternate_function &= 0x0F;
 	// Select proper register to set.
@@ -198,7 +199,7 @@ void GPIO_init(void) {
  * @param state: 	GPIO output state ('0' or '1').
  * @return: 		None.
  */
-void __attribute__((optimize("-O0"))) GPIO_write(const GPIO* gpio, unsigned char state) {
+void __attribute__((optimize("-O0"))) GPIO_write(const GPIO* gpio, uint8_t state) {
 	// Set bit.
 	if (state == 0) {
 		(gpio -> port) -> ODR &= ~(0b1 << (gpio -> pin));
@@ -212,9 +213,9 @@ void __attribute__((optimize("-O0"))) GPIO_write(const GPIO* gpio, unsigned char
  * @param gpio:		GPIO structure.
  * @return state: 	Current GPIO input state ('0' or '1').
  */
-unsigned char __attribute__((optimize("-O0"))) GPIO_read(const GPIO* gpio) {
+uint8_t __attribute__((optimize("-O0"))) GPIO_read(const GPIO* gpio) {
 	// Check mode.
-	unsigned char state = 0;
+	uint8_t state = 0;
 	switch (_GPIO_get_mode(gpio)) {
 	case GPIO_MODE_INPUT:
 		// GPIO configured as input -> read IDR register.

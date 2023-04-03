@@ -12,6 +12,7 @@
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
+#include "types.h"
 
 /*** VACMA local macros ***/
 
@@ -36,7 +37,7 @@ typedef struct {
 	SW2_context_t mp_va;
 	// State machine.
 	VACMA_State state;
-	unsigned int switch_state_time; // In ms.
+	uint32_t switch_state_time; // In ms.
 } VACMA_Context;
 
 /*** VACMA external global variables ***/
@@ -195,5 +196,3 @@ void VACMA_task(void) {
 		break;
 	}
 }
-
-

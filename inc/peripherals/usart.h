@@ -9,11 +9,12 @@
 #define __USART_H__
 
 #include "mode.h"
+#include "types.h"
 
 /*** USART functions ***/
 
 void USART1_init(void);
-void USART1_send_byte(unsigned char tx_byte);
+void USART1_send_byte(uint8_t tx_byte);
 #ifdef DEBUG
 void USART1_send_string(char* tx_string);
 #endif

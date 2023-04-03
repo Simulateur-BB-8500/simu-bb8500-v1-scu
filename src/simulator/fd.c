@@ -13,6 +13,7 @@
 #include "manometer.h"
 #include "mapping.h"
 #include "sw3.h"
+#include "types.h"
 
 /*** FD local structures ***/
 
@@ -45,7 +46,7 @@ void FD_init(void) {
  * @param new_voltage:	New voltage measured.
  * @return:				None.
  */
-void FD_set_voltage_mv(unsigned int fd_voltage_mv) {
+void FD_set_voltage_mv(uint32_t fd_voltage_mv) {
 	SW3_set_voltage_mv(&fd_ctx.sw3, fd_voltage_mv);
 }
 

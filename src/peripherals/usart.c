@@ -14,6 +14,7 @@
 #include "rcc.h"
 #include "rcc_reg.h"
 #include "usart_reg.h"
+#include "types.h"
 
 /*** USART local macros ***/
 
@@ -30,7 +31,7 @@ void __attribute__((optimize("-O0"))) USART1_IRQHandler(void) {
 	// RX.
 	if (((USART1 -> ISR) & (0b1 << 5)) != 0) { // RXNE='1'.
 		// Get and store new byte into RX buffer.
-		unsigned char rx_byte = (USART1 -> RDR);
+		uint8_t rx_byte = (USART1 -> RDR);
 		LSSGIU_FillRxBuffer(rx_byte);
 		GPIO_toggle(&GPIO_LED_GREEN);
 	}
@@ -73,11 +74,11 @@ void USART1_init(void) {
  * @param tx_byte:	Byte to send.
  * @return: 		None.
  */
-void USART1_send_byte(unsigned char tx_byte) {
+void USART1_send_byte(uint8_t tx_byte) {
 	// Fill transmit register.
 	USART1 -> TDR = tx_byte;
 	// Wait for transmission to complete.
-	unsigned int loop_count = 0;
+	uint32_t loop_count = 0;
 	while (((USART1 -> ISR) & (0b1 << 7)) == 0) {
 		// Wait for TXE='1' or timeout.
 		loop_count++;
@@ -91,6 +92,6 @@ void USART1_send_byte(unsigned char tx_byte) {
  */
 void USART1_send_string(char* tx_string) {
 	while (*tx_string) {
-		USART1_send_byte((unsigned char) *(tx_string++));
+		USART1_send_byte((uint8_t) *(tx_string++));
 	}
 }

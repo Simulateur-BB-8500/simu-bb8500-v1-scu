@@ -9,6 +9,7 @@
 
 #include "gpio.h"
 #include "tim.h"
+#include "types.h"
 
 /*** SW2 functions ***/
 
@@ -19,7 +20,7 @@
  * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
  * @return:					None.
  */
-void SW2_init(SW2_context_t* sw2, const GPIO* gpio, unsigned char active_state, unsigned int debouncing_ms) {
+void SW2_init(SW2_context_t* sw2, const GPIO* gpio, uint8_t active_state, uint32_t debouncing_ms) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
 	// Init context.

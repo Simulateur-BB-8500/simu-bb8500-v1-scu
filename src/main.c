@@ -35,6 +35,8 @@
 #include "zlfr.h"
 #include "zpt.h"
 #include "zsur.h"
+// Utils.
+#include "types.h"
 // Applicative.
 #include "lsmcu.h"
 #include "lssgiu.h"
@@ -53,8 +55,8 @@ LSMCU_Context lsmcu_ctx;
  */
 int main(void) {
 	// Local variables.
-	char str_value[16];
-	unsigned int print_timestamp = 0;
+	char_t str_value[16];
+	uint32_t print_timestamp = 0;
 	// Init Peripherals.
 	NVIC_init();
 	RCC_init();

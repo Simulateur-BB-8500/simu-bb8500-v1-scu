@@ -12,6 +12,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw2.h"
+#include "types.h"
 
 /*** BL local structures ***/
 
@@ -19,15 +20,15 @@ typedef struct {
 	SW2_context_t zdv;
 	SW2_context_t zdj;
 	SW2_context_t zen;
-	unsigned char zen_on;
+	uint8_t zen_on;
 	SW2_context_t zvm;
-	unsigned char zvm_on;
+	uint8_t zvm_on;
 	SW2_context_t zfg;
-	unsigned char zfg_on;
+	uint8_t zfg_on;
 	SW2_context_t zfd;
-	unsigned char zfd_on;
+	uint8_t zfd_on;
 	SW2_context_t zpr;
-	unsigned char zpr_on;
+	uint8_t zpr_on;
 } BL_Context;
 
 /*** BL external global variables ***/

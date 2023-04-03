@@ -9,6 +9,7 @@
 
 #include "flash.h"
 #include "rcc_reg.h"
+#include "types.h"
 
 /*** RCC local macros ***/
 
@@ -16,7 +17,7 @@
 
 /*** RCC local global variables ***/
 
-static unsigned int rcc_clock_frequency[RCC_CLOCK_LAST] = {RCC_HSI_FREQUENCY_KHZ, RCC_HSI_FREQUENCY_KHZ, RCC_HSI_FREQUENCY_KHZ};
+static uint32_t rcc_clock_frequency[RCC_CLOCK_LAST] = {RCC_HSI_FREQUENCY_KHZ, RCC_HSI_FREQUENCY_KHZ, RCC_HSI_FREQUENCY_KHZ};
 
 /*** RCC functions ***/
 
@@ -66,9 +67,9 @@ void RCC_init(void) {
  * @param rcc_clock:	RCC clock source.
  * @return freq_khz:	RCC clock frequency in kHz.
  */
-unsigned int RCC_get_clock_frequency(RCC_clock_t rcc_clock) {
+uint32_t RCC_get_clock_frequency(RCC_clock_t rcc_clock) {
 	// Local variables.
-	unsigned int freq_khz = 0;
+	uint32_t freq_khz = 0;
 	// Check parameter.
 	if (rcc_clock < RCC_CLOCK_LAST) {
 		freq_khz = rcc_clock_frequency[rcc_clock];

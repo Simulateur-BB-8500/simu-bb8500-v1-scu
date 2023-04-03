@@ -11,6 +11,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw3.h"
+#include "types.h"
 
 /*** MPINV local structures ***/
 
@@ -39,7 +40,7 @@ void MPINV_init(void) {
  * @param new_voltage:	New voltage measured.
  * @return:				None.
  */
-void MPINV_set_voltage_mv(unsigned int mpinv_voltage_mv) {
+void MPINV_set_voltage_mv(uint32_t mpinv_voltage_mv) {
 	SW3_set_voltage_mv(&mpinv_ctx.sw3, mpinv_voltage_mv);
 }
 

@@ -9,6 +9,7 @@
 #define __STEP_MOTOR_H__
 
 #include "gpio.h"
+#include "types.h"
 
 /*** STEP_MOTOR structures ***/
 
@@ -16,7 +17,7 @@ typedef struct {
 	const GPIO* gpio_command_1;
 	const GPIO* gpio_command_2;
 	const GPIO* gpio_stop_detection;
-	volatile unsigned int step;
+	volatile uint32_t step;
 } STEP_MOTOR_context_t;
 
 /*** STEP_MOTOR functions ***/

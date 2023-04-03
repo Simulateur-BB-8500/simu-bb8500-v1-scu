@@ -11,6 +11,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw3.h"
+#include "types.h"
 
 /*** WHISTLE local structures ***/
 
@@ -39,7 +40,7 @@ void WHISTLE_init(void) {
  * @param whistle_voltage_mv:	New voltage measured.
  * @return:				None.
  */
-void WHISTLE_set_voltage_mv(unsigned int whistle_voltage_mv) {
+void WHISTLE_set_voltage_mv(uint32_t whistle_voltage_mv) {
 	SW3_set_voltage_mv(&whistle_ctx.sw3, whistle_voltage_mv);
 }
 

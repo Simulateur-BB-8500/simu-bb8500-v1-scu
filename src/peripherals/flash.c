@@ -8,6 +8,7 @@
 #include "flash.h"
 
 #include "flash_reg.h"
+#include "types.h"
 
 /*** FLASH local macros ***/
 
@@ -19,12 +20,12 @@
  * @param wait_states:	Number of wait states.
  * @return:				None.
  */
-void FLASH_set_latency(unsigned char wait_states) {
+void FLASH_set_latency(uint8_t wait_states) {
 	// Configure number of wait states.
 	FLASH -> ACR &= ~(0b1111 << 0); // Reset bits.
 	FLASH -> ACR |= ((wait_states & 0b1111) << 0); // Set latency.
 	// Wait until configuration is done.
-	unsigned int count = 0;
+	uint32_t count = 0;
 	while ((((FLASH -> ACR) & (0b1111 << 0)) != ((wait_states & 0b1111) << 0)) && (count < FLASH_TIMEOUT_COUNT)) {
 		count++;
 	}

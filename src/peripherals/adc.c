@@ -16,6 +16,7 @@
 #include "mpinv.h"
 #include "pbl2.h"
 #include "rcc_reg.h"
+#include "types.h"
 #include "whistle.h"
 #include "zpt.h"
 
@@ -63,9 +64,9 @@ static ADC_State adc_state;
  * @param channel: 		ADC channel (x for 'ADCChannelx', 17 for 'VREF' or 18 for 'VBAT').
  * @return: 			None.
  */
-static void ADC1_SetChannel(unsigned char channel) {
+static void ADC1_SetChannel(uint8_t channel) {
 	// Ensure channel ranges between 0 and 18.
-	unsigned char local_channel = channel;
+	uint8_t local_channel = channel;
 	if (local_channel > ADC_CHANNEL_MAX) {
 		local_channel = ADC_CHANNEL_MAX;
 	}
@@ -89,7 +90,7 @@ static void ADC1_StartConversion(void) {
  * @param:	None.
  * @return:	ADC conversion result represented in mV.
  */
-static unsigned int ADC1_GetVoltageMv(void) {
+static uint32_t ADC1_GetVoltageMv(void) {
 	return ((ADC_VCC_DEFAULT_MV * (ADC1 -> DR)) / (ADC_FULL_SCALE));
 }
 
@@ -131,7 +132,7 @@ void ADC1_init(void) {
  * @return:	None.
  */
 void ADC1_task(void) {
-	unsigned int adc_result_mv = 0;
+	uint32_t adc_result_mv = 0;
 	switch (adc_state) {
 	case ADC_STATE_OFF:
 		// Check ZBA.

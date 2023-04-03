@@ -11,6 +11,7 @@
 #include "lsmcu.h"
 #include "mapping.h"
 #include "tim.h"
+#include "types.h"
 
 /*** PICTOGRAMS local macros ***/
 
@@ -70,7 +71,7 @@ static PICTOGRAMS_Context pictograms_ctx;
  * @param pictograms_state_mask:	Lights mask defined as [LSRH|LSPI|LSBA|LSPAT|LSP|LSCB|LSS|LSGR|LSDJ].
  * @return:					None.
  */
-static void PICTOGRAMS_SetState(unsigned int pictograms_state_mask) {
+static void PICTOGRAMS_SetState(uint32_t pictograms_state_mask) {
 	// Set all lights state.
 	GPIO_write(&GPIO_LSDJ, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSDJ_BIT_INDEX)));
 	GPIO_write(&GPIO_LSGR, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSGR_BIT_INDEX)));

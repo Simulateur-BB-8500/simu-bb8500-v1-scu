@@ -9,6 +9,7 @@
 #define __SW4_H__
 
 #include "gpio.h"
+#include "types.h"
 
 /*** SW4 structures ***/
 
@@ -33,17 +34,17 @@ typedef enum {
 } SW4_internal_state_t;
 
 typedef struct {
-	unsigned int voltage; // Current voltage measured by ADC.
+	uint32_t voltage; // Current voltage measured by ADC.
 	SW4_internal_state_t internal_state; // Current state in SW4 state machine.
 	SW4_state_t state; // State after anti-bouncing (used in higher levels).
-	unsigned int debouncing_ms; // Delay before validating states (in ms).
-	unsigned int confirm_start_time;
+	uint32_t debouncing_ms; // Delay before validating states (in ms).
+	uint32_t confirm_start_time;
 } SW4_context_t;
 
 /*** SW4 functions ***/
 
-void SW4_init(SW4_context_t* sw4, const GPIO* gpio, unsigned int debouncing_ms);
-void SW4_set_voltage_mv(SW4_context_t* sw4, unsigned int voltage_mv);
+void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms);
+void SW4_set_voltage_mv(SW4_context_t* sw4, uint32_t voltage_mv);
 void SW4_update_state(SW4_context_t* sw4);
 
 #endif /* __SW4_H__ */

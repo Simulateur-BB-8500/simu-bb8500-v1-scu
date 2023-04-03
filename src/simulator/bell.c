@@ -12,6 +12,7 @@
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
+#include "types.h"
 
 /*** BELL local macros ***/
 
@@ -32,7 +33,7 @@ typedef struct {
 	SW2_context_t zlct;
 	// State machine.
 	BELL_State state;
-	unsigned int switch_state_time; // In ms.
+	uint32_t switch_state_time; // In ms.
 } BELL_Context;
 
 /*** BELL external global variables ***/

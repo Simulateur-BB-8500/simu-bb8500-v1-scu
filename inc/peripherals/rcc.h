@@ -8,6 +8,8 @@
 #ifndef __RCC_H__
 #define __RCC_H__
 
+#include "types.h"
+
 /*** RCC structures ***/
 
 typedef enum {
@@ -25,6 +27,6 @@ typedef enum {
 /*** RCC functions ***/
 
 void RCC_init(void);
-unsigned int RCC_get_clock_frequency(RCC_clock_t rcc_clock);
+uint32_t RCC_get_clock_frequency(RCC_clock_t rcc_clock);
 
 #endif /* __RCC_H__ */

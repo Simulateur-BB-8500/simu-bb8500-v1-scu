@@ -8,8 +8,10 @@
 #ifndef __FLASH_H__
 #define __FLASH_H__
 
+#include "types.h"
+
 /*** FLASH functions ***/
 
-void FLASH_set_latency(unsigned char wait_states);
+void FLASH_set_latency(uint8_t wait_states);
 
 #endif /* __FLASH_H__ */

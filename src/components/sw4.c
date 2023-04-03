@@ -10,6 +10,7 @@
 #include "adc.h"
 #include "gpio.h"
 #include "tim.h"
+#include "types.h"
 
 /*** SW4 local macros ***/
 
@@ -27,8 +28,8 @@
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P0 position, '0' otherwise.
  */
-static unsigned char SW4_VoltageIsP0(SW4_context_t* sw4) {
-	unsigned char result = 0;
+static uint8_t SW4_VoltageIsP0(SW4_context_t* sw4) {
+	uint8_t result = 0;
 	if ((sw4 -> voltage) < SW4_P0P1_THRESHOLD_LOW) {
 		result = 1;
 	}
@@ -39,8 +40,8 @@ static unsigned char SW4_VoltageIsP0(SW4_context_t* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P1 position, '0' otherwise.
  */
-static unsigned char SW4_VoltageIsP1(SW4_context_t* sw4) {
-	unsigned char result = 0;
+static uint8_t SW4_VoltageIsP1(SW4_context_t* sw4) {
+	uint8_t result = 0;
 	if (((sw4 -> voltage) > SW4_P0P1_THRESHOLD_HIGH) && ((sw4 -> voltage) < SW4_P1P2_THRESHOLD_LOW)) {
 		result = 1;
 	}
@@ -51,8 +52,8 @@ static unsigned char SW4_VoltageIsP1(SW4_context_t* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P2 position, '0' otherwise.
  */
-static unsigned char SW4_VoltageIsP2(SW4_context_t* sw4) {
-	unsigned char result = 0;
+static uint8_t SW4_VoltageIsP2(SW4_context_t* sw4) {
+	uint8_t result = 0;
 	if (((sw4 -> voltage) > SW4_P1P2_THRESHOLD_HIGH) && ((sw4 -> voltage) < SW4_P2P3_THRESHOLD_LOW)) {
 		result = 1;
 	}
@@ -63,8 +64,8 @@ static unsigned char SW4_VoltageIsP2(SW4_context_t* sw4) {
  * @param sw4:		The switch to analyse.
  * @return result:	'1' if switch voltage indicates a P3 position, '0' otherwise.
  */
-static unsigned char SW4_VoltageIsP3(SW4_context_t* sw4) {
-	unsigned char result = 0;
+static uint8_t SW4_VoltageIsP3(SW4_context_t* sw4) {
+	uint8_t result = 0;
 	if ((sw4 -> voltage) > SW4_P2P3_THRESHOLD_HIGH) {
 		result = 1;
 	}
@@ -79,7 +80,7 @@ static unsigned char SW4_VoltageIsP3(SW4_context_t* sw4) {
  * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
  * @return:					None;
  */
-void SW4_init(SW4_context_t* sw4, const GPIO* gpio, unsigned int debouncing_ms) {
+void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
@@ -94,7 +95,7 @@ void SW4_init(SW4_context_t* sw4, const GPIO* gpio, unsigned int debouncing_ms) 
  * @param sw4:			The switch to set.
  * @param newVoltage:	New voltage measured by ADC.
  */
-void SW4_set_voltage_mv(SW4_context_t* sw4, unsigned int voltage_mv) {
+void SW4_set_voltage_mv(SW4_context_t* sw4, uint32_t voltage_mv) {
 	(sw4 -> voltage) = voltage_mv;
 }
 

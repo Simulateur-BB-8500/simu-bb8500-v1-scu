@@ -15,6 +15,7 @@
 #include "rcc.h"
 #include "rcc_reg.h"
 #include "tim_reg.h"
+#include "types.h"
 
 /*** TIM external global variables ***/
 
@@ -77,7 +78,7 @@ void TIM2_init(void) {
  * @param: 	None.
  * @return:	Number of milliseconds (32-bits word) elapsed since start-up.
  */
-unsigned int TIM2_get_milliseconds(void) {
+uint32_t TIM2_get_milliseconds(void) {
 	return (TIM2 -> CNT);
 }
 
@@ -85,8 +86,8 @@ unsigned int TIM2_get_milliseconds(void) {
  * @param msToWait:	Number of milliseconds to wait.
  * @return:			None.
  */
-void TIM2_delay_milliseconds(unsigned int ms_to_wait) {
-	unsigned int start_ms = TIM2_get_milliseconds();
+void TIM2_delay_milliseconds(uint32_t ms_to_wait) {
+	uint32_t start_ms = TIM2_get_milliseconds();
 	while (TIM2_get_milliseconds() < (start_ms + ms_to_wait));
 }
 
@@ -133,7 +134,7 @@ void TIM5_stop(void) {
  * @param arr_value:	New value of ARR register.
  * @return:				None.
  */
-void TIM5_set_delay_microseconds(unsigned int delay_us) {
+void TIM5_set_delay_microseconds(uint32_t delay_us) {
 	TIM5 -> ARR = delay_us; // TIM5 clock is 1MHz.
 }
 
@@ -141,7 +142,7 @@ void TIM5_set_delay_microseconds(unsigned int delay_us) {
  * @param:	None.
  * @return:	UIF flag status (0/1).
  */
-unsigned char TIM5_get_uif_flag(void) {
+uint8_t TIM5_get_uif_flag(void) {
 	return ((TIM5 -> SR) & (0b1 << 0));
 }
 
@@ -267,7 +268,7 @@ void TIM8_init(void) {
  * @param dutyCycke: 	PWM duty cycle in % (0 to 100).
  * @return:				None;
  */
-void TIM8_set_duty_cycle(unsigned char duty_cycle) {
+void TIM8_set_duty_cycle(uint8_t duty_cycle) {
 	// Set channel 1 duty cycle.
 	TIM8 -> CCR1 = (((duty_cycle) % 101) * (TIM8 -> ARR)) / 100; // % 101 because duty cycle ranges from 0 to 100 included.
 }

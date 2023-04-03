@@ -9,6 +9,7 @@
 
 #include "gpio.h"
 #include "mapping.h"
+#include "types.h"
 
 /*** ZLFR functions ***/
 

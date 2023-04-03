@@ -9,6 +9,7 @@
 
 #include "math.h"
 #include "mode.h"
+#include "types.h"
 
 #ifdef DEBUG
 
@@ -28,8 +29,8 @@
  * @param ascii_code:	Hexadecimal ASCII code to convert.
  * @return value:		Corresponding value.
  */
-unsigned char STRING_char_to_value(char ascii_code) {
-	unsigned char value = 0;
+uint8_t STRING_char_to_value(char_t ascii_code) {
+	uint8_t value = 0;
 	if ((ascii_code >= 'A') && (ascii_code <= 'F')) {
 		value = ascii_code - 'A' + 10;
 	}
@@ -43,8 +44,8 @@ unsigned char STRING_char_to_value(char ascii_code) {
  * @param value:		Decimal digit.
  * @return ascii_code:	Corresponding ASCII code.
  */
-char STRING_decimal_to_ascii(unsigned char decimal_digit) {
-	char ascii_code = 0;
+char STRING_decimal_to_ascii(uint8_t decimal_digit) {
+	char_t ascii_code = 0;
 	if (decimal_digit <= STRING_DIGIT_DECIMAL_MAX) {
 		ascii_code = decimal_digit + '0';
 	}
@@ -55,10 +56,10 @@ char STRING_decimal_to_ascii(unsigned char decimal_digit) {
  * @param n:			Hexadecimal digit.
  * @return ascii_code:	Corresponding ASCII code.
  */
-char STRING_hexa_to_ascii(unsigned char hexa_digit) {
-	char ascii_code = 0;
+char STRING_hexa_to_ascii(uint8_t hexa_digit) {
+	char_t ascii_code = 0;
 	if (hexa_digit <= STRING_DIGIT_HEXADECIMAL_MAX) {
-		ascii_code = (hexa_digit <= 9 ? (char) (hexa_digit + '0') : (char) (hexa_digit + ('A' - 10)));
+		ascii_code = (hexa_digit <= 9 ? (char_t) (hexa_digit + '0') : (char_t) (hexa_digit + ('A' - 10)));
 	}
 	return ascii_code;
 }
@@ -67,7 +68,7 @@ char STRING_hexa_to_ascii(unsigned char hexa_digit) {
  * @param ascii_code:	The byte to analyse.
  * @return:				1 if the byte is the ASCII code of an hexadecimal character, 0 otherwise.
  */
-unsigned char STRING_is_hexadecimal_char(char ascii_code) {
+uint8_t STRING_is_hexadecimal_char(char_t ascii_code) {
 	return (((ascii_code >= '0') && (ascii_code <= '9')) || ((ascii_code >= 'A') && (ascii_code <= 'F')));
 }
 
@@ -75,7 +76,7 @@ unsigned char STRING_is_hexadecimal_char(char ascii_code) {
  * @param ascii_code:	The byte to analyse.
  * @return:				1 if the byte is the ASCII code of a decimal character, 0 otherwise.
  */
-unsigned char STRING_is_decimal_char(char ascii_code) {
+uint8_t STRING_is_decimal_char(char_t ascii_code) {
 	return ((ascii_code >= '0') && (ascii_code <= '9'));
 }
 
@@ -85,22 +86,22 @@ unsigned char STRING_is_decimal_char(char ascii_code) {
  * @param print_prefix: Print base prefix is non zero.
  * @param string:       Output string.
  */
-void STRING_value_to_string(int value, STRING_format_t format, unsigned char print_prefix, char* string) {
+void STRING_value_to_string(int32_t value, STRING_format_t format, uint8_t print_prefix, char_t* string) {
     // Local variables.
-	unsigned int value_abs;
-	unsigned char first_non_zero_found = 0;
-	unsigned int idx;
-    unsigned int string_idx = 0;
-	unsigned char generic_byte = 0;
-	unsigned int current_power = 0;
-	unsigned int previous_decade = 0;
+	uint32_t value_abs;
+	uint8_t first_non_zero_found = 0;
+	uint32_t idx;
+    uint32_t string_idx = 0;
+	uint8_t generic_byte = 0;
+	uint32_t current_power = 0;
+	uint32_t previous_decade = 0;
 	// Manage negative numbers.
 	if (value < 0) {
 		string[string_idx++] = STRING_CHAR_MINUS;
-		value_abs = (unsigned int) ((-1) * value);
+		value_abs = (uint32_t) ((-1) * value);
 	}
 	else {
-		value_abs = (unsigned int) (value);
+		value_abs = (uint32_t) (value);
 	}
 	// Build string according to format.
 	switch (format) {
@@ -177,4 +178,4 @@ void STRING_value_to_string(int value, STRING_format_t format, unsigned char pri
     string[string_idx++] = STRING_CHAR_NULL;
 }
 
-#endif
+#endif /* DEBUG */

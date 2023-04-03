@@ -14,6 +14,7 @@
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
+#include "types.h"
 
 /*** BPGD local macros ***/
 
@@ -24,8 +25,8 @@
 
 typedef struct {
 	SW2_context_t sw2;
-	unsigned char enable;
-	unsigned int inhibit_start_ms;
+	uint8_t enable;
+	uint32_t inhibit_start_ms;
 } BPGD_Context;
 
 /*** BPGD external global variables ***/

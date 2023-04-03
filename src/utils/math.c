@@ -6,6 +6,7 @@
  */
 
 #include "math.h"
+#include "types.h"
 
 /*** MATH local macros ***/
 
@@ -18,9 +19,9 @@
  * @param power:	Desired power.
  * @return result:	Result of computation.
  */
-unsigned int MATH_pow_10(unsigned char power) {
-	unsigned int result = 0;
-	unsigned int pow10_buf[MATH_DECIMAL_MAX_DIGITS] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+uint32_t MATH_pow_10(uint8_t power) {
+	uint32_t result = 0;
+	uint32_t pow10_buf[MATH_DECIMAL_MAX_DIGITS] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 	if (power < MATH_DECIMAL_MAX_DIGITS) {
 		result = pow10_buf[power];
 	}
@@ -32,10 +33,10 @@ unsigned int MATH_pow_10(unsigned char power) {
  * @param data_length:	Input buffer length.
  * @return average: 	Average value of the input buffer.
  */
-unsigned int MATH_average(unsigned int* data, unsigned char data_length) {
+uint32_t MATH_average(uint32_t* data, uint8_t data_length) {
 	// Local variables.
-	unsigned char idx = 0;
-	unsigned int average = 0;
+	uint8_t idx = 0;
+	uint32_t average = 0;
 	// Compute
 	for (idx=0 ; idx<data_length ; idx++) {
 		average = ((average * idx) + data[idx]) / (idx + 1);
@@ -49,16 +50,16 @@ unsigned int MATH_average(unsigned int* data, unsigned char data_length) {
  * @param average_length:	Number of center elements taken for final average.
  * @return filter_out:		Output value of the median filter.
  */
-unsigned int MATH_median_filter(unsigned int* data, unsigned char median_length, unsigned char average_length) {
+uint32_t MATH_median_filter(uint32_t* data, uint8_t median_length, uint8_t average_length) {
 	// Local variables.
-	unsigned int local_buf[MATH_MEDIAN_FILTER_LENGTH_MAX];
-	unsigned char buffer_sorted = 0;
-	unsigned char idx1 = 0;
-	unsigned char idx2 = 0;
-	unsigned char start_idx = 0;
-	unsigned char end_idx = 0;
-	unsigned int filter_out = 0;
-	unsigned int temp = 0;
+	uint32_t local_buf[MATH_MEDIAN_FILTER_LENGTH_MAX];
+	uint8_t buffer_sorted = 0;
+	uint8_t idx1 = 0;
+	uint8_t idx2 = 0;
+	uint8_t start_idx = 0;
+	uint8_t end_idx = 0;
+	uint32_t filter_out = 0;
+	uint32_t temp = 0;
 	// Copy input buffer into local buffer.
 	for (idx1=0 ; idx1<median_length ; idx1++) {
 		local_buf[idx1] = data[idx1];

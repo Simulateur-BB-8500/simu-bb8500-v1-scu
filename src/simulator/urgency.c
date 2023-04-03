@@ -13,12 +13,13 @@
 #include "manometer.h"
 #include "mapping.h"
 #include "sw2.h"
+#include "types.h"
 
 /*** URGENCY local structures ***/
 
 typedef struct {
 	SW2_context_t bpurg;
-	unsigned char previous_state;
+	uint8_t previous_state;
 } URGENCY_Context;
 
 /*** URGENCY external global variables ***/
