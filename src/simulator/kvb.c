@@ -19,11 +19,12 @@
 // KVB segments.
 #define KVB_NUMBER_OF_SEGMENTS 		7 		// 7 segments.
 #define KVB_NUMBER_OF_DISPLAYS 		6 		// KVB has 6 displays (3 yellow and 3 green).
-#define _KVB_display_SWEEP_MS		2 		// Display sweep period in ms.
 // LVAL.
 #define KVB_LVAL_BLINK_PERIOD_MS	900		// Period of LVAL blinking (in ms).
 // LSSF.
 #define KVB_LSSF_BLINK_PERIOD_MS	333		// Period of LSSF blinking (in ms).
+// GPIO bits mask.
+#define KVB_GPIO_MASK				0xFFFFC080
 // Display messages.
 #define KVB_YG_PA400				((uint8_t*) "PA 400")
 #define KVB_YG_UC512				((uint8_t*) "UC 512")
@@ -75,9 +76,8 @@ typedef struct KVB_context_t {
 	// Each display state is coded in a byte: <dot G F E D B C B A>.
 	// A '1' bit means the segment is on, a '0' means the segment is off.
 	uint8_t ascii_buf[KVB_NUMBER_OF_DISPLAYS];
-	uint8_t segment_buf[KVB_NUMBER_OF_DISPLAYS];
-	uint8_t segment_idx; // A to dot.
-	uint8_t display_idx; // Yellow left to green right.
+	volatile uint32_t segment_buf[KVB_NUMBER_OF_DISPLAYS];
+	volatile uint8_t display_idx; // Yellow left to green right.
 	// Flags to enable LVAL and LSSF blinking.
 	uint8_t lval_blink_enable;
 	uint8_t lval_blinking;
@@ -240,24 +240,26 @@ static void _KVB_blink_lssf(void) {
  * @param display:	String to display (cut if too long, padded with null character if too short).
  * @return:			None.
  */
-static void _KVB_display(uint8_t* display) {
-	uint8_t charIndex = 0;
+void _KVB_display(uint8_t* display) {
+	// Local variables.
+	uint8_t idx = 0;
 	// Copy message into ascii_buf.
 	while (*display) {
-		kvb_ctx.ascii_buf[charIndex] = *display++;
-		charIndex++;
-		if (charIndex == KVB_NUMBER_OF_DISPLAYS) {
+		kvb_ctx.ascii_buf[idx] = *display++;
+		idx++;
+		if (idx == KVB_NUMBER_OF_DISPLAYS) {
 			// Number of displays reached.
 			break;
 		}
 	}
 	// Add null characters if necessary.
-	for (; charIndex<KVB_NUMBER_OF_DISPLAYS ; charIndex++) {
-		kvb_ctx.ascii_buf[charIndex] = 0;
+	for (; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) {
+		kvb_ctx.ascii_buf[idx] = 0;
 	}
 	// Convert ASCII characters to segment configurations.
-	for (charIndex=0 ; charIndex<KVB_NUMBER_OF_DISPLAYS ; charIndex++) {
-		kvb_ctx.segment_buf[charIndex] = _KVB_ascii_to_7_segments(kvb_ctx.ascii_buf[charIndex]);
+	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) {
+		kvb_ctx.segment_buf[idx] = 0;
+		kvb_ctx.segment_buf[idx] = (0b1 << (8 + idx)) | _KVB_ascii_to_7_segments(kvb_ctx.ascii_buf[idx]);
 	}
 	// Start sweep timer.
 	TIM6_start();
@@ -312,11 +314,11 @@ void KVB_init(void) {
 	GPIO_configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init buttons.
 	SW2_init(&kvb_ctx.bpval, &GPIO_KVB_BPVAL, 0, 100); // BPVAL active low.
-	SW2_init(&kvb_ctx.bpmv, &GPIO_KVB_BPVAL, 0, 100); // BPMV active low.
-	SW2_init(&kvb_ctx.bpfc, &GPIO_KVB_BPVAL, 0, 100); // BPFC active low.
-	SW2_init(&kvb_ctx.bpat, &GPIO_KVB_BPVAL, 0, 100); // BPAT active low.
-	SW2_init(&kvb_ctx.bpsf, &GPIO_KVB_BPVAL, 0, 100); // BPSF active low.
-	SW2_init(&kvb_ctx.acsf, &GPIO_KVB_BPVAL, 0, 100); // ACSF active low.
+	SW2_init(&kvb_ctx.bpmv, &GPIO_KVB_BPMV, 0, 100); // BPMV active low.
+	SW2_init(&kvb_ctx.bpfc, &GPIO_KVB_BPFC, 0, 100); // BPFC active low.
+	SW2_init(&kvb_ctx.bpat, &GPIO_KVB_BPAT, 0, 100); // BPAT active low.
+	SW2_init(&kvb_ctx.bpsf, &GPIO_KVB_BPSF, 0, 100); // BPSF active low.
+	SW2_init(&kvb_ctx.acsf, &GPIO_KVB_ACSF, 0, 100); // ACSF active low.
 	// Init context.
 	kvb_ctx.state = KVB_STATE_OFF;
 	kvb_ctx.state_switch_time_ms = 0;
@@ -325,7 +327,6 @@ void KVB_init(void) {
 		kvb_ctx.segment_buf[idx] = 0;
 	}
 	kvb_ctx.display_idx = 0;
-	kvb_ctx.segment_idx = 0;
 	kvb_ctx.lssf_blink_enable = 0;
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lval_blinking = 0;
@@ -337,23 +338,16 @@ void KVB_init(void) {
  * @param:	None.
  * @return:	None.
  */
-void KVB_sweep(void) {
-	// Switch off previous display.
-	GPIO_write(display_gpio_buf[kvb_ctx.display_idx], 0);
+void __attribute__((optimize("-O0"))) KVB_sweep(void) {
+	// Read register.
+	volatile uint32_t reg_value = (GPIOG -> ODR);
+	// Set bits.
+	reg_value &= KVB_GPIO_MASK;
+	reg_value |= kvb_ctx.segment_buf[kvb_ctx.display_idx];
+	// Write register.
+	GPIOG -> ODR = reg_value;
 	// Increment and manage index.
-	kvb_ctx.display_idx++;
-	if (kvb_ctx.display_idx > (KVB_NUMBER_OF_DISPLAYS-1)) {
-		kvb_ctx.display_idx = 0;
-	}
-	// Process display only if a character is present.
-	if (kvb_ctx.segment_buf[kvb_ctx.display_idx] != 0) {
-		// Switch on and off the segments of the current display.
-		for (kvb_ctx.segment_idx=0 ; kvb_ctx.segment_idx<KVB_NUMBER_OF_SEGMENTS ; kvb_ctx.segment_idx++) {
-			GPIO_write(segment_gpio_buf[kvb_ctx.segment_idx], kvb_ctx.segment_buf[kvb_ctx.display_idx] & (0b1 << kvb_ctx.segment_idx));
-		}
-		// Finally switch on current display.
-		GPIO_write(display_gpio_buf[kvb_ctx.display_idx], 1);
-	}
+	kvb_ctx.display_idx = (kvb_ctx.display_idx + 1) % KVB_NUMBER_OF_DISPLAYS;
 }
 
 /* MAIN ROUTINE OF KVB.
@@ -417,6 +411,15 @@ void KVB_task(void) {
 		// Check BPVAL.
 		if (kvb_ctx.bpval.state == SW2_ON) {
 			// Parameters validated, go to idle state.
+			TIM8_stop();
+			kvb_ctx.lval_blink_enable = 0;
+		}
+		if ((kvb_ctx.bpsf.state == SW2_ON) || (kvb_ctx.acsf.state == SW2_ON)) {
+			kvb_ctx.lssf_blink_enable = 0;
+			GPIO_write(&GPIO_KVB_LSSF, 0);
+		}
+		if ((kvb_ctx.lssf_blink_enable == 0) && (kvb_ctx.lval_blink_enable == 0)) {
+			// KVB ready.
 			kvb_ctx.state = KVB_STATE_IDLE;
 		}
 		break;

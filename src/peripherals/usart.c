@@ -33,7 +33,8 @@ void __attribute__((optimize("-O0"))) USART1_IRQHandler(void) {
 		// Get and store new byte into RX buffer.
 		uint8_t rx_byte = (USART1 -> RDR);
 		LSSGIU_FillRxBuffer(rx_byte);
-		GPIO_toggle(&GPIO_LED_GREEN);
+		// Clear flag.
+		USART1 -> RQR |= (0b1 << 3);
 	}
 	// Overrun error interrupt.
 	if (((USART1 -> ISR) & (0b1 << 3)) != 0) {
@@ -52,8 +53,8 @@ void USART1_init(void) {
 	// Enable peripheral clock.
 	RCC -> APB2ENR |= (0b1 << 4);
 	// Configure GPIOs.
-	GPIO_configure(&GPIO_USART1_TX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_configure(&GPIO_USART1_RX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_USART1_TX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
+	GPIO_configure(&GPIO_USART1_RX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
 	// Configure peripheral.
 	// 1 stop bit, 8 data bits, oversampling by 16.
 	USART1 -> CR1 = 0; // M='00' and OVER8='0'.
@@ -65,6 +66,8 @@ void USART1_init(void) {
 	// Enable transmitter and receiver.
 	USART1 -> CR1 |= (0b1 << 3); // TE='1'.
 	USART1 -> CR1 |= (0b1 << 2); // RE='1'.
+	// Enable interrupt.
+	NVIC_set_priority(NVIC_INTERRUPT_USART1, 2);
 	USART1 -> CR1 |= (0b1 << 5); // Enable RX interrupt (RXNEIE='1').
 	// Enable peripheral.
 	USART1 -> CR1 |= (0b1 << 0); // UE='1'.

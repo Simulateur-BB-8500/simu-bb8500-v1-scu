@@ -136,11 +136,11 @@ static const GPIO GPIO_MCF2_1 =						(GPIO) {GPIOE, 4, 14, 0};
 static const GPIO GPIO_MCF2_2 =						(GPIO) {GPIOE, 4, 15, 0};
 static const GPIO GPIO_MCF2_SD =					(GPIO) {GPIOG, 6, 15, 0};
 // BPEV.
-static const GPIO GPIO_BPEV =						(GPIO) {GPIOC, 3, 4, 0};
+static const GPIO GPIO_BPEV =						(GPIO) {GPIOC, 2, 4, 0};
 // ZLFR.
 static const GPIO GPIO_ZLFR =						(GPIO) {GPIOB, 1, 1, 0}; 	// ADC1_IN9.
 // ZLCT.
-static const GPIO GPIO_ZLCT =						(GPIO) {GPIOC, 3, 5, 0};
+static const GPIO GPIO_ZLCT =						(GPIO) {GPIOC, 2, 5, 0};
 // Tachro.
 static const GPIO GPIO_TCH_PWM_A =					(GPIO) {GPIOC, 2, 7, 0}; 	// AF3 = TIM8_CH2 or GPIO out.
 static const GPIO GPIO_TCH_PWM_B =					(GPIO) {GPIOC, 2, 8, 0};	// AF3 = TIM8_CH3 or GPIO out.

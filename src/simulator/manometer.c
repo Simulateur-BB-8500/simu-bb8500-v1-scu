@@ -20,7 +20,19 @@
 
 /*** MANOMETER local macros ***/
 
+#define MANOMETER_STEP_MOTOR
+
+#define MANOMETER_GEAR_G1_Z				36
+#define MANOMETER_GEAR_G2_Z				56
+#define MANOMETER_GEAR_CENTER_Z			20
+
+#define MANOMETER_PRESSURE_MAX_DEGREES	270
+#define MANOMETER_FULL_CIRCLE_DEGREES	360
+
 #define MANOMETER_STEP_IT_PERIOD_MAX	1000	// 1000 * 100us = 100ms.
+
+#define MANOMETER_PRESSURE_MAX_STEP_G1	((STEP_MOTOR_NUMBER_OF_STEPS * MANOMETER_PRESSURE_MAX_DEGREES * MANOMETER_GEAR_CENTER_Z) / (MANOMETER_GEAR_G1_Z * MANOMETER_FULL_CIRCLE_DEGREES))
+#define MANOMETER_PRESSURE_MAX_STEP_G2	((STEP_MOTOR_NUMBER_OF_STEPS * MANOMETER_PRESSURE_MAX_DEGREES * MANOMETER_GEAR_CENTER_Z) / (MANOMETER_GEAR_G2_Z * MANOMETER_FULL_CIRCLE_DEGREES))
 
 /*** MANOMETER external global variables ***/
 
@@ -33,11 +45,11 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** MANOMETER local global variables ***/
 
-static MANOMETER_context_t manometer_cp = {0, &step_motor_cp, 95, 100, 3072, 20, 0, 0, 100, 0, 0};
-static MANOMETER_context_t manometer_re = {0, &step_motor_re, 50, 100, 3072, 20, 0, 0, 100, 0, 0};
-static MANOMETER_context_t manometer_cg = {0, &step_motor_cg, 54, 100, 3072, 20, 0, 0, 100, 0, 0};
-static MANOMETER_context_t manometer_cf1 = {0, &step_motor_cf1, 41, 60, 3072, 20, 0, 0, 100, 0, 0};
-static MANOMETER_context_t manometer_cf2 = {0, &step_motor_cf2, 42, 60, 3072, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cp = {0, &step_motor_cp, 95, 100, MANOMETER_PRESSURE_MAX_STEP_G1, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_re = {0, &step_motor_re, 50, 100, MANOMETER_PRESSURE_MAX_STEP_G2, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cg = {0, &step_motor_cg, 54, 100, MANOMETER_PRESSURE_MAX_STEP_G1, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cf1 = {0, &step_motor_cf1, 41, 60, MANOMETER_PRESSURE_MAX_STEP_G1, 20, 0, 0, 100, 0, 0};
+static MANOMETER_context_t manometer_cf2 = {0, &step_motor_cf2, 42, 60, MANOMETER_PRESSURE_MAX_STEP_G2, 20, 0, 0, 100, 0, 0};
 
 /*** MANOMETER local functions ***/
 
@@ -86,8 +98,8 @@ void MANOMETER_init_all(void) {
 	GPIO_configure(&GPIO_MANOMETER_POWER_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init step motors.
 	STEP_MOTOR_init(manometer_cp.step_motor);
-	STEP_MOTOR_init(manometer_cg.step_motor);
 	STEP_MOTOR_init(manometer_re.step_motor);
+	STEP_MOTOR_init(manometer_cg.step_motor);
 	STEP_MOTOR_init(manometer_cf1.step_motor);
 	STEP_MOTOR_init(manometer_cf2.step_motor);
 	// Link to global context.
@@ -177,7 +189,7 @@ void MANOMETER_needle_stop(MANOMETER_context_t* manometer) {
  * @param:	None.
  * @return:	None.
  */
-void MANOMETER_needle_task(MANOMETER_context_t* manometer) {
+void __attribute__((optimize("-O0"))) MANOMETER_needle_task(MANOMETER_context_t* manometer) {
 	// Movement feedback loop.
 	manometer -> step_it_count++;
 	uint32_t current_step = ((manometer -> step_motor) -> step);

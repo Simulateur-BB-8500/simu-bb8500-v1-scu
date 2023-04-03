@@ -11,7 +11,11 @@
 #include "gpio.h"
 #include "types.h"
 
-/*** STEP_MOTOR structures ***/
+/*** STEP MOTOR macros ***/
+
+#define STEP_MOTOR_NUMBER_OF_STEPS	4096
+
+/*** STEP MOTOR structures ***/
 
 typedef struct {
 	const GPIO* gpio_command_1;

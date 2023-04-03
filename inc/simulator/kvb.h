@@ -8,10 +8,13 @@
 #ifndef __KVB_H__
 #define __KVB_H__
 
+#include "types.h"
+
 /*** KVB functions ***/
 
 void KVB_init(void);
-void KVB_sweep(void);
 void KVB_task(void);
+
+void __attribute__((optimize("-O0"))) KVB_sweep(void);
 
 #endif /* __KVB_H__ */

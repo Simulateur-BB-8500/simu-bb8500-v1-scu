@@ -28,10 +28,13 @@ extern LSMCU_Context lsmcu_ctx;
  * @return: None.
  */
 void __attribute__((optimize("-O0"))) TIM6_DAC_IRQHandler(void) {
-	// Perform KVB display sweep.
-	KVB_sweep();
-	// Clear flag.
-	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
+	// Check flag.
+	if (((TIM6 -> SR) & (0b1 << 0)) != 0) {
+		// Perform KVB display sweep.
+		KVB_sweep();
+		// Clear flag.
+		TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
+	}
 }
 
 /* TIM7 INTERRUPT HANDLER.
@@ -172,6 +175,7 @@ void TIM6_init(void) {
 	// Generate event to update registers.
 	TIM6 -> EGR |= (0b1 << 0); // UG='1'.
 	// Enable interrupt.
+	NVIC_set_priority(NVIC_INTERRUPT_TIM6_DAC, 0);
 	TIM6 -> DIER |= (0b1 << 0); // UIE='1'.
 	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
 }
@@ -194,6 +198,7 @@ void TIM6_stop(void) {
 	// Disable and reset counter.
 	TIM6 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM6 -> CNT = 0;
+	NVIC_disable_interrupt(NVIC_INTERRUPT_TIM6_DAC);
 }
 
 /* CONFIGURE TIM7 FOR MANOMETERS.
@@ -214,6 +219,7 @@ void TIM7_init(void) {
 	// Generate event to update registers.
 	TIM7 -> EGR |= (0b1 << 0); // UG='1'.
 	// Enable interrupt.
+	NVIC_set_priority(NVIC_INTERRUPT_TIM7, 1);
 	TIM7 -> DIER |= (0b1 << 0); // UIE='1'.
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 }

@@ -36,7 +36,9 @@ void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_de
 uint32_t MANOMETER_get_pressure(MANOMETER_context_t* manometer);
 void MANOMETER_needle_start(MANOMETER_context_t* manometer);
 void MANOMETER_needle_stop(MANOMETER_context_t* manometer);
-void MANOMETER_needle_task(MANOMETER_context_t* manometer);
+
+void __attribute__((optimize("-O0"))) MANOMETER_needle_task(MANOMETER_context_t* manometer);
+
 #ifdef DEBUG
 void MANOMETER_print_data(void);
 #endif

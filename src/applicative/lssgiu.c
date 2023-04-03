@@ -116,5 +116,6 @@ void LSSGIU_Task(void) {
 	// LSSGIU routine.
 	if (lssgiu_ctx.rx_read_idx != lssgiu_ctx.rx_write_idx) {
 		_LSSGIU_decode();
+		GPIO_toggle(&GPIO_LED_GREEN);
 	}
 }
