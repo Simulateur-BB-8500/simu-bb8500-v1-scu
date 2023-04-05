@@ -9,7 +9,7 @@
 
 #include "math.h"
 #include "mode.h"
-#include "types.h"
+#include "stdint.h"
 
 #ifdef DEBUG
 
@@ -29,7 +29,7 @@
  * @param ascii_code:	Hexadecimal ASCII code to convert.
  * @return value:		Corresponding value.
  */
-uint8_t STRING_char_to_value(char_t ascii_code) {
+uint8_t STRING_charo_value(char ascii_code) {
 	uint8_t value = 0;
 	if ((ascii_code >= 'A') && (ascii_code <= 'F')) {
 		value = ascii_code - 'A' + 10;
@@ -45,7 +45,7 @@ uint8_t STRING_char_to_value(char_t ascii_code) {
  * @return ascii_code:	Corresponding ASCII code.
  */
 char STRING_decimal_to_ascii(uint8_t decimal_digit) {
-	char_t ascii_code = 0;
+	char ascii_code = 0;
 	if (decimal_digit <= STRING_DIGIT_DECIMAL_MAX) {
 		ascii_code = decimal_digit + '0';
 	}
@@ -57,9 +57,9 @@ char STRING_decimal_to_ascii(uint8_t decimal_digit) {
  * @return ascii_code:	Corresponding ASCII code.
  */
 char STRING_hexa_to_ascii(uint8_t hexa_digit) {
-	char_t ascii_code = 0;
+	char ascii_code = 0;
 	if (hexa_digit <= STRING_DIGIT_HEXADECIMAL_MAX) {
-		ascii_code = (hexa_digit <= 9 ? (char_t) (hexa_digit + '0') : (char_t) (hexa_digit + ('A' - 10)));
+		ascii_code = (hexa_digit <= 9 ? (char) (hexa_digit + '0') : (char) (hexa_digit + ('A' - 10)));
 	}
 	return ascii_code;
 }
@@ -68,7 +68,7 @@ char STRING_hexa_to_ascii(uint8_t hexa_digit) {
  * @param ascii_code:	The byte to analyse.
  * @return:				1 if the byte is the ASCII code of an hexadecimal character, 0 otherwise.
  */
-uint8_t STRING_is_hexadecimal_char(char_t ascii_code) {
+uint8_t STRING_is_hexadecimal_char(char ascii_code) {
 	return (((ascii_code >= '0') && (ascii_code <= '9')) || ((ascii_code >= 'A') && (ascii_code <= 'F')));
 }
 
@@ -76,7 +76,7 @@ uint8_t STRING_is_hexadecimal_char(char_t ascii_code) {
  * @param ascii_code:	The byte to analyse.
  * @return:				1 if the byte is the ASCII code of a decimal character, 0 otherwise.
  */
-uint8_t STRING_is_decimal_char(char_t ascii_code) {
+uint8_t STRING_is_decimal_char(char ascii_code) {
 	return ((ascii_code >= '0') && (ascii_code <= '9'));
 }
 
@@ -86,7 +86,7 @@ uint8_t STRING_is_decimal_char(char_t ascii_code) {
  * @param print_prefix: Print base prefix is non zero.
  * @param string:       Output string.
  */
-void STRING_value_to_string(int32_t value, STRING_format_t format, uint8_t print_prefix, char_t* string) {
+void STRING_value_to_string(int32_t value, STRING_format_t format, uint8_t print_prefix, char* string) {
     // Local variables.
 	uint32_t value_abs;
 	uint8_t first_non_zero_found = 0;

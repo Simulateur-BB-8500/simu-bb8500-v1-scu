@@ -11,7 +11,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw3.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** WHISTLE local structures ***/
 

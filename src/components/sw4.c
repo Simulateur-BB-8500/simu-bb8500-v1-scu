@@ -10,7 +10,7 @@
 #include "adc.h"
 #include "gpio.h"
 #include "tim.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** SW4 local macros ***/
 

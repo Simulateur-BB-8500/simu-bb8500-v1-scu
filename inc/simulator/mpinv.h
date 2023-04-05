@@ -8,7 +8,7 @@
 #ifndef __MPINV_H__
 #define __MPINV_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** MPINV functions ***/
 

@@ -14,7 +14,7 @@
 #include "rcc.h"
 #include "rcc_reg.h"
 #include "usart_reg.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** USART local macros ***/
 

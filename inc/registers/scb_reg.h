@@ -8,7 +8,7 @@
 #ifndef __SCB_REG_H__
 #define __SCB_REG_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** SCB registers ***/
 

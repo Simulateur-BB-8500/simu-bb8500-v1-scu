@@ -9,7 +9,7 @@
 #define __USART_H__
 
 #include "mode.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** USART functions ***/
 

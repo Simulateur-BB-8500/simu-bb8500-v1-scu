@@ -6,7 +6,7 @@
  */
 
 #include "math.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** MATH local macros ***/
 

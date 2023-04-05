@@ -8,7 +8,7 @@
 #ifndef __TIM_REG_H__
 #define __TIM_REG_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** TIMx registers ***/
 

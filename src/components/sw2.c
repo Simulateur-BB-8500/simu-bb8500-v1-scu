@@ -9,7 +9,7 @@
 
 #include "gpio.h"
 #include "tim.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** SW2 functions ***/
 

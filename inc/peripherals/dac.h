@@ -8,7 +8,7 @@
 #ifndef __DAC_H__
 #define __DAC_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** DAC functions ***/
 

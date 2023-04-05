@@ -11,7 +11,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw2.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** ZBA external global variables ***/
 

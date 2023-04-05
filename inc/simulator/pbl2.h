@@ -8,7 +8,7 @@
 #ifndef __PBL2_H__
 #define __PBL2_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** PBL2 functions ***/
 

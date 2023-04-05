@@ -10,7 +10,7 @@
 #include "gpio.h"
 #include "mapping.h"
 #include "tim.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** STEP_MOTOR local global variables ***/
 

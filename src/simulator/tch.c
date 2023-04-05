@@ -10,7 +10,7 @@
 #include "lsmcu.h"
 #include "mapping.h"
 #include "tim.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** TCH local macros ***/
 

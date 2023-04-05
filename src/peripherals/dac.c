@@ -12,7 +12,7 @@
 #include "gpio.h"
 #include "mapping.h"
 #include "rcc_reg.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** DAC local macros ***/
 

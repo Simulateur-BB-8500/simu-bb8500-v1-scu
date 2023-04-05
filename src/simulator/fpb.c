@@ -13,7 +13,7 @@
 #include "manometer.h"
 #include "mapping.h"
 #include "sw3.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** FPB local macros ***/
 

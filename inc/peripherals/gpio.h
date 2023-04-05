@@ -9,7 +9,7 @@
 #define __GPIO_H__
 
 #include "gpio_reg.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** GPIO structures ***/
 

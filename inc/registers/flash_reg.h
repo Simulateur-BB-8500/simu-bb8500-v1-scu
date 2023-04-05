@@ -8,7 +8,7 @@
 #ifndef __FLASH_REG_H__
 #define __FLASH_REG_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** FLASH interface registers ***/
 

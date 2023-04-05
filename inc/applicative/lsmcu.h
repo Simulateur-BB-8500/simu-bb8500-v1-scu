@@ -9,7 +9,7 @@
 #define LSMCU_H
 
 #include "manometer.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** LSMCU structure ***/
 

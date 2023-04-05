@@ -9,7 +9,7 @@
 
 #include "flash.h"
 #include "rcc_reg.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** RCC local macros ***/
 

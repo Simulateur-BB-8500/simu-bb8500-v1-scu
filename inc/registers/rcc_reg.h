@@ -8,7 +8,7 @@
 #ifndef __RCC_REG_H__
 #define __RCC_REG_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** RCC registers ***/
 

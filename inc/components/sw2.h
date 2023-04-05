@@ -9,7 +9,7 @@
 #define __SW2_H__
 
 #include "gpio.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** SW2 structures ***/
 

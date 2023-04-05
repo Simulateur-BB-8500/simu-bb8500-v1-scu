@@ -8,7 +8,7 @@
 #ifndef __FD_H__
 #define __FD_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** FD functions ***/
 

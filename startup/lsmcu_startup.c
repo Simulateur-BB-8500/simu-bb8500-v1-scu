@@ -5,7 +5,7 @@
  *      Author: ARM
  */
 
-#include "types.h"
+#include "stdint.h"
 
 /*----------------------------------------------------------------------------
   Linker generated Symbols

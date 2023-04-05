@@ -9,7 +9,7 @@
 #define __STEP_MOTOR_H__
 
 #include "gpio.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** STEP MOTOR macros ***/
 

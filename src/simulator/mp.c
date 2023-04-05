@@ -13,7 +13,7 @@
 #include "mapping.h"
 #include "sw2.h"
 #include "tim.h"
-#include "types.h"
+#include "stdint.h"
 #include "usart.h"
 
 /*** MP local macros ***/

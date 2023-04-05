@@ -8,7 +8,7 @@
 #ifndef __TIM_H__
 #define __TIM_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** TIM functions ***/
 

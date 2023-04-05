@@ -9,7 +9,7 @@
 
 #include "nvic_reg.h"
 #include "scb_reg.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** NVIC local global variables ***/
 

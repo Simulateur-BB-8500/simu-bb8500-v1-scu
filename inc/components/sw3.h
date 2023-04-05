@@ -9,7 +9,7 @@
 #define __SW3_H__
 
 #include "gpio.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** 3-poles switch structures ***/
 

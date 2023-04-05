@@ -8,7 +8,7 @@
 #ifndef __FPB_H__
 #define __FPB_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** FPB functions ***/
 

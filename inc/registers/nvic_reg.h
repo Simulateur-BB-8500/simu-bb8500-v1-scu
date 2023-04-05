@@ -8,7 +8,7 @@
 #ifndef __NVIC_REG_H__
 #define __NVIC_REG_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** NVIC registers ***/
 

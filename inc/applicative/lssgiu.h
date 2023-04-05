@@ -9,7 +9,7 @@
 #define LSSGIU_H
 
 #include "tch.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** LSSGIU structures ***/
 

@@ -12,7 +12,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw4.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** ZPT local structures ***/
 

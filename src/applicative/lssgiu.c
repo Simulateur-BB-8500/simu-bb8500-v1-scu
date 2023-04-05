@@ -17,7 +17,7 @@
 #ifdef DEBUG
 #include "string.h"
 #endif
-#include "types.h"
+#include "stdint.h"
 
 /*** LSSGIU local macros ***/
 
@@ -98,7 +98,7 @@ void LSSGIU_FillRxBuffer(uint8_t ls_cmd) {
  */
 void LSSGIU_Send(uint8_t ls_cmd) {
 #ifdef DEBUG
-	char_t str_value[16];
+	char str_value[16];
 	STRING_value_to_string(ls_cmd, STRING_FORMAT_DECIMAL, 0, str_value);
 	USART1_send_string("\nLSSGIU command = ");
 	USART1_send_string(str_value);

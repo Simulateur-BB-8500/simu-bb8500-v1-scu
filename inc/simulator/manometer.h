@@ -10,7 +10,7 @@
 
 #include "mode.h"
 #include "step_motor.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** MANOMETERS structures ***/
 

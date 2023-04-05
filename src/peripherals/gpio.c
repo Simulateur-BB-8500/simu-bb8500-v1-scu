@@ -11,7 +11,7 @@
 #include "mapping.h"
 #include "rcc.h"
 #include "rcc_reg.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** GPIO local macros ***/
 

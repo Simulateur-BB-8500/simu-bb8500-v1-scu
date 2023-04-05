@@ -8,7 +8,7 @@
 #ifndef __FLASH_H__
 #define __FLASH_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** FLASH functions ***/
 

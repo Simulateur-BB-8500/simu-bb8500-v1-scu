@@ -9,7 +9,7 @@
 #define __SW4_H__
 
 #include "gpio.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** SW4 structures ***/
 

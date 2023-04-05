@@ -12,7 +12,7 @@
 #include "mode.h"
 #include "step_motor.h"
 #include "tim.h"
-#include "types.h"
+#include "stdint.h"
 #ifdef DEBUG
 #include "string.h"
 #include "usart.h"

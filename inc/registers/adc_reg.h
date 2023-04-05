@@ -8,7 +8,7 @@
 #ifndef __ADC_REG_H__
 #define __ADC_REG_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** ADC registers ***/
 

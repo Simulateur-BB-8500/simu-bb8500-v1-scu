@@ -16,7 +16,7 @@
 #include "mpinv.h"
 #include "pbl2.h"
 #include "rcc_reg.h"
-#include "types.h"
+#include "stdint.h"
 #include "whistle.h"
 #include "zpt.h"
 

@@ -8,7 +8,7 @@
 #ifndef __ZPT_H__
 #define __ZPT_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** ZPT functions ***/
 

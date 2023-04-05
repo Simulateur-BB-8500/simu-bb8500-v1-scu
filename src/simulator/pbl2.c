@@ -12,7 +12,7 @@
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw4.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** PBL2 local macros ***/
 

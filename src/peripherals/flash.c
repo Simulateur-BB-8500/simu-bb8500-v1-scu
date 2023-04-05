@@ -8,7 +8,7 @@
 #include "flash.h"
 
 #include "flash_reg.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** FLASH local macros ***/
 

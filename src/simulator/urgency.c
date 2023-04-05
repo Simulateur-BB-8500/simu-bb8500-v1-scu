@@ -13,7 +13,7 @@
 #include "manometer.h"
 #include "mapping.h"
 #include "sw2.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** URGENCY local structures ***/
 

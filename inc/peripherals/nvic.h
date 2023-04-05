@@ -8,7 +8,7 @@
 #ifndef __NVIC_H__
 #define __NVIC_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** NVIC interrupts vector ***/
 

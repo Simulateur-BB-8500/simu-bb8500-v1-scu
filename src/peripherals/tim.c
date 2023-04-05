@@ -15,7 +15,7 @@
 #include "rcc.h"
 #include "rcc_reg.h"
 #include "tim_reg.h"
-#include "types.h"
+#include "stdint.h"
 
 /*** TIM external global variables ***/
 

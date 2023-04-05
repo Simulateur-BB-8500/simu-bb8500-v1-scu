@@ -8,7 +8,7 @@
 #ifndef __WHISTLE_H__
 #define __WHISTLE_H__
 
-#include "types.h"
+#include "stdint.h"
 
 void WHISTLE_init(void);
 void WHISTLE_set_voltage_mv(uint32_t whistle_voltage_mv);

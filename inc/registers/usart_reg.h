@@ -8,7 +8,7 @@
 #ifndef __USART_REG_H__
 #define __USART_REG_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** USARTx registers ***/
 

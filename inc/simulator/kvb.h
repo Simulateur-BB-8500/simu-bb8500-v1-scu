@@ -8,7 +8,7 @@
 #ifndef __KVB_H__
 #define __KVB_H__
 
-#include "types.h"
+#include "stdint.h"
 
 /*** KVB functions ***/
 
