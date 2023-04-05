@@ -55,8 +55,10 @@ LSMCU_Context lsmcu_ctx;
  */
 int main(void) {
 	// Local variables.
+#ifdef DEBUG
 	char str_value[16];
 	uint32_t print_timestamp = 0;
+#endif
 	// Init Peripherals.
 	NVIC_init();
 	RCC_init();
@@ -64,7 +66,7 @@ int main(void) {
 	TIM2_init(); // Time keeper.
 	TIM5_init(); // Tachro.
 	TIM6_init(); // KVB sweep.
-	TIM7_init(); // Manometers.
+	TIM7_init(MANOMETER_STEP_IRQ_PERIOD_US); // Manometers.
 	TIM8_init(); // LVAL PWM.
 	ADC1_init();
 	DAC_init();

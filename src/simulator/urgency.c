@@ -15,6 +15,12 @@
 #include "sw2.h"
 #include "stdint.h"
 
+/*** URGENCY local macros ***/
+
+#define URGENCY_CG_SPEED_MBAR_PER_SECOND	500
+#define URGENCY_RE_SPEED_MBAR_PER_SECOND	500
+#define URGENCY_CF_SPEED_MBAR_PER_SECOND	500
+
 /*** URGENCY local structures ***/
 
 typedef struct {
@@ -58,10 +64,10 @@ void URGENCY_task(void) {
 	// Check global flag.
 	if ((lsmcu_ctx.urgency != 0) && (urgency_ctx.previous_state == 0)) {
 		// Trigger urgency brake.
-		MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0);
-		MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0);
-		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, (lsmcu_ctx.manometer_cf1) -> pressure_limit_decibars);
-		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, (lsmcu_ctx.manometer_cf2) -> pressure_limit_decibars);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0, URGENCY_CG_SPEED_MBAR_PER_SECOND);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, URGENCY_RE_SPEED_MBAR_PER_SECOND);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar), URGENCY_CF_SPEED_MBAR_PER_SECOND);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar), URGENCY_CF_SPEED_MBAR_PER_SECOND);
 		// Open DJ.
 		lsmcu_ctx.dj_locked = 0;
 		// Send sound command.

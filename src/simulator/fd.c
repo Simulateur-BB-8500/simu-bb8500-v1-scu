@@ -15,6 +15,11 @@
 #include "sw3.h"
 #include "stdint.h"
 
+/*** FD local macros ***/
+
+#define FD_CF1_SPEED_MBAR_PER_SECOND	800
+#define FD_CF2_SPEED_MBAR_PER_SECOND	1000
+
 /*** FD local structures ***/
 
 typedef struct {
@@ -62,10 +67,8 @@ void FD_task(void) {
 	case SW3_BACK:
 		if (fd_ctx.previous_state != SW3_BACK) {
 			// Update CF1/CF2 manometers.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0);
-			MANOMETER_needle_start(lsmcu_ctx.manometer_cf1);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0);
-			MANOMETER_needle_start(lsmcu_ctx.manometer_cf2);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0, FD_CF1_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0, FD_CF2_SPEED_MBAR_PER_SECOND);
 			// Send command.
 			LSSGIU_Send(LSMCU_OUT_FD_RELEASE);
 		}
@@ -82,10 +85,8 @@ void FD_task(void) {
 	case SW3_FRONT:
 		if (fd_ctx.previous_state != SW3_FRONT) {
 			// Update CF1/CF2 manometers.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, (lsmcu_ctx.manometer_cf1) -> pressure_limit_decibars);
-			MANOMETER_needle_start(lsmcu_ctx.manometer_cf1);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, (lsmcu_ctx.manometer_cf2) -> pressure_limit_decibars);
-			MANOMETER_needle_start(lsmcu_ctx.manometer_cf2);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar), FD_CF1_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar), FD_CF2_SPEED_MBAR_PER_SECOND);
 			// Forward.
 			LSSGIU_Send(LSMCU_OUT_FD_APPLY);
 		}

@@ -18,8 +18,12 @@
 
 /*** BPGD local macros ***/
 
-#define BPGD_CG_RE_PRESSURE_DECIBARS	50
-#define BPGD_INHIBIT_DELAY_MS			5000
+#define BPGD_CG_RE_PRESSURE_MBAR			5000
+#define BPGD_CG_RE_SPEED_MBAR_PER_SECOND	1000
+
+#define BPGD_CF_SPEED_MBAR_PER_SECOND		1000
+
+#define BPGD_INHIBIT_DELAY_MS				5000
 
 /*** BPGD local structures ***/
 
@@ -62,10 +66,10 @@ void BPGD_task(void) {
 		// Send commands on change.
 		if (bpgd_ctx.enable != 0) {
 			// Update manometers.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, BPGD_CG_RE_PRESSURE_DECIBARS);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, BPGD_CG_RE_PRESSURE_DECIBARS);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, BPGD_CG_RE_PRESSURE_MBAR, BPGD_CG_RE_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, BPGD_CG_RE_PRESSURE_MBAR, BPGD_CG_RE_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0, BPGD_CF_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0, BPGD_CF_SPEED_MBAR_PER_SECOND);
 			// Send sound command.
 			LSSGIU_Send(LSMCU_OUT_BPGD);
 			// Disable module and start delay.

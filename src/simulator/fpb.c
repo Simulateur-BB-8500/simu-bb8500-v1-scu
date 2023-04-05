@@ -17,7 +17,10 @@
 
 /*** FPB local macros ***/
 
-#define FPB_CG_PRESSURE_MAX_DECIBARS	50
+#define FPB_CG_PRESSURE_MAX_MBAR		5000
+#define FPB_CG_SPEED_MBAR_PER_SECOND	1000
+
+#define FPB_RE_SPEED_MBAR_PER_SECOND	1000
 
 /*** FPB local structures ***/
 
@@ -69,10 +72,8 @@ void FPB_task(void) {
 				// Backward.
 				LSSGIU_Send(LSMCU_OUT_FPB_RELEASE);
 				// Start CG and RE manometers.
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, FPB_CG_PRESSURE_MAX_DECIBARS);
-				MANOMETER_needle_start(lsmcu_ctx.manometer_cg);
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_re, (lsmcu_ctx.manometer_re) -> pressure_limit_decibars);
-				MANOMETER_needle_start(lsmcu_ctx.manometer_re);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, FPB_CG_PRESSURE_MAX_MBAR, FPB_CG_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_re, ((lsmcu_ctx.manometer_re) -> pressure_limit_mbar), FPB_RE_SPEED_MBAR_PER_SECOND);
 			}
 			break;
 		case SW3_NEUTRAL:
@@ -89,10 +90,8 @@ void FPB_task(void) {
 				// Forward.
 				LSSGIU_Send(LSMCU_OUT_FPB_APPLY);
 				// Start CG and RE manometers.
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0);
-				MANOMETER_needle_start(lsmcu_ctx.manometer_cg);
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0);
-				MANOMETER_needle_start(lsmcu_ctx.manometer_re);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0, FPB_CG_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, FPB_RE_SPEED_MBAR_PER_SECOND);
 			}
 			break;
 		default:

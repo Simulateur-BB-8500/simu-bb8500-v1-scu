@@ -16,7 +16,8 @@
 
 /*** ZSUR local macros ***/
 
-#define LSUR_CG_PRESSURE_THRESHOLD_DECIBARS	50
+#define ZSUR_CG_SPEED_MBAR_PER_SECOND		1000
+#define LSUR_CG_PRESSURE_THRESHOLD_MBAR		5000
 
 /*** ZSUR local structures ***/
 
@@ -56,13 +57,13 @@ void ZSUR_task(void) {
 	if (zsur_ctx.sw2.state == SW2_ON) {
 		// Send command on change.
 		if (zsur_ctx.previous_state != SW2_ON) {
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, (lsmcu_ctx.manometer_cg) -> pressure_limit_decibars);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, ((lsmcu_ctx.manometer_cg) -> pressure_limit_mbar), ZSUR_CG_SPEED_MBAR_PER_SECOND);
 		}
 	}
 	// Update previous state.
 	zsur_ctx.previous_state = zsur_ctx.sw2.state;
 	// Manage LSUR indicator.
-	if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cg) > LSUR_CG_PRESSURE_THRESHOLD_DECIBARS) {
+	if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cg) > LSUR_CG_PRESSURE_THRESHOLD_MBAR) {
 		GPIO_write(&GPIO_LSUR, 1);
 	}
 	else {

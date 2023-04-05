@@ -16,9 +16,13 @@
 
 /*** PBL2 local macros ***/
 
-#define PBL2_MIN_CP_PRESSURE_DECIBARS	50
-#define PBL2_ON_CG_PRESSURE_DECIBARS	35
-#define PBL2_ON_RE_PRESSURE_DECIBARS	35
+#define PBL2_MIN_CP_PRESSURE_MBAR			5000
+
+#define PBL2_ON_CG_PRESSURE_MBAR			3500
+#define PBL2_ON_CG_SPEED_MBAR_PER_SECOND	1000
+
+#define PBL2_ON_RE_PRESSURE_MBAR			3500
+#define PBL2_ON_RE_SPEED_MBAR_PER_SECOND	1000
 
 /*** PBL2 external global variables ***/
 
@@ -64,10 +68,8 @@ void PBL2_task(void) {
 			// Send command on change.
 			LSSGIU_Send(LSMCU_OUT_FPB_OFF);
 			// Empty CG and RE.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0);
-			MANOMETER_needle_start(lsmcu_ctx.manometer_cg);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0);
-			MANOMETER_needle_start(lsmcu_ctx.manometer_re);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);
 			// Update global context.
 			lsmcu_ctx.pbl2_on = 0;
 		}
@@ -77,14 +79,12 @@ void PBL2_task(void) {
 		break;
 	case SW4_P2:
 		// Service.
-		if ((lsmcu_ctx.pbl2_on == 0) && (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > PBL2_MIN_CP_PRESSURE_DECIBARS)) {
+		if ((lsmcu_ctx.pbl2_on == 0) && (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > PBL2_MIN_CP_PRESSURE_MBAR)) {
 			// Send command on change.
 			LSSGIU_Send(LSMCU_OUT_FPB_ON);
 			// Start CG and RE manometers.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_DECIBARS);
-			MANOMETER_needle_start(lsmcu_ctx.manometer_cg);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, PBL2_ON_CG_PRESSURE_DECIBARS);
-			MANOMETER_needle_start(lsmcu_ctx.manometer_re);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_MBAR, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, PBL2_ON_RE_PRESSURE_MBAR, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);
 			// Update global context.
 			lsmcu_ctx.pbl2_on = 1;
 		}

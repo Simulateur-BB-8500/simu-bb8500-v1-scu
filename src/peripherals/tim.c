@@ -42,6 +42,7 @@ void __attribute__((optimize("-O0"))) TIM6_DAC_IRQHandler(void) {
  * @return: None.
  */
 void __attribute__((optimize("-O0"))) TIM7_IRQHandler(void) {
+	// Check flag.
 	if (((TIM7 -> SR) & (0b1 << 0)) != 0) {
 		// Perform manometers needle control.
 		MANOMETER_needle_task(lsmcu_ctx.manometer_cp);
@@ -89,9 +90,9 @@ uint32_t TIM2_get_milliseconds(void) {
  * @param msToWait:	Number of milliseconds to wait.
  * @return:			None.
  */
-void TIM2_delay_milliseconds(uint32_t ms_to_wait) {
+void TIM2_delay_milliseconds(uint32_t delay_ms) {
 	uint32_t start_ms = TIM2_get_milliseconds();
-	while (TIM2_get_milliseconds() < (start_ms + ms_to_wait));
+	while (TIM2_get_milliseconds() < (start_ms + delay_ms));
 }
 
 /* CONFIGURE TIM5 FOR TACHRO STEPPING.
@@ -167,10 +168,10 @@ void TIM6_init(void) {
 	// Configure peripheral.
 	TIM6 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM6 -> CNT = 0;
-	TIM6 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
+	TIM6 -> DIER &= ~(0b1 << 0); // Disable interrupt (UIE='0').
 	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 2ms.
-	TIM6 -> PSC = ((2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK1)) / 50) - 1; // TIM6 input clock = (2*PCLK1)/((((2*PCLK1)/50)-1)+1) = 50kHz.
+	TIM6 -> PSC = ((2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK1)) / 50) - 1; // TIM6 input clock = (2 * PCLK1) / ((((2 * PCLK1) / 50) - 1) + 1) = 50kHz.
 	TIM6 -> ARR = 100; // 100 fronts @ 50kHz = 2ms.
 	// Generate event to update registers.
 	TIM6 -> EGR |= (0b1 << 0); // UG='1'.
@@ -202,10 +203,10 @@ void TIM6_stop(void) {
 }
 
 /* CONFIGURE TIM7 FOR MANOMETERS.
- * @param:	None.
- * @return:	None.
+ * @param period_us:	Timer period in microsecond.
+ * @return:				None.
  */
-void TIM7_init(void) {
+void TIM7_init(uint32_t period_us) {
 	// Enable peripheral clock.
 	RCC -> APB1ENR |= (0b1 << 5); // TIM7EN='1'.
 	// Configure peripheral.
@@ -214,8 +215,8 @@ void TIM7_init(void) {
 	TIM7 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 1ms.
-	TIM7 -> PSC = ((2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK1)) / 1000) - 1; // TIM7 input clock = (2*PCLK1)/((((2*PCLK1)/1000)-1)+1) = 1MHz.
-	TIM7 -> ARR = 100; // 100 fronts @ 1MHz = 100us.
+	TIM7 -> PSC = ((2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK1)) / 1000) - 1; // TIM7 input clock = (2 * PCLK1) / ((((2 * PCLK1) / 1000) - 1) + 1) = 1MHz.
+	TIM7 -> ARR = period_us;
 	// Generate event to update registers.
 	TIM7 -> EGR |= (0b1 << 0); // UG='1'.
 	// Enable interrupt.
@@ -274,9 +275,9 @@ void TIM8_init(void) {
  * @param dutyCycke: 	PWM duty cycle in % (0 to 100).
  * @return:				None;
  */
-void TIM8_set_duty_cycle(uint8_t duty_cycle) {
+void TIM8_set_duty_cycle(uint8_t duty_cycle_percent) {
 	// Set channel 1 duty cycle.
-	TIM8 -> CCR1 = (((duty_cycle) % 101) * (TIM8 -> ARR)) / 100; // % 101 because duty cycle ranges from 0 to 100 included.
+	TIM8 -> CCR1 = (((duty_cycle_percent) % 101) * (TIM8 -> ARR)) / 100; // % 101 because duty cycle ranges from 0 to 100 included.
 }
 
 /* START TIM8.
