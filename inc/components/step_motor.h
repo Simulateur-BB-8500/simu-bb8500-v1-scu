@@ -13,7 +13,7 @@
 
 /*** STEP MOTOR macros ***/
 
-#define STEP_MOTOR_NUMBER_OF_STEPS	4096
+#define STEP_MOTOR_NUMBER_OF_STEPS	2048
 
 /*** STEP MOTOR structures ***/
 
