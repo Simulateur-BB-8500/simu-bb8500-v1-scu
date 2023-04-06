@@ -7,6 +7,7 @@
 
 #include "fpb.h"
 
+#include "adc.h"
 #include "gpio.h"
 #include "lsmcu.h"
 #include "lssgiu.h"
@@ -45,16 +46,8 @@ static FPB_context_t fpb_ctx;
  */
 void FPB_init(void) {
 	// Init GPIO.
-	SW3_init(&fpb_ctx.sw3, &GPIO_FPB, 100);
+	SW3_init(&fpb_ctx.sw3, &GPIO_FPB, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_FPB]));
 	fpb_ctx.previous_state = SW3_NEUTRAL;
-}
-
-/* UPDATE THE VOLTAGE READ ON FPB SELECTOR (CALLED BY ADC ROUTINE).
- * @param new_voltage:	New voltage measured.
- * @return:				None.
- */
-void FPB_set_voltage_mv(uint32_t fpb_voltage_mv) {
-	SW3_set_voltage_mv(&fpb_ctx.sw3, fpb_voltage_mv);
 }
 
 /* MAIN ROUTINE OF FPB MODULE.

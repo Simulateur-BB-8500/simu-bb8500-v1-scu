@@ -13,7 +13,6 @@
 /*** FD functions ***/
 
 void FD_init(void);
-void FD_set_voltage_mv(uint32_t fd_voltage_mv);
 void FD_task(void);
 
 #endif /* __FD_H__ */

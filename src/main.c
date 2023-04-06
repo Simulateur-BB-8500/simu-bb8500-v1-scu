@@ -8,6 +8,7 @@
 // Peripherals.
 #include "adc.h"
 #include "dac.h"
+#include "dma.h"
 #include "gpio.h"
 #include "nvic.h"
 #include "rcc.h"
@@ -59,21 +60,25 @@ int main(void) {
 	char str_value[16];
 	uint32_t print_timestamp = 0;
 #endif
-	// Init Peripherals.
+	// Init interrupts, clocks and GPIOs.
 	NVIC_init();
 	RCC_init();
 	GPIO_init();
+	// Timers.
+	TIM1_init(ADC_CONVERSION_PERIOD_MS); // ADC trigger.
 	TIM2_init(); // Time keeper.
 	TIM5_init(); // Tachro.
 	TIM6_init(); // KVB sweep.
 	TIM7_init(MANOMETER_STEP_IRQ_PERIOD_US); // Manometers.
 	TIM8_init(); // LVAL PWM.
+	// Analog.
+	DMA2_STR0_init();
 	ADC1_init();
 	DAC_init();
+	// Communication interface.
 	USART1_init();
-	// Init communication interface.
 	LSSGIU_Init();
-	// Init simulator modules.
+	// Simulator modules.
 	BELL_init();
 	BL_init();
 	BPGD_init();
@@ -96,8 +101,6 @@ int main(void) {
 	ZSUR_init();
 	// Main loop.
 	while (1) {
-		// Peripherals tasks.
-		ADC1_task();
 		// Communication tasks.
 		LSSGIU_Task();
 		// Simulator tasks.

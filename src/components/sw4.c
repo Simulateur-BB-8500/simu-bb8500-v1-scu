@@ -25,48 +25,48 @@
 /*** SW4 local functions ***/
 
 /* CHECK IF A 4-POLES SWITCH IS IN P0 POSITION.
- * @param sw4:		The switch to analyse.
+ * @param sw4:		The switch to analyze.
  * @return result:	'1' if switch voltage indicates a P0 position, '0' otherwise.
  */
 static uint8_t _SW4_voltage_is_p0(SW4_context_t* sw4) {
 	uint8_t result = 0;
-	if ((sw4 -> voltage) < SW4_P0P1_THRESHOLD_LOW) {
+	if ((sw4 -> voltage_mv) < SW4_P0P1_THRESHOLD_LOW) {
 		result = 1;
 	}
 	return result;
 }
 
 /* CHECK IF A 4-POLES SWITCH IS IN P1 POSITION.
- * @param sw4:		The switch to analyse.
+ * @param sw4:		The switch to analyze.
  * @return result:	'1' if switch voltage indicates a P1 position, '0' otherwise.
  */
 static uint8_t _SW4_voltage_is_p1(SW4_context_t* sw4) {
 	uint8_t result = 0;
-	if (((sw4 -> voltage) > SW4_P0P1_THRESHOLD_HIGH) && ((sw4 -> voltage) < SW4_P1P2_THRESHOLD_LOW)) {
+	if (((sw4 -> voltage_mv) > SW4_P0P1_THRESHOLD_HIGH) && ((sw4 -> voltage_mv) < SW4_P1P2_THRESHOLD_LOW)) {
 		result = 1;
 	}
 	return result;
 }
 
 /* CHECK IF A 4-POLES SWITCH IS IN P2 POSITION.
- * @param sw4:		The switch to analyse.
+ * @param sw4:		The switch to analyze.
  * @return result:	'1' if switch voltage indicates a P2 position, '0' otherwise.
  */
 static uint8_t _SW4_voltage_is_p2(SW4_context_t* sw4) {
 	uint8_t result = 0;
-	if (((sw4 -> voltage) > SW4_P1P2_THRESHOLD_HIGH) && ((sw4 -> voltage) < SW4_P2P3_THRESHOLD_LOW)) {
+	if (((sw4 -> voltage_mv) > SW4_P1P2_THRESHOLD_HIGH) && ((sw4 -> voltage_mv) < SW4_P2P3_THRESHOLD_LOW)) {
 		result = 1;
 	}
 	return result;
 }
 
 /* CHECK IF A 4-POLES SWITCH IS IN P3 POSITION.
- * @param sw4:		The switch to analyse.
+ * @param sw4:		The switch to analyze.
  * @return result:	'1' if switch voltage indicates a P3 position, '0' otherwise.
  */
 static uint8_t _SW4_voltage_is_p3(SW4_context_t* sw4) {
 	uint8_t result = 0;
-	if ((sw4 -> voltage) > SW4_P2P3_THRESHOLD_HIGH) {
+	if ((sw4 -> voltage_mv) > SW4_P2P3_THRESHOLD_HIGH) {
 		result = 1;
 	}
 	return result;
@@ -78,32 +78,29 @@ static uint8_t _SW4_voltage_is_p3(SW4_context_t* sw4) {
  * @param sw4:				Switch structure to initialize.
  * @param gpio:				GPIO attached to the switch.
  * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
+ * @param adc_data_ptr:		Pointer to the 12-bits ADC data.
  * @return:					None;
  */
-void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms) {
+void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
-	(sw4 -> voltage) = 0; // P0 = 0V.
+	(sw4 -> adc_data_ptr) = adc_data_ptr;
+	(sw4 -> voltage_mv) = 0; // P0 = 0V.
 	(sw4 -> internal_state) = SW4_STATE_P0;
 	(sw4 -> state) = SW4_P0;
 	(sw4 -> debouncing_ms) = debouncing_ms;
 	(sw4 -> confirm_start_time) = 0;
 }
 
-/* SET THE CURRENT VOLTAGE OF A 3-POLES SWITCH.
- * @param sw4:			The switch to set.
- * @param newVoltage:	New voltage measured by ADC.
- */
-void SW4_set_voltage_mv(SW4_context_t* sw4, uint32_t voltage_mv) {
-	(sw4 -> voltage) = voltage_mv;
-}
-
 /* UPDATE THE STATE OF AN SW4 STRUCTURE PERFORMING HYSTERESIS AND CONFIRMATION.
- * @param sw4:	The switch to analyse.
+ * @param sw4:	The switch to analyze.
  * @return:		None.
  */
 void SW4_update_state(SW4_context_t* sw4) {
+	// Update voltage.
+	(sw4 -> voltage_mv) = ADC1_convert_to_mv(*(sw4 -> adc_data_ptr));
+	// Perform debouncing state machine.
 	switch((sw4 -> internal_state)) {
 	case SW4_STATE_CONFIRM_P0:
 		// Check previous state.

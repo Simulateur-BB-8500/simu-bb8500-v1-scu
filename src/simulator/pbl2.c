@@ -7,6 +7,7 @@
 
 #include "pbl2.h"
 
+#include "adc.h"
 #include "gpio.h"
 #include "lsmcu.h"
 #include "lssgiu.h"
@@ -40,17 +41,9 @@ static SW4_context_t pbl2_sw4;
  */
 void PBL2_init(void) {
 	// Init GPIO.
-	SW4_init(&pbl2_sw4, &GPIO_PBL2, 500);
+	SW4_init(&pbl2_sw4, &GPIO_PBL2, 500, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_PBL2]));
 	// Init global context.
 	lsmcu_ctx.pbl2_on = 0;
-}
-
-/* UPDATE THE VOLTAGE READ ON PBL2 SELECTOR (CALLED BY ADC ROUTINE).
- * @param new_voltage:	New voltage measured.
- * @return:				None.
- */
-void PBL2_set_voltage_mv(uint32_t pbl2_voltage_mv) {
-	SW4_set_voltage_mv(&pbl2_sw4, pbl2_voltage_mv);
 }
 
 /* MAIN ROUTINE OF PBL2 MODULE.

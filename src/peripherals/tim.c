@@ -57,6 +57,26 @@ void __attribute__((optimize("-O0"))) TIM7_IRQHandler(void) {
 
 /*** TIM functions ***/
 
+/* INIT TIM1 FOR ADC TRIGGER OPERATION.
+ * @param:	None.
+ * @return:	None.
+ */
+void TIM1_init(uint32_t period_ms) {
+	// Enable peripheral clock.
+	RCC -> APB2ENR |= (0b1 << 0); // TIM1EN='1'.
+	// Configure peripheral.
+	TIM1 -> CR1 &= ~(0b1 << 0); // CEN='0'.
+	TIM1 -> CNT = 0;
+	TIM1 -> CR2 |= (0b010 << 4); // TRGO signal on update.
+	// Set PSC and ARR registers to reach 1ms.
+	TIM1 -> PSC = (2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK2)) - 1; // TIM1 input clock = (2 * PCLK2) / ((2 * PLCK2 - 1) + 1) = 1kHz.
+	TIM1 -> ARR = period_ms;
+	// Generate event to update registers.
+	TIM1 -> EGR |= (0b1 << 0); // UG='1'.
+	// Start counter.
+	TIM1 -> CR1 |= (0b1 << 0); // CEN='1'.
+}
+
 /* CONFIGURE TIM2 TO COUNT MILLISECONDS SINCE START-UP.
  * @param:	None.
  * @return:	None.
@@ -69,8 +89,8 @@ void TIM2_init(void) {
 	TIM2 -> CNT = 0;
 	TIM2 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM2 -> SR &= ~(0b1 << 0); // UIF='0'.
-	// Set PSC and ARR registers to reach 1 ms.
-	TIM2 -> PSC = (2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK1)) - 1; // TIM2 input clock = (2*PCLK1)/((2*PLCK1-1)+1) = 1kHz.
+	// Set PSC and ARR registers to reach 1ms.
+	TIM2 -> PSC = (2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK1)) - 1; // TIM2 input clock = (2 * PCLK1) / ((2 * PLCK1 - 1) + 1) = 1kHz.
 	TIM2 -> ARR = 0xFFFFFFFF; // No overflow (49 days).
 	// Generate event to update registers.
 	TIM2 -> EGR |= (0b1 << 0); // UG='1'.
@@ -108,7 +128,7 @@ void TIM5_init(void) {
 	TIM5 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM5 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to reach 2 ms.
-	TIM5 -> PSC = ((2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK1)) / 1000) - 1; // TIM5 input clock = (2*PCLK1)/((((2*PCLK1)/1000)-1)+1) = 1MHz.
+	TIM5 -> PSC = ((2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK1)) / 1000) - 1; // TIM5 input clock = (2 * PCLK1) / ((((2 * PCLK1) / 1000) - 1) + 1) = 1MHz.
 	TIM5 -> ARR = 0; // Default value.
 	// Generate event to update registers.
 	TIM5 -> EGR |= (0b1 << 0); // UG='1'.
@@ -259,7 +279,7 @@ void TIM8_init(void) {
 	TIM8 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM8 -> SR &= ~(0b1 << 0); // UIF='0'.
 	// Set PSC and ARR registers to set PWM frequency to 2kHz.
-	TIM8 -> PSC = ((2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK2)) / 1000) - 1;; // TIM8 input clock = (2*PCLK2)/((((2*PCLK2)/1000)-1)+1) = 1MHz.
+	TIM8 -> PSC = ((2 * RCC_get_clock_frequency(RCC_CLOCK_PCLK2)) / 1000) - 1;; // TIM8 input clock = (2 * PCLK2) / ((((2 * PCLK2) / 1000) - 1) + 1) = 1MHz.
 	TIM8 -> ARR = 250; // 250 fronts @ 1MHz = 4kHz.
 	// Configure channel 1 in PWM mode 1.
 	TIM8 -> CCMR1 &= 0xFFFFFF00; // Reset bits 0-7 and output mode (CC1S='00').

@@ -7,6 +7,7 @@
 
 #include "zpt.h"
 
+#include "adc.h"
 #include "gpio.h"
 #include "lsmcu.h"
 #include "lssgiu.h"
@@ -44,20 +45,12 @@ static ZPT_context_t zpt_ctx;
  */
 void ZPT_init(void) {
 	// Init GPIOs.
-	SW4_init(&zpt_ctx.sw4, &GPIO_ZPT, 500);
+	SW4_init(&zpt_ctx.sw4, &GPIO_ZPT, 500, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_ZPT]));
 	zpt_ctx.state = ZPT_STATE_0;
 	GPIO_configure(&GPIO_VLG, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_write(&GPIO_VLG, 1);
 	// Init global context.
 	lsmcu_ctx.zpt_raised = 0;
-}
-
-/* UPDATE THE VOLTAGE READ ON ZPT SELECTOR (CALLED BY ADC ROUTINE).
- * @param new_voltage:	New voltage measured.
- * @return:				None.
- */
-void ZPT_set_voltage_mv(uint32_t zpt_voltage_mv) {
-	SW4_set_voltage_mv(&zpt_ctx.sw4, zpt_voltage_mv);
 }
 
 /* MAIN ROUTINE OF ZPT MODULE.

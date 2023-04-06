@@ -13,7 +13,6 @@
 /*** MPINV functions ***/
 
 void MPINV_init(void);
-void MPINV_set_voltage_mv(uint32_t mpinv_voltage_mv);
 void MPINV_task(void);
 
 #endif /* __MPINV_H__ */

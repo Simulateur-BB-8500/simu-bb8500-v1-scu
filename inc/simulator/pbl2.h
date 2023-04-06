@@ -13,7 +13,6 @@
 /*** PBL2 functions ***/
 
 void PBL2_init(void);
-void PBL2_set_voltage_mv(uint32_t pbl2_voltage_mv);
 void PBL2_task(void);
 
-#endif /* APPLICATIVE___PBL2_H___ */
+#endif /* __PBL2_H__ */

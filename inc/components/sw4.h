@@ -34,7 +34,8 @@ typedef enum {
 } SW4_internal_state_t;
 
 typedef struct {
-	uint32_t voltage; // Current voltage measured by ADC.
+	uint32_t* adc_data_ptr; // Pointer to the 12-bits ADC data.
+	uint32_t voltage_mv; // Voltage in mV.
 	SW4_internal_state_t internal_state; // Current state in SW4 state machine.
 	SW4_state_t state; // State after anti-bouncing (used in higher levels).
 	uint32_t debouncing_ms; // Delay before validating states (in ms).
@@ -43,8 +44,7 @@ typedef struct {
 
 /*** SW4 functions ***/
 
-void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms);
-void SW4_set_voltage_mv(SW4_context_t* sw4, uint32_t voltage_mv);
+void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr);
 void SW4_update_state(SW4_context_t* sw4);
 
 #endif /* __SW4_H__ */

@@ -13,7 +13,6 @@
 /*** FPB functions ***/
 
 void FPB_init(void);
-void FPB_set_voltage_mv(uint32_t fpb_voltage_mv);
 void FPB_task(void);
 
 #endif /* __FPB_H__ */

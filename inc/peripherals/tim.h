@@ -12,6 +12,9 @@
 
 /*** TIM functions ***/
 
+// ADC trigger.
+void TIM1_init(uint32_t period_ms);
+
 // Milliseconds count.
 void TIM2_init(void);
 uint32_t TIM2_get_milliseconds(void);

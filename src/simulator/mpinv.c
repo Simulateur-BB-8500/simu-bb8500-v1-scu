@@ -7,7 +7,9 @@
 
 #include "mpinv.h"
 
+#include "adc.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "lssgiu.h"
 #include "mapping.h"
 #include "sw3.h"
@@ -19,6 +21,10 @@ typedef struct {
 	SW3_context_t sw3;
 	SW3_state_t previous_state;
 } MPINV_context_t;
+
+/*** MPINV external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** MPINV local global variables ***/
 
@@ -32,16 +38,8 @@ static MPINV_context_t mpinv_ctx;
  */
 void MPINV_init(void) {
 	// Init GPIO.
-	SW3_init(&mpinv_ctx.sw3, &GPIO_MPINV, 100);
+	SW3_init(&mpinv_ctx.sw3, &GPIO_MPINV, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_MPINV]));
 	mpinv_ctx.previous_state = SW3_NEUTRAL;
-}
-
-/* UPDATE THE VOLTAGE READ ON MPINV SELECTOR (CALLED BY ADC ROUTINE).
- * @param new_voltage:	New voltage measured.
- * @return:				None.
- */
-void MPINV_set_voltage_mv(uint32_t mpinv_voltage_mv) {
-	SW3_set_voltage_mv(&mpinv_ctx.sw3, mpinv_voltage_mv);
 }
 
 /* MAIN ROUTINE OF MPINV MODULE.

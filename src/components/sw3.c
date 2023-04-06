@@ -28,7 +28,7 @@
  */
 static uint8_t _SW3_voltage_is_neutral(SW3_context_t* sw3) {
 	uint8_t result = 0;
-	if (((sw3 -> voltage) > SW3_BACK_THRESHOLD_HIGH) && ((sw3 -> voltage) < SW3_FRONT_THRESHOLD_LOW)) {
+	if (((sw3 -> voltage_mv) > SW3_BACK_THRESHOLD_HIGH) && ((sw3 -> voltage_mv) < SW3_FRONT_THRESHOLD_LOW)) {
 		result = 1;
 	}
 	return result;
@@ -40,7 +40,7 @@ static uint8_t _SW3_voltage_is_neutral(SW3_context_t* sw3) {
  */
 static uint8_t _SW3_voltage_is_back(SW3_context_t* sw3) {
 	uint8_t result = 0;
-	if ((sw3 -> voltage) < SW3_BACK_THRESHOLD_LOW) {
+	if ((sw3 -> voltage_mv) < SW3_BACK_THRESHOLD_LOW) {
 		result = 1;
 	}
 	return result;
@@ -52,7 +52,7 @@ static uint8_t _SW3_voltage_is_back(SW3_context_t* sw3) {
  */
 static uint8_t _SW3_voltage_is_front(SW3_context_t* sw3) {
 	uint8_t result = 0;
-	if ((sw3 -> voltage) > SW3_FRONT_THRESHOLD_HIGH) {
+	if ((sw3 -> voltage_mv) > SW3_FRONT_THRESHOLD_HIGH) {
 		result = 1;
 	}
 	return result;
@@ -64,25 +64,19 @@ static uint8_t _SW3_voltage_is_front(SW3_context_t* sw3) {
  * @param sw3:				Switch structure to initialize.
  * @param gpio:				GPIO attached to the switch.
  * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
+ * @param adc_data_ptr:		Pointer to the 12-bits ADC data.
  * @return:					None.
  */
-void SW3_init(SW3_context_t* sw3, const GPIO* gpio, uint32_t debouncing_ms) {
+void SW3_init(SW3_context_t* sw3, const GPIO* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
-	(sw3 -> voltage) = (ADC_VCC_DEFAULT_MV / 2); // Neutral = Vcc/2.
+	(sw3 -> adc_data_ptr) = adc_data_ptr;
+	(sw3 -> voltage_mv) = (ADC_VCC_DEFAULT_MV / 2); // Neutral = Vcc/2.
 	(sw3 -> internal_state) = SW3_STATE_NEUTRAL;
 	(sw3 -> state) = SW3_NEUTRAL;
 	(sw3 -> debouncing_ms) = debouncing_ms;
 	(sw3 -> confirm_start_time) = 0;
-}
-
-/* SET THE CURRENT VOLTAGE OF A SW3.
- * @param sw3:			The switch to set.
- * @param newVoltage:	New voltage measured by ADC.
- */
-void SW3_set_voltage_mv(SW3_context_t* sw3, uint32_t voltage_mv) {
-	(sw3 -> voltage) = voltage_mv;
 }
 
 /* UPDATE THE STATE OF AN SW3 STRUCTURE PERFORMING HYSTERESIS AND CONFIRMATION.
@@ -90,6 +84,9 @@ void SW3_set_voltage_mv(SW3_context_t* sw3, uint32_t voltage_mv) {
  * @return:		None.
  */
 void SW3_update_state(SW3_context_t* sw3) {
+	// Update voltage.
+	(sw3 -> voltage_mv) = ADC1_convert_to_mv(*(sw3 -> adc_data_ptr));
+	// Perform debouncing state machine.
 	switch((sw3 -> internal_state)) {
 	case SW3_STATE_CONFIRM_NEUTRAL:
 		// Check previous state.

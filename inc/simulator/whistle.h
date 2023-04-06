@@ -11,7 +11,6 @@
 #include "stdint.h"
 
 void WHISTLE_init(void);
-void WHISTLE_set_voltage_mv(uint32_t whistle_voltage_mv);
 void WHISTLE_task(void);
 
 #endif /* __WHISTLE_H__ */

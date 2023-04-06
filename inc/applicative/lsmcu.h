@@ -8,6 +8,7 @@
 #ifndef LSMCU_H
 #define LSMCU_H
 
+#include "adc.h"
 #include "manometer.h"
 #include "stdint.h"
 
@@ -27,6 +28,7 @@ typedef struct {
 	uint8_t series_traction;
 	uint8_t pbl2_on;
 	uint8_t urgency;
+	volatile uint32_t adc_data[ADC_DATA_INDEX_LAST];
 	MANOMETER_context_t* manometer_cp;
 	MANOMETER_context_t* manometer_re;
 	MANOMETER_context_t* manometer_cg;
