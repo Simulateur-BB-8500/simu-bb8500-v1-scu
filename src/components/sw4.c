@@ -9,11 +9,13 @@
 
 #include "adc.h"
 #include "gpio.h"
+#include "lsmcu.h"
 #include "tim.h"
 #include "stdint.h"
 
 /*** SW4 local macros ***/
 
+#define SW4_DEFAULT_VOLTAGE_MV		0 // P0 = 0V.
 #define SW4_DELTA_HYSTERESIS_MV		100 // Set the voltage difference (in mV) between low and high thresholds.
 #define SW4_P0P1_THRESHOLD_LOW 		((ADC_VCC_DEFAULT_MV / 6) - (SW4_DELTA_HYSTERESIS_MV / 2))
 #define SW4_P0P1_THRESHOLD_HIGH 	((ADC_VCC_DEFAULT_MV / 6) + (SW4_DELTA_HYSTERESIS_MV / 2))
@@ -21,6 +23,10 @@
 #define SW4_P1P2_THRESHOLD_HIGH 	(((3 * ADC_VCC_DEFAULT_MV) / 6) + (SW4_DELTA_HYSTERESIS_MV / 2))
 #define SW4_P2P3_THRESHOLD_LOW 		(((5 * ADC_VCC_DEFAULT_MV) / 6) - (SW4_DELTA_HYSTERESIS_MV / 2))
 #define SW4_P2P3_THRESHOLD_HIGH 	(((5 * ADC_VCC_DEFAULT_MV) / 6) + (SW4_DELTA_HYSTERESIS_MV / 2))
+
+/*** SW4 external global variables ***/
+
+extern LSMCU_Context lsmcu_ctx;
 
 /*** SW4 local functions ***/
 
@@ -86,7 +92,7 @@ void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms, uint
 	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.
 	(sw4 -> adc_data_ptr) = adc_data_ptr;
-	(sw4 -> voltage_mv) = 0; // P0 = 0V.
+	(sw4 -> voltage_mv) = SW4_DEFAULT_VOLTAGE_MV;
 	(sw4 -> internal_state) = SW4_STATE_P0;
 	(sw4 -> state) = SW4_P0;
 	(sw4 -> debouncing_ms) = debouncing_ms;
@@ -98,8 +104,8 @@ void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms, uint
  * @return:		None.
  */
 void SW4_update_state(SW4_context_t* sw4) {
-	// Update voltage.
-	(sw4 -> voltage_mv) = ADC1_convert_to_mv(*(sw4 -> adc_data_ptr));
+	// Update voltage (only if ZBA is closed).
+	(sw4 -> voltage_mv) = (lsmcu_ctx.zba_closed != 0) ? ADC1_convert_to_mv(*(sw4 -> adc_data_ptr)) : SW4_DEFAULT_VOLTAGE_MV;
 	// Perform debouncing state machine.
 	switch((sw4 -> internal_state)) {
 	case SW4_STATE_CONFIRM_P0:

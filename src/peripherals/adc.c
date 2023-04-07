@@ -58,8 +58,8 @@ void ADC1_init(void) {
 	ADC1 -> SQR3 |= (ADC_CHANNEL_PBL2 << 5);
 	ADC1 -> SQR3 |= (ADC_CHANNEL_FPB << 10);
 	ADC1 -> SQR3 |= (ADC_CHANNEL_AM << 15);
-	ADC1 -> SQR3 |= (ADC_CHANNEL_FD << 10);
-	ADC1 -> SQR3 |= (ADC_CHANNEL_MPINV << 15);
+	ADC1 -> SQR3 |= (ADC_CHANNEL_FD << 20);
+	ADC1 -> SQR3 |= (ADC_CHANNEL_MPINV << 25);
 	ADC1 -> SQR2 |= (ADC_CHANNEL_S << 0);
 	ADC1 -> SQR2 |= (ADC_CHANNEL_ZLFR << 5);
 	// Configure peripheral.

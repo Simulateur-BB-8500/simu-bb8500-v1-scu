@@ -41,8 +41,8 @@
 #define KVB_G_000					((uint8_t*) "   000")
 #define KVB_Y_000					((uint8_t*) "000   ")
 // Initialization screens duration.
-#define KVB_PA400_DURATION_MS		2000
-#define KVB_PA400_OFF_DURATION_MS	2000
+#define KVB_PA400_DURATION_MS		2200
+#define KVB_PA400_OFF_DURATION_MS	2200
 #define KVB_UC512_DURATION_MS		2000
 #define KVB_888888_DURATION_MS		3000
 // Security parameters.
@@ -289,8 +289,19 @@ static void _KVB_display_off(void) {
  * @return:	None.
  */
 static void _KVB_lights_off(void) {
+	// Turn all GPIOs off.
+	TIM8_stop();
+	GPIO_write(&GPIO_KVB_LMV, 0);
+	GPIO_write(&GPIO_KVB_LFC, 0);
+	GPIO_write(&GPIO_KVB_LV, 0);
+	GPIO_write(&GPIO_KVB_LFU, 0);
+	GPIO_write(&GPIO_KVB_LPE, 0);
+	GPIO_write(&GPIO_KVB_LPS, 0);
+	GPIO_write(&GPIO_KVB_LSSF, 0);
+	// Update flags.
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lssf_blink_enable = 0;
+
 }
 
 /*** KVB functions ***/
@@ -304,7 +315,7 @@ void KVB_init(void) {
 	uint32_t idx = 0;
 	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	// Init lights (exceptv LVAL configured in TIM8 driver).
+	// Init lights (except LVAL configured in TIM8 driver).
 	GPIO_configure(&GPIO_KVB_LMV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_configure(&GPIO_KVB_LFC, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_configure(&GPIO_KVB_LV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
@@ -377,6 +388,7 @@ void KVB_task(void) {
 		// Wait PA400 display duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_PA400_DURATION_MS)) {
 			_KVB_display_off();
+			GPIO_write(&GPIO_KVB_LPS, 1);
 			kvb_ctx.state = KVB_STATE_PA400_OFF;
 			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
@@ -385,6 +397,7 @@ void KVB_task(void) {
 		// Wait transition duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_PA400_OFF_DURATION_MS)) {
 			_KVB_display(KVB_YG_UC512);
+			GPIO_write(&GPIO_KVB_LPS, 0);
 			kvb_ctx.state = KVB_STATE_UC512;
 			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
@@ -393,6 +406,8 @@ void KVB_task(void) {
 		// Wait for UC512 display duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_UC512_DURATION_MS)) {
 			_KVB_display(KVB_YG_888);
+			GPIO_write(&GPIO_KVB_LMV, 1);
+			GPIO_write(&GPIO_KVB_LFC, 1);
 			TIM8_start();
 			kvb_ctx.lval_blink_enable = 1;
 			kvb_ctx.state = KVB_STATE_888888;
@@ -403,6 +418,8 @@ void KVB_task(void) {
 		// Wait for 888888 display duration.
 		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_888888_DURATION_MS)) {
 			_KVB_display_off();
+			GPIO_write(&GPIO_KVB_LMV, 0);
+			GPIO_write(&GPIO_KVB_LFC, 0);
 			kvb_ctx.state = KVB_STATE_WAIT_VALIDATION;
 			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
 		}
@@ -440,8 +457,6 @@ void KVB_task(void) {
 	if (lsmcu_ctx.bl_unlocked == 0) {
 		_KVB_display_off();
 		_KVB_lights_off();
-		GPIO_write(&GPIO_KVB_LSSF, 0);
-		TIM8_stop();
 		kvb_ctx.state = KVB_STATE_OFF;
 	}
 	// Manage LVAL and LSSF blinking.
