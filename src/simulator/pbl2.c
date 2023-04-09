@@ -10,7 +10,7 @@
 #include "adc.h"
 #include "gpio.h"
 #include "lsmcu.h"
-#include "lssgiu.h"
+#include "lsagiu.h"
 #include "mapping.h"
 #include "sw4.h"
 #include "stdint.h"
@@ -59,7 +59,7 @@ void PBL2_task(void) {
 		// Retrait.
 		if (lsmcu_ctx.pbl2_on != 0) {
 			// Send command on change.
-			LSSGIU_Send(LSMCU_OUT_FPB_OFF);
+			LSAGIU_Send(LSMCU_OUT_FPB_OFF);
 			// Empty CG and RE.
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);
@@ -74,7 +74,7 @@ void PBL2_task(void) {
 		// Service.
 		if ((lsmcu_ctx.pbl2_on == 0) && (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > PBL2_MIN_CP_PRESSURE_MBAR)) {
 			// Send command on change.
-			LSSGIU_Send(LSMCU_OUT_FPB_ON);
+			LSAGIU_Send(LSMCU_OUT_FPB_ON);
 			// Start CG and RE manometers.
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_MBAR, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, PBL2_ON_RE_PRESSURE_MBAR, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);

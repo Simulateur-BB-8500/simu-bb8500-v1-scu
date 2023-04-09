@@ -1,5 +1,5 @@
 /*
- * lsmcu_hw1-1.ld
+ * ls-mcu_hw1-0.ld
  *
  *  Created on: 5 sep. 2017
  *      Author: ARM

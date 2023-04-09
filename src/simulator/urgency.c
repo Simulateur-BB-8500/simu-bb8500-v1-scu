@@ -9,7 +9,7 @@
 
 #include "gpio.h"
 #include "lsmcu.h"
-#include "lssgiu.h"
+#include "lsagiu.h"
 #include "manometer.h"
 #include "mapping.h"
 #include "sw2.h"
@@ -71,7 +71,7 @@ void URGENCY_task(void) {
 		// Open DJ.
 		lsmcu_ctx.dj_locked = 0;
 		// Send sound command.
-		LSSGIU_Send(LSMCU_OUT_URGENCY);
+		LSAGIU_Send(LSMCU_OUT_URGENCY);
 	}
 	// Release urgency state only when train is stopped.
 	if ((urgency_ctx.bpurg.state == SW2_OFF) && (lsmcu_ctx.speed_kmh == 0)) {

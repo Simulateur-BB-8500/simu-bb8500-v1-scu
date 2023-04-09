@@ -10,7 +10,7 @@
 #include "adc.h"
 #include "gpio.h"
 #include "lsmcu.h"
-#include "lssgiu.h"
+#include "lsagiu.h"
 #include "manometer.h"
 #include "mapping.h"
 #include "sw3.h"
@@ -63,7 +63,7 @@ void FD_task(void) {
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0, FD_CF1_SPEED_MBAR_PER_SECOND);
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0, FD_CF2_SPEED_MBAR_PER_SECOND);
 			// Send command.
-			LSSGIU_Send(LSMCU_OUT_FD_RELEASE);
+			LSAGIU_Send(LSMCU_OUT_FD_RELEASE);
 		}
 		break;
 	case SW3_NEUTRAL:
@@ -72,7 +72,7 @@ void FD_task(void) {
 			MANOMETER_needle_stop(lsmcu_ctx.manometer_cf1);
 			MANOMETER_needle_stop(lsmcu_ctx.manometer_cf2);
 			// Neutral.
-			LSSGIU_Send(LSMCU_OUT_FD_NEUTRAL);
+			LSAGIU_Send(LSMCU_OUT_FD_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
@@ -81,7 +81,7 @@ void FD_task(void) {
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar), FD_CF1_SPEED_MBAR_PER_SECOND);
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar), FD_CF2_SPEED_MBAR_PER_SECOND);
 			// Forward.
-			LSSGIU_Send(LSMCU_OUT_FD_APPLY);
+			LSAGIU_Send(LSMCU_OUT_FD_APPLY);
 		}
 		break;
 	default:

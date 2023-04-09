@@ -1,5 +1,5 @@
 /*
- * lsmcu_startup.c
+ * ls-mcu_startup.c
  *
  *  Created on: 5 sep. 2017
  *      Author: ARM

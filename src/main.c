@@ -40,7 +40,7 @@
 #include "stdint.h"
 // Applicative.
 #include "lsmcu.h"
-#include "lssgiu.h"
+#include "lsagiu.h"
 #include "mode.h"
 #include "string.h"
 
@@ -77,7 +77,7 @@ int main(void) {
 	DAC_init();
 	// Communication interface.
 	USART1_init();
-	LSSGIU_Init();
+	LSAGIU_Init();
 	// Simulator modules.
 	BELL_init();
 	BL_init();
@@ -102,7 +102,7 @@ int main(void) {
 	// Main loop.
 	while (1) {
 		// Communication tasks.
-		LSSGIU_Task();
+		LSAGIU_Task();
 		// Simulator tasks.
 		BELL_task();
 		BL_task();

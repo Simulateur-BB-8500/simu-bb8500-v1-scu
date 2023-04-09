@@ -8,7 +8,7 @@
 #include "usart.h"
 
 #include "gpio.h"
-#include "lssgiu.h"
+#include "lsagiu.h"
 #include "mapping.h"
 #include "nvic.h"
 #include "rcc.h"
@@ -32,7 +32,7 @@ void __attribute__((optimize("-O0"))) USART1_IRQHandler(void) {
 	if (((USART1 -> ISR) & (0b1 << 5)) != 0) { // RXNE='1'.
 		// Get and store new byte into RX buffer.
 		uint8_t rx_byte = (USART1 -> RDR);
-		LSSGIU_FillRxBuffer(rx_byte);
+		LSAGIU_FillRxBuffer(rx_byte);
 		// Clear flag.
 		USART1 -> RQR |= (0b1 << 3);
 	}

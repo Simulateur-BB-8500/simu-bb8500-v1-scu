@@ -1,17 +1,17 @@
 /*
- * lssgiu.h
+ * lsagiu.h
  *
  *  Created on: 1 oct. 2017
  *      Author: Ludo
  */
 
-#ifndef LSSGIU_H
-#define LSSGIU_H
+#ifndef LSAGIU_H
+#define LSAGIU_H
 
 #include "tch.h"
 #include "stdint.h"
 
-/*** LSSGIU structures ***/
+/*** LSAGIU structures ***/
 
 typedef enum {
 	LSMCU_OUT_ZBA_ON = 0,
@@ -70,7 +70,7 @@ typedef enum {
 	LSMCU_OUT_ZLFRD_OFF,
 	LSMCU_OUT_URGENCY,
 	LSMCU_OUT_NOP = 0xFF
-} LSMCU_To_LSSGIU;
+} LSMCU_To_LSAGIU;
 
 typedef enum {
 	// First range is reserved for coding current speed in km/h.
@@ -81,13 +81,13 @@ typedef enum {
 	LSMCU_SPEED_LIMIT_LAST = (TCH_SPEED_MAX_KMH + 1 + (TCH_SPEED_MAX_KMH / 10)),
 	// NOP.
 	LSMCU_IN_NOP = 0xFF
-} LSSGIU_To_LSMCU;
+} LSAGIU_To_LSMCU;
 
-/*** LSSGIU functions ***/
+/*** LSAGIU functions ***/
 
-void LSSGIU_Init(void);
-void LSSGIU_FillRxBuffer(uint8_t ls_cmd);
-void LSSGIU_Send(uint8_t ls_cmd);
-void LSSGIU_Task(void);
+void LSAGIU_Init(void);
+void LSAGIU_FillRxBuffer(uint8_t ls_cmd);
+void LSAGIU_Send(uint8_t ls_cmd);
+void LSAGIU_Task(void);
 
-#endif /* LSSGIU_H */
+#endif /* LSAGIU_H */
