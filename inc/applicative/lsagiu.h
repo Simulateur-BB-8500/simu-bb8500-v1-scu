@@ -11,6 +11,10 @@
 #include "tch.h"
 #include "stdint.h"
 
+/*** LSAGIU macros ***/
+
+#define LSAGIU_SPEED_LIMIT_FACTOR	10
+
 /*** LSAGIU structures ***/
 
 typedef enum {
@@ -73,12 +77,12 @@ typedef enum {
 } LSMCU_To_LSAGIU;
 
 typedef enum {
-	// First range is reserved for coding current speed in km/h.
+	// First range is reserved for coding speed in km/h.
 	LSMCU_TCH_SPEED_OFFSET = 0,
-	LSMCU_TCH_SPEED_LAST = TCH_SPEED_MAX_KMH,
+	LSMCU_TCH_SPEED_LAST = (LSMCU_TCH_SPEED_OFFSET + TCH_SPEED_MAX_KMH),
 	// Second range is reserved for coding speed limit in tens of km/h.
-	LSMCU_SPEED_LIMIT_OFFSET = (TCH_SPEED_MAX_KMH + 1),
-	LSMCU_SPEED_LIMIT_LAST = (TCH_SPEED_MAX_KMH + 1 + (TCH_SPEED_MAX_KMH / 10)),
+	LSMCU_SPEED_LIMIT_OFFSET = (LSMCU_TCH_SPEED_LAST + 1),
+	LSMCU_SPEED_LIMIT_LAST = (LSMCU_SPEED_LIMIT_OFFSET + 1 + (TCH_SPEED_MAX_KMH / LSAGIU_SPEED_LIMIT_FACTOR)),
 	// NOP.
 	LSMCU_IN_NOP = 0xFF
 } LSAGIU_To_LSMCU;

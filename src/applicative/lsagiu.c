@@ -54,13 +54,10 @@ static void _LSAGIU_decode(void) {
 	}
 	else if (ls_cmd <= LSMCU_SPEED_LIMIT_LAST) {
 		// Store speed limit in global context.
-		lsmcu_ctx.speed_limit_kmh = 10 * (ls_cmd - LSMCU_SPEED_LIMIT_OFFSET);
+		lsmcu_ctx.speed_limit_kmh = LSAGIU_SPEED_LIMIT_FACTOR * (ls_cmd - LSMCU_SPEED_LIMIT_OFFSET);
 	}
 	// Increment read index and manage roll-over.
-	lsagiu_ctx.rx_read_idx++;
-	if (lsagiu_ctx.rx_read_idx >= LSAGIU_RX_BUFFER_SIZE) {
-		lsagiu_ctx.rx_read_idx = 0;
-	}
+	lsagiu_ctx.rx_read_idx = ((lsagiu_ctx.rx_read_idx + 1) % LSAGIU_RX_BUFFER_SIZE);
 }
 
 /*** LSAGIU functions ***/
@@ -84,12 +81,10 @@ void LSAGIU_Init(void) {
  * @return:			None.
  */
 void LSAGIU_FillRxBuffer(uint8_t ls_cmd) {
+	// Store command.
 	lsagiu_ctx.rx_buf[lsagiu_ctx.rx_write_idx] = ls_cmd;
-	lsagiu_ctx.rx_write_idx++;
-	// Roll-over management.
-	if (lsagiu_ctx.rx_write_idx >= LSAGIU_RX_BUFFER_SIZE) {
-		lsagiu_ctx.rx_write_idx = 0;
-	}
+	// Increment read index and manage roll-over.
+	lsagiu_ctx.rx_write_idx = ((lsagiu_ctx.rx_write_idx + 1) % LSAGIU_RX_BUFFER_SIZE);
 }
 
 /* SEND AN LSAGIU COMMAND TO SGKCU.
