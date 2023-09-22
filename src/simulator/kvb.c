@@ -20,9 +20,9 @@
 #define KVB_NUMBER_OF_SEGMENTS 		7 		// 7 segments.
 #define KVB_NUMBER_OF_DISPLAYS 		6 		// KVB has 6 displays (3 yellow and 3 green).
 // LVAL.
-#define KVB_LVAL_BLINK_PERIOD_MS	900		// Period of LVAL blinking (in ms).
+#define KVB_LVAL_BLINK_PERIOD_MS	900		// Period of LVAL blinking.
 // LSSF.
-#define KVB_LSSF_BLINK_PERIOD_MS	333		// Period of LSSF blinking (in ms).
+#define KVB_LSSF_BLINK_PERIOD_MS	333		// Period of LSSF blinking.
 // GPIO bits mask.
 #define KVB_GPIO_MASK				0xFFFFC080
 // Display messages.
@@ -58,7 +58,7 @@ typedef enum {
 	KVB_STATE_888888,
 	KVB_STATE_WAIT_VALIDATION,
 	KVB_STATE_IDLE,
-	KVB_STATE_URGENCY
+	KVB_STATE_EMERGENCY
 } KVB_State;
 
 // KVB context.
@@ -240,7 +240,7 @@ static void _KVB_blink_lssf(void) {
  * @param display:	String to display (cut if too long, padded with null character if too short).
  * @return:			None.
  */
-void _KVB_display(uint8_t* display) {
+static void _KVB_display(uint8_t* display) {
 	// Local variables.
 	uint8_t idx = 0;
 	// Copy message into ascii_buf.
@@ -443,12 +443,12 @@ void KVB_task(void) {
 	case KVB_STATE_IDLE:
 		// Speed check.
 		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_LIMIT_MARGIN_KMH)) {
-			// Trigger urgency brake.
-			lsmcu_ctx.urgency = 1;
-			kvb_ctx.state = KVB_STATE_URGENCY;
+			// Trigger emergency brake.
+			lsmcu_ctx.emergency = 1;
+			kvb_ctx.state = KVB_STATE_EMERGENCY;
 		}
 		break;
-	case KVB_STATE_URGENCY:
+	case KVB_STATE_EMERGENCY:
 		break;
 	default:
 		break;

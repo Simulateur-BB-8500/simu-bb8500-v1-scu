@@ -19,6 +19,7 @@
 #include "bl.h"
 #include "bpgd.h"
 #include "compressor.h"
+#include "emergency.h"
 #include "fpb.h"
 #include "fd.h"
 #include "kvb.h"
@@ -29,7 +30,6 @@
 #include "pbl2.h"
 #include "pictograms.h"
 #include "tch.h"
-#include "urgency.h"
 #include "vacma.h"
 #include "whistle.h"
 #include "zba.h"
@@ -83,6 +83,7 @@ int main(void) {
 	BL_init();
 	BPGD_init();
 	COMPRESSOR_init();
+	EMERGENCY_init();
 	FD_init();
 	FPB_init();
 	KVB_init();
@@ -92,7 +93,6 @@ int main(void) {
 	PICTOGRAMS_init();
 	PBL2_init();
 	TCH_init();
-	URGENCY_init();
 	VACMA_init();
 	WHISTLE_init();
 	ZBA_init();
@@ -108,6 +108,7 @@ int main(void) {
 		BL_task();
 		BPGD_task();
 		COMPRESSOR_task();
+		EMERGENCY_task();
 		FD_task();
 		FPB_task();
 		KVB_task();
@@ -117,19 +118,11 @@ int main(void) {
 		PBL2_task();
 		PICTOGRAMS_task();
 		TCH_task();
-		URGENCY_task();
 		VACMA_task();
 		WHISTLE_task();
 		ZBA_task();
 		ZPT_task();
 		ZSUR_task();
-#ifdef DEBUG
-		// Print manometers pressure.
-		if (TIM2_get_milliseconds() > (print_timestamp + 1000)) {
-			MANOMETER_print_data();
-			print_timestamp = TIM2_get_milliseconds();
-		}
-#endif
 	}
 	return 0;
 }

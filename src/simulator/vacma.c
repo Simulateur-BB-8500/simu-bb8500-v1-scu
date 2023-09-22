@@ -28,7 +28,7 @@ typedef enum {
 	VACMA_STATE_HOLD_ALARM,
 	VACMA_STATE_RELEASED,
 	VACMA_STATE_RELEASED_ALARM,
-	VACMA_STATE_URGENCY
+	VACMA_STATE_EMERGENCY
 } VACMA_State;
 
 typedef struct {
@@ -121,11 +121,11 @@ void VACMA_task(void) {
 		}
 		else {
 			if (TIM2_get_milliseconds() > (vacma_ctx.switch_state_time + VACMA_ALARM_DURATION_MS)) {
-				// Trigger urgency brake.
+				// Trigger emergency brake.
 				GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
 				GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
-				lsmcu_ctx.urgency = 1;
-				vacma_ctx.state = VACMA_STATE_URGENCY;
+				lsmcu_ctx.emergency = 1;
+				vacma_ctx.state = VACMA_STATE_EMERGENCY;
 			}
 			else {
 				if (vacma_ctx.mp_va.state == SW2_OFF) {
@@ -168,11 +168,11 @@ void VACMA_task(void) {
 		}
 		else {
 			if (TIM2_get_milliseconds() > (vacma_ctx.switch_state_time + VACMA_ALARM_DURATION_MS)) {
-				// Trigger urgency brake.
+				// Trigger emergency brake.
 				GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
 				GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
-				lsmcu_ctx.urgency = 1;
-				vacma_ctx.state = VACMA_STATE_URGENCY;
+				lsmcu_ctx.emergency = 1;
+				vacma_ctx.state = VACMA_STATE_EMERGENCY;
 			}
 			else {
 				if (vacma_ctx.mp_va.state == SW2_ON) {
@@ -184,9 +184,9 @@ void VACMA_task(void) {
 			}
 		}
 		break;
-	case VACMA_STATE_URGENCY:
-		// Stay in this state while urgency flag is set.
-		if (lsmcu_ctx.urgency == 0) {
+	case VACMA_STATE_EMERGENCY:
+		// Stay in this state while emergency flag is set.
+		if (lsmcu_ctx.emergency == 0) {
 			vacma_ctx.state = VACMA_STATE_OFF;
 		}
 		break;

@@ -27,7 +27,7 @@ typedef struct {
 	uint8_t lsrh_blink_request;
 	uint8_t series_traction;
 	uint8_t pbl2_on;
-	uint8_t urgency;
+	uint8_t emergency;
 	volatile uint32_t adc_data[ADC_DATA_INDEX_LAST];
 	MANOMETER_context_t* manometer_cp;
 	MANOMETER_context_t* manometer_re;

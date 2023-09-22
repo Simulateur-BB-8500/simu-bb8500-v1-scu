@@ -59,11 +59,15 @@ void FD_task(void) {
 	switch (fd_ctx.sw3.state) {
 	case SW3_BACK:
 		if (fd_ctx.previous_state != SW3_BACK) {
-			// Update CF1/CF2 manometers.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0, FD_CF1_SPEED_MBAR_PER_SECOND);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0, FD_CF2_SPEED_MBAR_PER_SECOND);
-			// Send command.
-			LSAGIU_Send(LSMCU_OUT_FD_RELEASE);
+			// Check current pressure.
+			if ((MANOMETER_get_pressure(lsmcu_ctx.manometer_cf1) > 0) ||
+				(MANOMETER_get_pressure(lsmcu_ctx.manometer_cf2) > 0)) {
+				// Update CF1/CF2 manometers.
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0, FD_CF1_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0, FD_CF2_SPEED_MBAR_PER_SECOND);
+				// Send command.
+				LSAGIU_Send(LSMCU_OUT_FD_RELEASE);
+			}
 		}
 		break;
 	case SW3_NEUTRAL:
@@ -77,11 +81,15 @@ void FD_task(void) {
 		break;
 	case SW3_FRONT:
 		if (fd_ctx.previous_state != SW3_FRONT) {
-			// Update CF1/CF2 manometers.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar), FD_CF1_SPEED_MBAR_PER_SECOND);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar), FD_CF2_SPEED_MBAR_PER_SECOND);
-			// Forward.
-			LSAGIU_Send(LSMCU_OUT_FD_APPLY);
+			// Check current pressure.
+			if ((MANOMETER_get_pressure(lsmcu_ctx.manometer_cf1) < ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar)) ||
+				(MANOMETER_get_pressure(lsmcu_ctx.manometer_cf2) < ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar))) {
+				// Update CF1/CF2 manometers.
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar), FD_CF1_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar), FD_CF2_SPEED_MBAR_PER_SECOND);
+				// Forward.
+				LSAGIU_Send(LSMCU_OUT_FD_APPLY);
+			}
 		}
 		break;
 	default:
