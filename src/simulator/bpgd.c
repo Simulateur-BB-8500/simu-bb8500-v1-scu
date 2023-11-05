@@ -45,7 +45,7 @@ static BPGD_Context bpgd_ctx;
 
 /* INIT BPGD MODULE.
  * @param:	None.
- * @eturn:	None.
+ * @return:	None.
  */
 void BPGD_init(void) {
 	// Init GPIO.

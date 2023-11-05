@@ -1,7 +1,7 @@
 /*
  * rcc.c
  *
- *  Created on: 9 sept. 2017
+ *  Created on: 9 sep. 2017
  *      Author: Ludo
  */
 

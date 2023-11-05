@@ -22,6 +22,8 @@ typedef struct {
 	const GPIO* gpio_command_2;
 	const GPIO* gpio_stop_detection;
 	volatile uint32_t step;
+	volatile uint32_t step_zero_offset;
+	volatile uint8_t stop_detect_flag;
 } STEP_MOTOR_context_t;
 
 /*** STEP_MOTOR functions ***/

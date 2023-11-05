@@ -17,7 +17,7 @@
 /*** ZSUR local macros ***/
 
 #define ZSUR_CG_SPEED_MBAR_PER_SECOND		1000
-#define LSUR_CG_PRESSURE_THRESHOLD_MBAR		5000
+#define LSUR_CG_PRESSURE_THRESHOLD_MBAR		5300
 
 /*** ZSUR local structures ***/
 
@@ -58,6 +58,7 @@ void ZSUR_task(void) {
 		// Send command on change.
 		if (zsur_ctx.previous_state != SW2_ON) {
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, ((lsmcu_ctx.manometer_cg) -> pressure_limit_mbar), ZSUR_CG_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, ((lsmcu_ctx.manometer_re) -> pressure_limit_mbar), ZSUR_CG_SPEED_MBAR_PER_SECOND);
 		}
 	}
 	// Update previous state.

@@ -76,7 +76,7 @@ void ZPT_task(void) {
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			case SW4_P2:
-				// Rise both pantographs.
+				// Rise both pantograph.
 				LSAGIU_Send(LSMCU_OUT_ZPT_REAR_UP);
 				LSAGIU_Send(LSMCU_OUT_ZPT_FRONT_UP);
 				zpt_ctx.state = ZPT_STATE_ARAV;
@@ -137,7 +137,7 @@ void ZPT_task(void) {
 		if (lsmcu_ctx.bl_unlocked != 0) {
 			switch (zpt_ctx.sw4.state) {
 			case SW4_P0:
-				// Lower both pantographs.
+				// Lower both pantograph.
 				LSAGIU_Send(LSMCU_OUT_ZPT_REAR_DOWN);
 				LSAGIU_Send(LSMCU_OUT_ZPT_FRONT_DOWN);
 				zpt_ctx.state = ZPT_STATE_0;

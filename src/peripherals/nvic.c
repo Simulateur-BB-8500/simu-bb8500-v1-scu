@@ -1,7 +1,7 @@
 /*
  * nvic.c
  *
- *  Created on: 16 sept. 2017
+ *  Created on: 16 sep. 2017
  *      Author: Ludo
  */
 

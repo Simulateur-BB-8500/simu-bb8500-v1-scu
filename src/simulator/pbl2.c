@@ -17,8 +17,6 @@
 
 /*** PBL2 local macros ***/
 
-#define PBL2_MIN_CP_PRESSURE_MBAR			5000
-
 #define PBL2_ON_CG_PRESSURE_MBAR			3500
 #define PBL2_ON_CG_SPEED_MBAR_PER_SECOND	1000
 
@@ -72,7 +70,9 @@ void PBL2_task(void) {
 		break;
 	case SW4_P2:
 		// Service.
-		if ((lsmcu_ctx.pbl2_on == 0) && (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > PBL2_MIN_CP_PRESSURE_MBAR)) {
+		if ((lsmcu_ctx.pbl2_on == 0) &&
+		   (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > ((lsmcu_ctx.manometer_cg) -> pressure_limit_mbar)) &&
+		   (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > ((lsmcu_ctx.manometer_re) -> pressure_limit_mbar))) {
 			// Send command on change.
 			LSAGIU_Send(LSMCU_OUT_PBL2_ON);
 			// Start CG and RE manometers.

@@ -33,7 +33,7 @@ void SW2_init(SW2_context_t* sw2, const GPIO* gpio, uint8_t active_state, uint32
 }
 
 /* UPDATE THE STATE OF AN SW2 STRUCTURE.
- * @param sw2:	The switch to analyse.
+ * @param sw2:	The switch to analyze.
  * @return:		None.
  */
 void SW2_update_state(SW2_context_t* sw2) {

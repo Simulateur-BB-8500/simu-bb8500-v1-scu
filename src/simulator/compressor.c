@@ -16,11 +16,12 @@
 
 /*** COMPRESSOR macros ***/
 
-#define COMPRESSOR_CP_HYSTERESIS_LOW_MBAR		7800 	// Low threshold of regulation hysteresis.
-#define COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_MBAR	800 	// Pressure range within which no off command is sent (sound will stop by itself).
-#define COMPRESSOR_CP_HYSTERESIS_HIGH_MBAR 		9000 	// High threshold of regulation hysteresis.
-#define COMPRESSOR_CP_MAXIMUM_VALUE_MBAR	 	9500 	// Maximum value displayed.
-#define COMPRESSOR_CP_SPEED_MBAR_PER_SECOND		54
+#define COMPRESSOR_CP_HYSTERESIS_LOW_MBAR			7800 	// Low threshold of regulation hysteresis.
+#define COMPRESSOR_CP_HYSTERESIS_HIGH_MBAR 			9000 	// High threshold of regulation hysteresis.
+#define COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_MBAR		800 	// Pressure range within which no off command is sent (sound will stop by itself).
+
+#define COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND		54
+#define COMPRESSOR_CP_SPEED_DOWN_MBAR_PER_SECOND	100
 
 /*** COMPRESSOR local structures ***/
 
@@ -61,8 +62,6 @@ void COMPRESSOR_init(void) {
 	// Init context.
 	compressor_ctx.state = COMPRESSOR_STATE_OFF;
 	compressor_ctx.sound_auto_off = 0;
-	// Init global context.
-	lsmcu_ctx.compressor_on = 0;
 }
 
 /* MAIN TASK OF COMPRESSOR MODULE.
@@ -78,18 +77,15 @@ void COMPRESSOR_task(void) {
 	// Perform state machine.
 	switch (compressor_ctx.state) {
 	case COMPRESSOR_STATE_OFF:
-		// Update global context.
-		lsmcu_ctx.compressor_on = 0;
 		// Check DJ.
 		if (lsmcu_ctx.dj_locked != 0) {
 			// ZCD overrides ZCA.
 			if (compressor_ctx.zcd.state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSAGIU_Send(LSMCU_OUT_ZCD_ON);
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_MBAR, COMPRESSOR_CP_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, ((lsmcu_ctx.manometer_cp) -> pressure_limit_mbar), COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND);
 				// Compute next state.
 				compressor_ctx.state = COMPRESSOR_STATE_DIRECT;
-
 			}
 			else {
 				if (compressor_ctx.zca.state == SW2_ON) {
@@ -112,7 +108,7 @@ void COMPRESSOR_task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_MBAR, COMPRESSOR_CP_SPEED_MBAR_PER_SECOND);
+						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, ((lsmcu_ctx.manometer_cp) -> pressure_limit_mbar), COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_ON;
 					}
@@ -127,8 +123,6 @@ void COMPRESSOR_task(void) {
 		}
 		break;
 	case COMPRESSOR_STATE_AUTO_ON:
-		// Update global context.
-		lsmcu_ctx.compressor_on = 1;
 		// Check DJ
 		if (lsmcu_ctx.dj_locked == 0) {
 			// Stop compressor.
@@ -142,7 +136,7 @@ void COMPRESSOR_task(void) {
 			if (compressor_ctx.zcd.state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSAGIU_Send(LSMCU_OUT_ZCD_ON);
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_MBAR, COMPRESSOR_CP_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, ((lsmcu_ctx.manometer_cp) -> pressure_limit_mbar), COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND);
 				// Compute next state.
 				compressor_ctx.state = COMPRESSOR_STATE_DIRECT;
 
@@ -171,8 +165,6 @@ void COMPRESSOR_task(void) {
 		}
 		break;
 	case COMPRESSOR_STATE_AUTO_OFF:
-		// Update global context.
-		lsmcu_ctx.compressor_on = 0;
 		// Check DJ
 		if (lsmcu_ctx.dj_locked == 0) {
 			// Compute next state.
@@ -183,7 +175,7 @@ void COMPRESSOR_task(void) {
 			if (compressor_ctx.zcd.state == SW2_ON) {
 				// Play direct sound and set CP needle to maximum.
 				LSAGIU_Send(LSMCU_OUT_ZCD_ON);
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_MBAR, COMPRESSOR_CP_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, ((lsmcu_ctx.manometer_cp) -> pressure_limit_mbar), COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND);
 				// Compute next state.
 				compressor_ctx.state = COMPRESSOR_STATE_DIRECT;
 
@@ -209,7 +201,7 @@ void COMPRESSOR_task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_MBAR, COMPRESSOR_CP_SPEED_MBAR_PER_SECOND);
+						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, ((lsmcu_ctx.manometer_cp) -> pressure_limit_mbar), COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_ON;
 					}
@@ -222,8 +214,6 @@ void COMPRESSOR_task(void) {
 		}
 		break;
 	case COMPRESSOR_STATE_DIRECT:
-		// Update global context.
-		lsmcu_ctx.compressor_on = 1;
 		// Check DJ
 		if (lsmcu_ctx.dj_locked == 0) {
 			// Stop compressor.
@@ -256,7 +246,7 @@ void COMPRESSOR_task(void) {
 							}
 						}
 						// Set CP needle to maximum (will be stopped by hysteresis).
-						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, COMPRESSOR_CP_MAXIMUM_VALUE_MBAR, COMPRESSOR_CP_SPEED_MBAR_PER_SECOND);
+						MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, ((lsmcu_ctx.manometer_cp) -> pressure_limit_mbar), COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND);
 						// Compute next state.
 						compressor_ctx.state = COMPRESSOR_STATE_AUTO_ON;
 					}
@@ -281,5 +271,21 @@ void COMPRESSOR_task(void) {
 		// Unknown state.
 		compressor_ctx.state = COMPRESSOR_STATE_OFF;
 		break;
+	}
+	// Manage CP when compressor is inactive.
+	if ((compressor_ctx.state == COMPRESSOR_STATE_OFF) || (compressor_ctx.state == COMPRESSOR_STATE_AUTO_OFF)) {
+		// Check all manometers.
+		if ((MANOMETER_is_pressure_increasing(lsmcu_ctx.manometer_re))  ||
+			(MANOMETER_is_pressure_increasing(lsmcu_ctx.manometer_cg))  ||
+			(MANOMETER_is_pressure_increasing(lsmcu_ctx.manometer_cf1)) ||
+			(MANOMETER_is_pressure_increasing(lsmcu_ctx.manometer_cf2))) {
+			// Empty CP if pressure is increasing in any other air circuit.
+			MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, 0, COMPRESSOR_CP_SPEED_DOWN_MBAR_PER_SECOND);
+
+		}
+		else {
+			// Stabilize CP needle.
+			MANOMETER_needle_stop(lsmcu_ctx.manometer_cp);
+		}
 	}
 }

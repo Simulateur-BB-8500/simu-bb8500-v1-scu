@@ -20,7 +20,6 @@ typedef struct {
 	uint8_t zpt_raised;
 	uint8_t dj_closed;
 	uint8_t dj_locked;
-	uint8_t compressor_on;
 	uint8_t speed_kmh;
 	uint8_t speed_limit_kmh;
 	uint8_t rheostat_0;
