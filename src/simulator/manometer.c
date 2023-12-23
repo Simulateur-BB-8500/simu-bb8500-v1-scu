@@ -20,6 +20,8 @@
 
 /*** MANOMETER local macros ***/
 
+#define MANOMETER_STEP_IRQ_PERIOD_US		100
+
 #define MANOMETER_GEAR_G1_Z					36
 #define MANOMETER_GEAR_G2_Z					56
 #define MANOMETER_GEAR_CENTER_Z				20
@@ -52,6 +54,78 @@ static MANOMETER_context_t manometer_cf1 = {&step_motor_cf1, 4100, 6000,  (MANOM
 static MANOMETER_context_t manometer_cf2 = {&step_motor_cf2, 4200, 6000,  (MANOMETER_PRESSURE_MAX_STEP_G2 + 30), 0, 30, 3, 0, 0, 0, 0, 0, 0};
 
 /*** MANOMETER local functions ***/
+
+/* MANOMETER MAIN TASK (CALLED BY TIM7 INTERRUPT HANDLER EVERY 100us).
+ * @param:	None.
+ * @return:	None.
+ */
+static void __attribute__((optimize("-O0"))) _MANOMETER_needle_task(MANOMETER_context_t* manometer) {
+	// Local variables.
+	uint32_t current_step = (manometer -> step_motor -> step);
+	uint32_t delta_start = 0;
+	uint32_t delta_target = 0;
+	uint32_t step_irq_period_max = (manometer -> step_irq_period_min) * (manometer -> needle_inertia_factor);
+	// Movement feedback loop.
+	(manometer -> step_irq_count)++;
+	// Check if the period was reached.
+	if ((manometer -> step_irq_count) >= (manometer -> step_irq_period)) {
+		// Reset interrupt count.
+		(manometer -> step_irq_count) = 0;
+		// Up direction.
+		if (current_step < (manometer -> step_target)) {
+			STEP_MOTOR_up(manometer -> step_motor);
+			// Compute absolute distances between start, target and current steps.
+			delta_start = current_step - (manometer -> step_start);
+			delta_target = (manometer -> step_target) - current_step;
+		}
+		// Down direction.
+		if (current_step > (manometer -> step_target)) {
+			STEP_MOTOR_down(manometer -> step_motor);
+			// Compute absolute distances between start, target and current steps.
+			delta_start = (manometer -> step_start) - current_step;
+			delta_target = current_step - (manometer -> step_target);
+		}
+		// Compute next period.
+		if (current_step != (manometer -> step_target)) {
+			// Perform linear equation.
+			if (delta_start < (manometer -> needle_inertia_steps)) {
+				(manometer -> step_irq_period) = step_irq_period_max - ((step_irq_period_max - (manometer -> step_irq_period_min)) * (delta_start)) / (manometer -> needle_inertia_steps);
+			}
+			else {
+				if (delta_target < (manometer -> needle_inertia_steps)) {
+					(manometer -> step_irq_period) = step_irq_period_max - ((step_irq_period_max - (manometer -> step_irq_period_min)) * (delta_target)) / (manometer -> needle_inertia_steps);
+				}
+				else {
+					// Maximum speed.
+					(manometer -> step_irq_period) = (manometer -> step_irq_period_min);
+				}
+			}
+		}
+		// Force step down if current step and target are equal but stop detect is not reached.
+		if ((current_step == (manometer -> step_target)) && ((manometer -> step_target_zero_flag) != 0) && ((manometer -> step_motor -> stop_detect_flag) == 0)) {
+			// Maximum speed.
+			(manometer -> step_irq_period) = (manometer -> step_irq_period_min);
+			// Step down.
+			STEP_MOTOR_down(manometer -> step_motor);
+			// Align target value on new step.
+			(manometer -> step_target) = (manometer -> step_motor -> step);
+		}
+		else {
+			if (current_step == (manometer -> step_target)) {
+				(manometer -> is_moving) = 0;
+			}
+		}
+	}
+}
+
+static void _MANOMETER_needle_task_all(void) {
+	// Perform manometers needle control.
+	_MANOMETER_needle_task(lsmcu_ctx.manometer_cp);
+	_MANOMETER_needle_task(lsmcu_ctx.manometer_re);
+	_MANOMETER_needle_task(lsmcu_ctx.manometer_cg);
+	_MANOMETER_needle_task(lsmcu_ctx.manometer_cf1);
+	_MANOMETER_needle_task(lsmcu_ctx.manometer_cf2);
+}
 
 /* POWER MANOMETER DRIVERS.
  * @param:	None.
@@ -107,6 +181,8 @@ void MANOMETER_init_all(void) {
 	lsmcu_ctx.manometer_cg = &manometer_cg;
 	lsmcu_ctx.manometer_cf1 = &manometer_cf1;
 	lsmcu_ctx.manometer_cf2 = &manometer_cf2;
+	// Init step motor control timer.
+	TIM7_init(MANOMETER_STEP_IRQ_PERIOD_US, &_MANOMETER_needle_task_all);
 }
 
 /* CONTROL MANOMETER POWER.
@@ -209,67 +285,4 @@ void MANOMETER_needle_stop(MANOMETER_context_t* manometer) {
 	}
 	// Update zero target flag.
 	_MANOMETER_update_zero_target_flag(manometer);
-}
-
-/* MANOMETER MAIN TASK (CALLED BY TIM7 INTERRUPT HANDLER EVERY 100us).
- * @param:	None.
- * @return:	None.
- */
-void __attribute__((optimize("-O0"))) MANOMETER_needle_task(MANOMETER_context_t* manometer) {
-	// Local variables.
-	uint32_t current_step = (manometer -> step_motor -> step);
-	uint32_t delta_start = 0;
-	uint32_t delta_target = 0;
-	uint32_t step_irq_period_max = (manometer -> step_irq_period_min) * (manometer -> needle_inertia_factor);
-	// Movement feedback loop.
-	(manometer -> step_irq_count)++;
-	// Check if the period was reached.
-	if ((manometer -> step_irq_count) >= (manometer -> step_irq_period)) {
-		// Reset interrupt count.
-		(manometer -> step_irq_count) = 0;
-		// Up direction.
-		if (current_step < (manometer -> step_target)) {
-			STEP_MOTOR_up(manometer -> step_motor);
-			// Compute absolute distances between start, target and current steps.
-			delta_start = current_step - (manometer -> step_start);
-			delta_target = (manometer -> step_target) - current_step;
-		}
-		// Down direction.
-		if (current_step > (manometer -> step_target)) {
-			STEP_MOTOR_down(manometer -> step_motor);
-			// Compute absolute distances between start, target and current steps.
-			delta_start = (manometer -> step_start) - current_step;
-			delta_target = current_step - (manometer -> step_target);
-		}
-		// Compute next period.
-		if (current_step != (manometer -> step_target)) {
-			// Perform linear equation.
-			if (delta_start < (manometer -> needle_inertia_steps)) {
-				(manometer -> step_irq_period) = step_irq_period_max - ((step_irq_period_max - (manometer -> step_irq_period_min)) * (delta_start)) / (manometer -> needle_inertia_steps);
-			}
-			else {
-				if (delta_target < (manometer -> needle_inertia_steps)) {
-					(manometer -> step_irq_period) = step_irq_period_max - ((step_irq_period_max - (manometer -> step_irq_period_min)) * (delta_target)) / (manometer -> needle_inertia_steps);
-				}
-				else {
-					// Maximum speed.
-					(manometer -> step_irq_period) = (manometer -> step_irq_period_min);
-				}
-			}
-		}
-		// Force step down if current step and target are equal but stop detect is not reached.
-		if ((current_step == (manometer -> step_target)) && ((manometer -> step_target_zero_flag) != 0) && ((manometer -> step_motor -> stop_detect_flag) == 0)) {
-			// Maximum speed.
-			(manometer -> step_irq_period) = (manometer -> step_irq_period_min);
-			// Step down.
-			STEP_MOTOR_down(manometer -> step_motor);
-			// Align target value on new step.
-			(manometer -> step_target) = (manometer -> step_motor -> step);
-		}
-		else {
-			if (current_step == (manometer -> step_target)) {
-				(manometer -> is_moving) = 0;
-			}
-		}
-	}
 }

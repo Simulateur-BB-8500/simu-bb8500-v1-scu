@@ -71,7 +71,7 @@ void BPGD_task(void) {
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0, BPGD_CF_SPEED_MBAR_PER_SECOND);
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0, BPGD_CF_SPEED_MBAR_PER_SECOND);
 			// Send sound command.
-			LSAGIU_Send(LSMCU_OUT_BPGD);
+			LSAGIU_write(LSMCU_OUT_BPGD);
 			// Disable module and start delay.
 			bpgd_ctx.enable = 0;
 			bpgd_ctx.inhibit_start_ms = TIM2_get_milliseconds();

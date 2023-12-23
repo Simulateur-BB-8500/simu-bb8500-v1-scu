@@ -15,6 +15,4 @@
 void KVB_init(void);
 void KVB_task(void);
 
-void __attribute__((optimize("-O0"))) KVB_sweep(void);
-
 #endif /* __KVB_H__ */

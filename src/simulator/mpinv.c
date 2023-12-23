@@ -54,19 +54,19 @@ void MPINV_task(void) {
 	case SW3_BACK:
 		if (mpinv_ctx.previous_state != SW3_BACK) {
 			// Backward.
-			LSAGIU_Send(LSMCU_OUT_MPINV_BACKWARD);
+			LSAGIU_write(LSMCU_OUT_MPINV_BACKWARD);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (mpinv_ctx.previous_state != SW3_NEUTRAL) {
 			// Forward.
-			LSAGIU_Send(LSMCU_OUT_MPINV_NEUTRAL);
+			LSAGIU_write(LSMCU_OUT_MPINV_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (mpinv_ctx.previous_state != SW3_FRONT) {
 			// Forward.
-			LSAGIU_Send(LSMCU_OUT_MPINV_FORWARD);
+			LSAGIU_write(LSMCU_OUT_MPINV_FORWARD);
 		}
 		break;
 	default:

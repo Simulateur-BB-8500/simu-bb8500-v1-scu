@@ -89,9 +89,8 @@ typedef enum {
 
 /*** LSAGIU functions ***/
 
-void LSAGIU_Init(void);
-void LSAGIU_FillRxBuffer(uint8_t ls_cmd);
-void LSAGIU_Send(uint8_t ls_cmd);
-void LSAGIU_Task(void);
+void LSAGIU_init(void);
+void LSAGIU_write(uint8_t command);
+void LSAGIU_task(void);
 
 #endif /* LSAGIU_H */

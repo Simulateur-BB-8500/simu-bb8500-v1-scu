@@ -67,7 +67,7 @@ static void _MP_increase_gear(void) {
 		// Increment gear and send command.
 		mp_ctx.gear_count++;
 		lsmcu_ctx.lsrh_blink_request = 1;
-		LSAGIU_Send(LSMCU_OUT_MP_T_MORE);
+		LSAGIU_write(LSMCU_OUT_MP_T_MORE);
 	}
 }
 
@@ -81,7 +81,7 @@ static void _MP_decrease_gear(void) {
 		// Decrement gear and send command.
 		mp_ctx.gear_count--;
 		lsmcu_ctx.lsrh_blink_request = 1;
-		LSAGIU_Send(LSMCU_OUT_MP_T_LESS);
+		LSAGIU_write(LSMCU_OUT_MP_T_LESS);
 	}
 }
 
@@ -132,7 +132,7 @@ void MP_task(void) {
 		if ((mp_ctx.gear_count > 0) && (TIM2_get_milliseconds() > (mp_ctx.gear_switch_next_time + MP_T_LESS_PERIOD_MS))) {
 			_MP_decrease_gear();
 			//if (mp_ctx.gear_count == 0) {
-				//LSAGIU_Send(LSMCU_OUT_MP_0);
+				//LSAGIU_write(LSMCU_OUT_MP_0);
 			//}
 			// Update next time.
 			mp_ctx.gear_switch_next_time = TIM2_get_milliseconds() + MP_T_LESS_PERIOD_MS;

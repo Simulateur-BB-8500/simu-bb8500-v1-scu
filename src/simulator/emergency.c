@@ -71,7 +71,7 @@ void EMERGENCY_task(void) {
 		// Open DJ.
 		lsmcu_ctx.dj_locked = 0;
 		// Send sound command.
-		LSAGIU_Send(LSMCU_OUT_EMERGENCY);
+		LSAGIU_write(LSMCU_OUT_EMERGENCY);
 	}
 	// Release emergency state only when train is stopped.
 	if ((emergency_ctx.bpurg.state == SW2_OFF) && (lsmcu_ctx.speed_kmh == 0)) {

@@ -57,7 +57,7 @@ void PBL2_task(void) {
 		// Retrait.
 		if (lsmcu_ctx.pbl2_on != 0) {
 			// Send command on change.
-			LSAGIU_Send(LSMCU_OUT_PBL2_OFF);
+			LSAGIU_write(LSMCU_OUT_PBL2_OFF);
 			// Empty CG and RE.
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);
@@ -74,7 +74,7 @@ void PBL2_task(void) {
 		   (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > ((lsmcu_ctx.manometer_cg) -> pressure_limit_mbar)) &&
 		   (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > ((lsmcu_ctx.manometer_re) -> pressure_limit_mbar))) {
 			// Send command on change.
-			LSAGIU_Send(LSMCU_OUT_PBL2_ON);
+			LSAGIU_write(LSMCU_OUT_PBL2_ON);
 			// Start CG and RE manometers.
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_MBAR, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, PBL2_ON_RE_PRESSURE_MBAR, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);

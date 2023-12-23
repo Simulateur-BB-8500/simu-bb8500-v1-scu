@@ -56,7 +56,7 @@ typedef struct {
 	volatile uint32_t DCR;    	// DMA control register.
 	volatile uint32_t DMAR;    	// DMA address for full transfer register.
 	volatile uint32_t OR;    	// Option register.
-	volatile uint32_t CCMR3O;   // Output capture/compare mode register 3.
+	volatile uint32_t CCMR3;	// Output capture/compare mode register 3.
 	volatile uint32_t CCR5;    	// Capture/compare register 5.
 	volatile uint32_t CCR6;    	// Capture/compare register 6.
 } TIM_registers_t;

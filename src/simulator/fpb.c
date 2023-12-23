@@ -61,7 +61,7 @@ void FPB_task(void) {
 		case SW3_BACK:
 			if (fpb_ctx.previous_state != SW3_BACK) {
 				// Backward.
-				LSAGIU_Send(LSMCU_OUT_FPB_RELEASE);
+				LSAGIU_write(LSMCU_OUT_FPB_RELEASE);
 				// Start CG and RE manometers.
 				MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, FPB_CG_RE_PRESSURE_MAX_MBAR, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
 				MANOMETER_set_pressure(lsmcu_ctx.manometer_re, FPB_CG_RE_PRESSURE_MAX_MBAR, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
@@ -70,7 +70,7 @@ void FPB_task(void) {
 		case SW3_NEUTRAL:
 			if (fpb_ctx.previous_state != SW3_NEUTRAL) {
 				// Forward.
-				LSAGIU_Send(LSMCU_OUT_FPB_NEUTRAL);
+				LSAGIU_write(LSMCU_OUT_FPB_NEUTRAL);
 				// Stop manometers.
 				MANOMETER_needle_stop(lsmcu_ctx.manometer_cg);
 				MANOMETER_needle_stop(lsmcu_ctx.manometer_re);
@@ -79,7 +79,7 @@ void FPB_task(void) {
 		case SW3_FRONT:
 			if (fpb_ctx.previous_state != SW3_FRONT) {
 				// Forward.
-				LSAGIU_Send(LSMCU_OUT_FPB_APPLY);
+				LSAGIU_write(LSMCU_OUT_FPB_APPLY);
 				// Start CG and RE manometers.
 				MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
 				MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, FPB_CG_RE_SPEED_MBAR_PER_SECOND);

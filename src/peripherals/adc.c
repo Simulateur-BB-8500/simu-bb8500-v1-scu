@@ -1,7 +1,7 @@
 /*
  * adc.c
  *
- *  Created on: 19 sept. 2017
+ *  Created on: 19 sep. 2017
  *      Author: Ludo
  */
 
@@ -13,6 +13,7 @@
 
 /*** ADC local structures ***/
 
+/*******************************************************************/
 typedef enum {
 	ADC_CHANNEL_ZPT	= 0,
 	ADC_CHANNEL_PBL2 = 1,
@@ -27,16 +28,13 @@ typedef enum {
 	ADC_CHANNEL_LAST = 19
 } ADC_channel_t;
 
-/*** DMA external global variables ***/
+/*** ADC external global variables ***/
 
 extern LSMCU_Context lsmcu_ctx;
 
 /*** ADC functions ***/
 
-/* CONFIGURE ADC1 PERIPHERAL.
- * @param:	None.
- * @return: None.
- */
+/*******************************************************************/
 void ADC1_init(void) {
 	// Local variables.
 	uint8_t idx = 0;

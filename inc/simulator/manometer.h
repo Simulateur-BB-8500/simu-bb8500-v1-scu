@@ -12,10 +12,6 @@
 #include "step_motor.h"
 #include "stdint.h"
 
-/*** MANOMETERS macros ***/
-
-#define MANOMETER_STEP_IRQ_PERIOD_US	100
-
 /*** MANOMETERS structures ***/
 
 typedef struct {
@@ -42,7 +38,5 @@ void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_mb
 uint32_t MANOMETER_get_pressure(MANOMETER_context_t* manometer);
 uint8_t MANOMETER_is_pressure_increasing(MANOMETER_context_t* manometer);
 void MANOMETER_needle_stop(MANOMETER_context_t* manometer);
-
-void __attribute__((optimize("-O0"))) MANOMETER_needle_task(MANOMETER_context_t* manometer);
 
 #endif /* __MANOMETERS_H__ */

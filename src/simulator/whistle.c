@@ -53,19 +53,19 @@ void WHISTLE_task(void) {
 	case SW3_BACK:
 		if (whistle_ctx.previous_state != SW3_BACK) {
 			// Low tone.
-			LSAGIU_Send(LSMCU_OUT_WHISTLE_LOW_TONE);
+			LSAGIU_write(LSMCU_OUT_WHISTLE_LOW_TONE);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (whistle_ctx.previous_state != SW3_NEUTRAL) {
 			// Whistle off
-			LSAGIU_Send(LSMCU_OUT_WHISTLE_NEUTRAL);
+			LSAGIU_write(LSMCU_OUT_WHISTLE_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (whistle_ctx.previous_state != SW3_FRONT) {
 			// High tone.
-			LSAGIU_Send(LSMCU_OUT_WHISTLE_HIGH_TONE);
+			LSAGIU_write(LSMCU_OUT_WHISTLE_HIGH_TONE);
 		}
 		break;
 	default:

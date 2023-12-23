@@ -44,14 +44,14 @@ void ZBA_task(void) {
 	if (zba.state == SW2_ON) {
 		// Send command on change.
 		if (lsmcu_ctx.zba_closed == 0) {
-			LSAGIU_Send(LSMCU_OUT_ZBA_ON);
+			LSAGIU_write(LSMCU_OUT_ZBA_ON);
 		}
 		lsmcu_ctx.zba_closed = 1;
 	}
 	else {
 		// Send command on change.
 		if (lsmcu_ctx.zba_closed != 0) {
-			LSAGIU_Send(LSMCU_OUT_ZBA_OFF);
+			LSAGIU_write(LSMCU_OUT_ZBA_OFF);
 		}
 		lsmcu_ctx.zba_closed = 0;
 	}

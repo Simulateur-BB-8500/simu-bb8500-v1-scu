@@ -1,7 +1,7 @@
 /*
  * rcc.h
  *
- *  Created on: 9 sept. 2017
+ *  Created on: 9 sep. 2017
  *      Author: Ludo
  */
 
@@ -10,23 +10,41 @@
 
 #include "stdint.h"
 
+/*** RCC macros ***/
+
+//#define RCC_OUTPUT_CLOCK
+
 /*** RCC structures ***/
 
+/*!******************************************************************
+ * \enum RCC_clock_t
+ * \brief RCC clocks list.
+ *******************************************************************/
 typedef enum {
-	RCC_CLOCK_SYSCLK,
-	RCC_CLOCK_PCLK1,
-	RCC_CLOCK_PCLK2,
+	RCC_CLOCK_SYSTEM = 0,
+	RCC_CLOCK_APB1,
+	RCC_CLOCK_APB2,
 	RCC_CLOCK_LAST
 } RCC_clock_t;
 
-/*** RCC macros ***/
-
-// If defined, output clocks on MCO1 and MCO2 pins.
-//#define RCC_OUTPUT_CLOCK
-
 /*** RCC functions ***/
 
+/*!******************************************************************
+ * \fn void RCC_init(void)
+ * \brief Init MCU default clock tree.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		Function execution status.
+ *******************************************************************/
 void RCC_init(void);
-uint32_t RCC_get_clock_frequency(RCC_clock_t rcc_clock);
+
+/*!******************************************************************
+ * \fn uint32_t RCC_get_frequency_hz(RCC_clock_t clock)
+ * \brief Get clock frequency.
+ * \param[in]  	clock: Clock to read.
+ * \param[out] 	none
+ * \retval		Clock frequency in Hz.
+ *******************************************************************/
+uint32_t RCC_get_frequency_hz(RCC_clock_t clock);
 
 #endif /* __RCC_H__ */

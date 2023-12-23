@@ -91,8 +91,8 @@ extern LSMCU_Context lsmcu_ctx;
 /*** KVB local global variables ***/
 
 static KVB_context_t kvb_ctx;
-static const GPIO* segment_gpio_buf[KVB_NUMBER_OF_SEGMENTS] = {&GPIO_KVB_ZSA, &GPIO_KVB_ZSB, &GPIO_KVB_ZSC, &GPIO_KVB_ZSD, &GPIO_KVB_ZSE, &GPIO_KVB_ZSF, &GPIO_KVB_ZSG};
-static const GPIO* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_ZJG, &GPIO_KVB_ZJC, &GPIO_KVB_ZJD, &GPIO_KVB_ZVG, &GPIO_KVB_ZVC, &GPIO_KVB_ZVD};
+static const GPIO_pin_t* segment_gpio_buf[KVB_NUMBER_OF_SEGMENTS] = {&GPIO_KVB_ZSA, &GPIO_KVB_ZSB, &GPIO_KVB_ZSC, &GPIO_KVB_ZSD, &GPIO_KVB_ZSE, &GPIO_KVB_ZSF, &GPIO_KVB_ZSG};
+static const GPIO_pin_t* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_ZJG, &GPIO_KVB_ZJC, &GPIO_KVB_ZJD, &GPIO_KVB_ZVG, &GPIO_KVB_ZVC, &GPIO_KVB_ZVD};
 
 /*** KVB local functions ***/
 
@@ -284,6 +284,22 @@ static void _KVB_display_off(void) {
 	TIM6_stop();
 }
 
+/* PROCESS KVB DISPLAY (CALLED BY TIM6 INTERRUPT HANDLER EVERY 2ms).
+ * @param:	None.
+ * @return:	None.
+ */
+static void __attribute__((optimize("-O0"))) _KVB_sweep(void) {
+	// Read register.
+	volatile uint32_t reg_value = (GPIOG -> ODR);
+	// Set bits.
+	reg_value &= KVB_GPIO_MASK;
+	reg_value |= kvb_ctx.segment_buf[kvb_ctx.display_idx];
+	// Write register.
+	GPIOG -> ODR = reg_value;
+	// Increment and manage index.
+	kvb_ctx.display_idx = (kvb_ctx.display_idx + 1) % KVB_NUMBER_OF_DISPLAYS;
+}
+
 /* TURN ALL KVB LIGHTS OFF.
  * @param:	None.
  * @return:	None.
@@ -301,7 +317,6 @@ static void _KVB_lights_off(void) {
 	// Update flags.
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lssf_blink_enable = 0;
-
 }
 
 /*** KVB functions ***/
@@ -311,8 +326,22 @@ static void _KVB_lights_off(void) {
  * @return:	None.
  */
 void KVB_init(void) {
+	// Local variables.
+	uint8_t idx = 0;
+	// Init context.
+	kvb_ctx.state = KVB_STATE_OFF;
+	kvb_ctx.state_switch_time_ms = 0;
+	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) {
+		kvb_ctx.ascii_buf[idx] = 0;
+		kvb_ctx.segment_buf[idx] = 0;
+	}
+	kvb_ctx.display_idx = 0;
+	kvb_ctx.lssf_blink_enable = 0;
+	kvb_ctx.lval_blink_enable = 0;
+	kvb_ctx.lval_blinking = 0;
+	// Init global context.
+	lsmcu_ctx.speed_limit_kmh = 0;
 	// Init 7-segments displays.
-	uint32_t idx = 0;
 	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init lights (except LVAL configured in TIM8 driver).
@@ -330,35 +359,9 @@ void KVB_init(void) {
 	SW2_init(&kvb_ctx.bpat, &GPIO_KVB_BPAT, 0, 100); // BPAT active low.
 	SW2_init(&kvb_ctx.bpsf, &GPIO_KVB_BPSF, 0, 100); // BPSF active low.
 	SW2_init(&kvb_ctx.acsf, &GPIO_KVB_ACSF, 0, 100); // ACSF active low.
-	// Init context.
-	kvb_ctx.state = KVB_STATE_OFF;
-	kvb_ctx.state_switch_time_ms = 0;
-	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) {
-		kvb_ctx.ascii_buf[idx] = 0;
-		kvb_ctx.segment_buf[idx] = 0;
-	}
-	kvb_ctx.display_idx = 0;
-	kvb_ctx.lssf_blink_enable = 0;
-	kvb_ctx.lval_blink_enable = 0;
-	kvb_ctx.lval_blinking = 0;
-	// Init global context.
-	lsmcu_ctx.speed_limit_kmh = 0;
-}
-
-/* PROCESS KVB DISPLAY (CALLED BY TIM6 INTERRUPT HANDLER EVERY 2ms).
- * @param:	None.
- * @return:	None.
- */
-void __attribute__((optimize("-O0"))) KVB_sweep(void) {
-	// Read register.
-	volatile uint32_t reg_value = (GPIOG -> ODR);
-	// Set bits.
-	reg_value &= KVB_GPIO_MASK;
-	reg_value |= kvb_ctx.segment_buf[kvb_ctx.display_idx];
-	// Write register.
-	GPIOG -> ODR = reg_value;
-	// Increment and manage index.
-	kvb_ctx.display_idx = (kvb_ctx.display_idx + 1) % KVB_NUMBER_OF_DISPLAYS;
+	// Init sweep and LVAL timers.
+	TIM6_init(&_KVB_sweep);
+	TIM8_init();
 }
 
 /* MAIN ROUTINE OF KVB.

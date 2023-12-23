@@ -41,6 +41,17 @@ static LSAGIU_Context lsagiu_ctx;
 
 /*** LSAGIU local functions ***/
 
+/* FILL LSAGIU BUFFER (CALLED BY USART2 INTERRUPT HANDLER).
+ * @param lsagiu_cmd:	The new LSAGIU command to store.
+ * @return:			None.
+ */
+static void _LSAGIU_fill_rx_buffer(uint8_t ls_cmd) {
+	// Store command.
+	lsagiu_ctx.rx_buf[lsagiu_ctx.rx_write_idx] = ls_cmd;
+	// Increment read index and manage roll-over.
+	lsagiu_ctx.rx_write_idx = ((lsagiu_ctx.rx_write_idx + 1) % LSAGIU_RX_BUFFER_SIZE);
+}
+
 /* DECODE THE CURRENT LSAGIU COMMAND.
  * @param:	None.
  * @return: None.
@@ -66,48 +77,34 @@ static void _LSAGIU_decode(void) {
  * @param:	None.
  * @return:	None.
  */
-void LSAGIU_Init(void) {
+void LSAGIU_init(void) {
 	// Init context.
 	uint32_t idx = 0;
 	for (idx=0 ; idx<LSAGIU_RX_BUFFER_SIZE ; idx++) lsagiu_ctx.rx_buf[idx] = LSMCU_IN_NOP;
 	lsagiu_ctx.rx_write_idx = 0;
 	lsagiu_ctx.rx_read_idx = 0;
+	// Init USART.
+	USART1_init(&_LSAGIU_fill_rx_buffer);
 	// Enable USART interrupt.
-	NVIC_enable_interrupt(NVIC_INTERRUPT_USART1);
-}
-
-/* FILL LSAGIU BUFFER (CALLED BY USART2 INTERRUPT HANDLER).
- * @param lsagiu_cmd:	The new LSAGIU command to store.
- * @return:			None.
- */
-void LSAGIU_FillRxBuffer(uint8_t ls_cmd) {
-	// Store command.
-	lsagiu_ctx.rx_buf[lsagiu_ctx.rx_write_idx] = ls_cmd;
-	// Increment read index and manage roll-over.
-	lsagiu_ctx.rx_write_idx = ((lsagiu_ctx.rx_write_idx + 1) % LSAGIU_RX_BUFFER_SIZE);
+	NVIC_enable_interrupt(NVIC_INTERRUPT_USART1, NVIC_PRIORITY_USART1);
 }
 
 /* SEND AN LSAGIU COMMAND TO SGKCU.
  * @param lsagiu_cmd: 	LSAGIU command (byte) to transmit.
  * @return: 			None.
  */
-void LSAGIU_Send(uint8_t ls_cmd) {
-#ifdef DEBUG
-	char str_value[16];
-	STRING_value_to_string(ls_cmd, STRING_FORMAT_DECIMAL, 0, str_value);
-	USART1_send_string("\nLSAGIU command = ");
-	USART1_send_string(str_value);
-	USART1_send_string("\n");
-#else
-	USART1_send_byte(ls_cmd);
-#endif
+void LSAGIU_write(uint8_t command) {
+	// Local variables.
+	uint8_t data = command;
+	// Send byte.
+	USART1_write(&data, 1);
 }
 
 /* MAIN ROUTINE OF LSAGIU COMMAND MANAGER.
  * @param:	None.
  * @return:	None.
  */
-void LSAGIU_Task(void) {
+void LSAGIU_task(void) {
 	// LSAGIU routine.
 	if (lsagiu_ctx.rx_read_idx != lsagiu_ctx.rx_write_idx) {
 		_LSAGIU_decode();

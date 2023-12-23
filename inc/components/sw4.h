@@ -44,7 +44,7 @@ typedef struct {
 
 /*** SW4 functions ***/
 
-void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr);
+void SW4_init(SW4_context_t* sw4, const GPIO_pin_t* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr);
 void SW4_update_state(SW4_context_t* sw4);
 
 #endif /* __SW4_H__ */

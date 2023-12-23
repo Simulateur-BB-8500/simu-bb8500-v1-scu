@@ -42,7 +42,7 @@ typedef struct {
 
 /*** 3-poles switch functions ***/
 
-void SW3_init(SW3_context_t* sw3, const GPIO* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr);
+void SW3_init(SW3_context_t* sw3, const GPIO_pin_t* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr);
 void SW3_update_state(SW3_context_t* sw3);
 
 #endif /* __SW3_H__ */

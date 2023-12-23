@@ -12,6 +12,13 @@
 
 /*** DMA functions ***/
 
+/*!******************************************************************
+ * \fn void DMA2_STR0_init(void)
+ * \brief Init DMA2 stream 0 peripheral for ADC samples transfer.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void DMA2_STR0_init(void);
 
 #endif /* __DMA_H__ */

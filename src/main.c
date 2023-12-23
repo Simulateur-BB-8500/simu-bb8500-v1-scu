@@ -64,20 +64,15 @@ int main(void) {
 	NVIC_init();
 	RCC_init();
 	GPIO_init();
-	// Timers.
-	TIM1_init(ADC_CONVERSION_PERIOD_MS); // ADC trigger.
-	TIM2_init(); // Time keeper.
-	TIM5_init(); // Tachro.
-	TIM6_init(); // KVB sweep.
-	TIM7_init(MANOMETER_STEP_IRQ_PERIOD_US); // Manometers.
-	TIM8_init(); // LVAL PWM.
+	// Global time base.
+	TIM2_init();
 	// Analog.
+	TIM1_init(ADC_CONVERSION_PERIOD_MS); // ADC trigger.
 	DMA2_STR0_init();
 	ADC1_init();
 	DAC_init();
 	// Communication interface.
-	USART1_init();
-	LSAGIU_Init();
+	LSAGIU_init();
 	// Simulator modules.
 	BELL_init();
 	BL_init();
@@ -102,7 +97,7 @@ int main(void) {
 	// Main loop.
 	while (1) {
 		// Communication tasks.
-		LSAGIU_Task();
+		LSAGIU_task();
 		// Simulator tasks.
 		BELL_task();
 		BL_task();

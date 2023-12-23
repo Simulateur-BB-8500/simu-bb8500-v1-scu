@@ -19,10 +19,7 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** DMA functions ***/
 
-/* CONFIGURE DMA2 FOR ADC DATA STREAMING.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void DMA2_STR0_init(void) {
 	// Enable peripheral clock.
 	RCC -> AHB1ENR |= (0b1 << 22); // DMA2EN='1'.

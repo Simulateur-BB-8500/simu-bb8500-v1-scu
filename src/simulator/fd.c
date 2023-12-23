@@ -74,7 +74,7 @@ void FD_task(void) {
 
 			}
 			if (command_required != 0) {
-				LSAGIU_Send(LSMCU_OUT_FD_RELEASE);
+				LSAGIU_write(LSMCU_OUT_FD_RELEASE);
 			}
 		}
 		break;
@@ -84,7 +84,7 @@ void FD_task(void) {
 			MANOMETER_needle_stop(lsmcu_ctx.manometer_cf1);
 			MANOMETER_needle_stop(lsmcu_ctx.manometer_cf2);
 			// Neutral.
-			LSAGIU_Send(LSMCU_OUT_FD_NEUTRAL);
+			LSAGIU_write(LSMCU_OUT_FD_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
@@ -103,7 +103,7 @@ void FD_task(void) {
 				command_required = 1;
 			}
 			if (command_required != 0) {
-				LSAGIU_Send(LSMCU_OUT_FD_APPLY);
+				LSAGIU_write(LSMCU_OUT_FD_APPLY);
 			}
 		}
 		break;

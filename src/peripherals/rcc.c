@@ -13,18 +13,22 @@
 
 /*** RCC local macros ***/
 
-#define RCC_HSI_FREQUENCY_KHZ	16000
+#define RCC_HSI_FREQUENCY_DEFAULT_HZ	16000000
+
+/*** RCC local structures ***/
+
+/*******************************************************************/
+typedef struct {
+	uint32_t clock_frequency[RCC_CLOCK_LAST];
+} RCC_context_t;
 
 /*** RCC local global variables ***/
 
-static uint32_t rcc_clock_frequency[RCC_CLOCK_LAST] = {RCC_HSI_FREQUENCY_KHZ, RCC_HSI_FREQUENCY_KHZ, RCC_HSI_FREQUENCY_KHZ};
+static RCC_context_t rcc_ctx;
 
 /*** RCC functions ***/
 
-/* CONFIGURE MCU CLOCK TREE.
- * @param: None.
- * @return: None.
- */
+/*******************************************************************/
 void RCC_init(void) {
 	// Peripherals clock prescalers:
 	// HPRE = 1 -> HCLK = SYSCLK = 100MHz (max 216).
@@ -58,21 +62,18 @@ void RCC_init(void) {
 	RCC -> CFGR |= 0x36000000;
 #endif
 	// Update frequencies.
-	rcc_clock_frequency[RCC_CLOCK_SYSCLK] = 100000;
-	rcc_clock_frequency[RCC_CLOCK_PCLK1] = 25000;
-	rcc_clock_frequency[RCC_CLOCK_PCLK2] = 25000;
+	rcc_ctx.clock_frequency[RCC_CLOCK_SYSTEM] = 100000000;
+	rcc_ctx.clock_frequency[RCC_CLOCK_APB1] = 25000000;
+	rcc_ctx.clock_frequency[RCC_CLOCK_APB2] = 25000000;
 }
 
-/* GET RCC CLOC FREQUENCY.
- * @param rcc_clock:	RCC clock source.
- * @return freq_khz:	RCC clock frequency in kHz.
- */
-uint32_t RCC_get_clock_frequency(RCC_clock_t rcc_clock) {
+/*******************************************************************/
+uint32_t RCC_get_frequency_hz(RCC_clock_t rcc_clock) {
 	// Local variables.
 	uint32_t freq_khz = 0;
 	// Check parameter.
 	if (rcc_clock < RCC_CLOCK_LAST) {
-		freq_khz = rcc_clock_frequency[rcc_clock];
+		freq_khz = rcc_ctx.clock_frequency[rcc_clock];
 	}
 	return freq_khz;
 }

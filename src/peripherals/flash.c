@@ -16,10 +16,7 @@
 
 /*** FLASH functions ***/
 
-/* SET FLASH LATENCY.
- * @param wait_states:	Number of wait states.
- * @return:				None.
- */
+/*******************************************************************/
 void FLASH_set_latency(uint8_t wait_states) {
 	// Configure number of wait states.
 	FLASH -> ACR &= ~(0b1111 << 0); // Reset bits.

@@ -87,6 +87,8 @@ void TCH_init(void) {
 	tch_state = TCH_STATE_OFF;
 	// Init global context.
 	lsmcu_ctx.speed_kmh = 0;
+	// Init phase control timer.
+	TIM5_init();
 }
 
 /* MAIN ROUTINE OF TCH CONTROL INTERFACE.

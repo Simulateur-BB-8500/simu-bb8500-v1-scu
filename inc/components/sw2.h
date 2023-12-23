@@ -29,7 +29,7 @@ typedef enum {
 
 // SW2 structure.
 typedef struct {
-	const GPIO* gpio;
+	const GPIO_pin_t* gpio;
 	uint8_t active_state; // Depends on switch wiring.
 	SW2_internal_state_t internal_state; // Current state in SW2 state machine.
 	SW2_state_t state; // State after anti-bouncing (used in higher levels).
@@ -39,7 +39,7 @@ typedef struct {
 
 /*** SW2 functions ***/
 
-void SW2_init(SW2_context_t* sw2, const GPIO* gpio, uint8_t active_state, uint32_t debouncing_ms);
+void SW2_init(SW2_context_t* sw2, const GPIO_pin_t* gpio, uint8_t active_state, uint32_t debouncing_ms);
 void SW2_update_state(SW2_context_t* sw2);
 
 #endif /* __SW2_H__ */

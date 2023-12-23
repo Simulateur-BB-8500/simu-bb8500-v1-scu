@@ -87,7 +87,7 @@ static uint8_t _SW4_voltage_is_p3(SW4_context_t* sw4) {
  * @param adc_data_ptr:		Pointer to the 12-bits ADC data.
  * @return:					None;
  */
-void SW4_init(SW4_context_t* sw4, const GPIO* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr) {
+void SW4_init(SW4_context_t* sw4, const GPIO_pin_t* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init context.

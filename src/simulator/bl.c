@@ -75,14 +75,14 @@ void BL_task(void) {
 	if ((bl_ctx.zdv.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
 		// Send command on change.
 		if (lsmcu_ctx.bl_unlocked == 0) {
-			LSAGIU_Send(LSMCU_OUT_ZDV_ON);
+			LSAGIU_write(LSMCU_OUT_ZDV_ON);
 		}
 		lsmcu_ctx.bl_unlocked = 1;
 	}
 	else {
 		// Send command on change.
 		if (lsmcu_ctx.bl_unlocked != 0) {
-			LSAGIU_Send(LSMCU_OUT_ZDV_OFF);
+			LSAGIU_write(LSMCU_OUT_ZDV_OFF);
 		}
 		lsmcu_ctx.bl_unlocked = 0;
 	}
@@ -96,7 +96,7 @@ void BL_task(void) {
 			// Send command on change (only if DJ is locked).
 			if (lsmcu_ctx.dj_closed != 0) {
 				if (lsmcu_ctx.dj_locked != 0) {
-					LSAGIU_Send(LSMCU_OUT_ZDJ_OFF);
+					LSAGIU_write(LSMCU_OUT_ZDJ_OFF);
 				}
 				lsmcu_ctx.dj_locked = 0;
 			}
@@ -105,7 +105,7 @@ void BL_task(void) {
 	}
 	else {
 		if (lsmcu_ctx.dj_closed != 0) {
-			LSAGIU_Send(LSMCU_OUT_ZDJ_OFF);
+			LSAGIU_write(LSMCU_OUT_ZDJ_OFF);
 		}
 		lsmcu_ctx.dj_closed = 0; // Hack.
 		lsmcu_ctx.dj_locked = 0;
@@ -116,7 +116,7 @@ void BL_task(void) {
 		if (bl_ctx.zen.state == SW2_ON) {
 			// Send command on change.
 			if ((bl_ctx.zen_on == 0) && (lsmcu_ctx.dj_locked == 0)) {
-				LSAGIU_Send(LSMCU_OUT_ZEN_ON);
+				LSAGIU_write(LSMCU_OUT_ZEN_ON);
 				lsmcu_ctx.dj_locked = 1;
 			}
 			bl_ctx.zen_on = 1;
@@ -130,14 +130,14 @@ void BL_task(void) {
 	if ((lsmcu_ctx.dj_locked != 0) && (bl_ctx.zvm.state == SW2_ON)) {
 		// Send command on change.
 		if (bl_ctx.zvm_on == 0) {
-			LSAGIU_Send(LSMCU_OUT_ZVM_ON);
+			LSAGIU_write(LSMCU_OUT_ZVM_ON);
 		}
 		bl_ctx.zvm_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.zvm_on != 0) {
-			LSAGIU_Send(LSMCU_OUT_ZVM_OFF);
+			LSAGIU_write(LSMCU_OUT_ZVM_OFF);
 		}
 		bl_ctx.zvm_on = 0;
 	}
@@ -146,14 +146,14 @@ void BL_task(void) {
 	if ((bl_ctx.zfg.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.zfg_on == 0) {
-			LSAGIU_Send(LSMCU_OUT_ZFG_ON);
+			LSAGIU_write(LSMCU_OUT_ZFG_ON);
 		}
 		bl_ctx.zfg_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.zfg_on != 0) {
-			LSAGIU_Send(LSMCU_OUT_ZFG_OFF);
+			LSAGIU_write(LSMCU_OUT_ZFG_OFF);
 		}
 		bl_ctx.zfg_on = 0;
 	}
@@ -162,14 +162,14 @@ void BL_task(void) {
 	if ((bl_ctx.zfd.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.zfd_on == 0) {
-			LSAGIU_Send(LSMCU_OUT_ZFD_ON);
+			LSAGIU_write(LSMCU_OUT_ZFD_ON);
 		}
 		bl_ctx.zfd_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.zfd_on != 0) {
-			LSAGIU_Send(LSMCU_OUT_ZFD_OFF);
+			LSAGIU_write(LSMCU_OUT_ZFD_OFF);
 		}
 		bl_ctx.zfd_on = 0;
 	}
@@ -178,14 +178,14 @@ void BL_task(void) {
 	if ((bl_ctx.zpr.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.zpr_on == 0) {
-			LSAGIU_Send(LSMCU_OUT_ZPR_ON);
+			LSAGIU_write(LSMCU_OUT_ZPR_ON);
 		}
 		bl_ctx.zpr_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.zpr_on != 0) {
-			LSAGIU_Send(LSMCU_OUT_ZPR_OFF);
+			LSAGIU_write(LSMCU_OUT_ZPR_OFF);
 		}
 		bl_ctx.zpr_on = 0;
 	}
