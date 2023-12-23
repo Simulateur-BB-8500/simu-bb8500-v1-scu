@@ -9,14 +9,9 @@
 
 #include "lsmcu.h"
 #include "mapping.h"
-#include "mode.h"
 #include "step_motor.h"
 #include "tim.h"
 #include "stdint.h"
-#ifdef DEBUG
-#include "string.h"
-#include "usart.h"
-#endif
 
 /*** MANOMETER local macros ***/
 

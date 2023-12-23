@@ -8,7 +8,6 @@
 #ifndef __USART_H__
 #define __USART_H__
 
-#include "mode.h"
 #include "stdint.h"
 
 /*** USART structures ***/

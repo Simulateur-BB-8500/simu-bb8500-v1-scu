@@ -11,12 +11,8 @@
 #include "gpio.h"
 #include "lsmcu.h"
 #include "mapping.h"
-#include "mode.h"
 #include "nvic.h"
 #include "usart.h"
-#ifdef DEBUG
-#include "string.h"
-#endif
 #include "stdint.h"
 
 /*** LSAGIU local macros ***/

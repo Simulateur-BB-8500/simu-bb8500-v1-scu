@@ -41,7 +41,6 @@
 // Applicative.
 #include "lsmcu.h"
 #include "lsagiu.h"
-#include "mode.h"
 #include "string.h"
 
 /*** MAIN global variables ***/
@@ -55,11 +54,6 @@ LSMCU_Context lsmcu_ctx;
  * @return: 0.
  */
 int main(void) {
-	// Local variables.
-#ifdef DEBUG
-	char str_value[16];
-	uint32_t print_timestamp = 0;
-#endif
 	// Init interrupts, clocks and GPIOs.
 	NVIC_init();
 	RCC_init();

@@ -8,7 +8,6 @@
 #ifndef __MANOMETERS_H__
 #define __MANOMETERS_H__
 
-#include "mode.h"
 #include "step_motor.h"
 #include "stdint.h"
 

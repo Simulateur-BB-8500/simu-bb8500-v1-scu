@@ -50,7 +50,6 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/registers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/peripherals&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/utils&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/components&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/simulator&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/applicative&quot;"/>
@@ -68,7 +67,6 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/registers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/peripherals&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/utils&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/components&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/simulator&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc/applicative&quot;"/>
