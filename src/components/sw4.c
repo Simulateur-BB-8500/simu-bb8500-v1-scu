@@ -30,10 +30,7 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** SW4 local functions ***/
 
-/* CHECK IF A 4-POLES SWITCH IS IN P0 POSITION.
- * @param sw4:		The switch to analyze.
- * @return result:	'1' if switch voltage indicates a P0 position, '0' otherwise.
- */
+/*******************************************************************/
 static uint8_t _SW4_voltage_is_p0(SW4_context_t* sw4) {
 	uint8_t result = 0;
 	if ((sw4 -> voltage_mv) < SW4_P0P1_THRESHOLD_LOW) {
@@ -42,10 +39,7 @@ static uint8_t _SW4_voltage_is_p0(SW4_context_t* sw4) {
 	return result;
 }
 
-/* CHECK IF A 4-POLES SWITCH IS IN P1 POSITION.
- * @param sw4:		The switch to analyze.
- * @return result:	'1' if switch voltage indicates a P1 position, '0' otherwise.
- */
+/*******************************************************************/
 static uint8_t _SW4_voltage_is_p1(SW4_context_t* sw4) {
 	uint8_t result = 0;
 	if (((sw4 -> voltage_mv) > SW4_P0P1_THRESHOLD_HIGH) && ((sw4 -> voltage_mv) < SW4_P1P2_THRESHOLD_LOW)) {
@@ -54,10 +48,7 @@ static uint8_t _SW4_voltage_is_p1(SW4_context_t* sw4) {
 	return result;
 }
 
-/* CHECK IF A 4-POLES SWITCH IS IN P2 POSITION.
- * @param sw4:		The switch to analyze.
- * @return result:	'1' if switch voltage indicates a P2 position, '0' otherwise.
- */
+/*******************************************************************/
 static uint8_t _SW4_voltage_is_p2(SW4_context_t* sw4) {
 	uint8_t result = 0;
 	if (((sw4 -> voltage_mv) > SW4_P1P2_THRESHOLD_HIGH) && ((sw4 -> voltage_mv) < SW4_P2P3_THRESHOLD_LOW)) {
@@ -66,10 +57,7 @@ static uint8_t _SW4_voltage_is_p2(SW4_context_t* sw4) {
 	return result;
 }
 
-/* CHECK IF A 4-POLES SWITCH IS IN P3 POSITION.
- * @param sw4:		The switch to analyze.
- * @return result:	'1' if switch voltage indicates a P3 position, '0' otherwise.
- */
+/*******************************************************************/
 static uint8_t _SW4_voltage_is_p3(SW4_context_t* sw4) {
 	uint8_t result = 0;
 	if ((sw4 -> voltage_mv) > SW4_P2P3_THRESHOLD_HIGH) {
@@ -80,13 +68,7 @@ static uint8_t _SW4_voltage_is_p3(SW4_context_t* sw4) {
 
 /*** SW4 functions ***/
 
-/* INITIALISE AN SW4 STRUCTURE.
- * @param sw4:				Switch structure to initialize.
- * @param gpio:				GPIO attached to the switch.
- * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
- * @param adc_data_ptr:		Pointer to the 12-bits ADC data.
- * @return:					None;
- */
+/*******************************************************************/
 void SW4_init(SW4_context_t* sw4, const GPIO_pin_t* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
@@ -99,10 +81,7 @@ void SW4_init(SW4_context_t* sw4, const GPIO_pin_t* gpio, uint32_t debouncing_ms
 	(sw4 -> confirm_start_time) = 0;
 }
 
-/* UPDATE THE STATE OF AN SW4 STRUCTURE PERFORMING HYSTERESIS AND CONFIRMATION.
- * @param sw4:	The switch to analyze.
- * @return:		None.
- */
+/*******************************************************************/
 void SW4_update_state(SW4_context_t* sw4) {
 	// Update voltage (only if ZBA is closed).
 	(sw4 -> voltage_mv) = (lsmcu_ctx.zba_closed != 0) ? ADC1_convert_to_mv(*(sw4 -> adc_data_ptr)) : SW4_DEFAULT_VOLTAGE_MV;

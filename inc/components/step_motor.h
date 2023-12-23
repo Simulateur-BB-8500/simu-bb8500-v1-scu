@@ -17,6 +17,10 @@
 
 /*** STEP MOTOR structures ***/
 
+/*!******************************************************************
+ * \enum STEP_MOTOR_context_t
+ * \brief Step motor context structure.
+ *******************************************************************/
 typedef struct {
 	const GPIO_pin_t* gpio_command_1;
 	const GPIO_pin_t* gpio_command_2;
@@ -28,8 +32,31 @@ typedef struct {
 
 /*** STEP_MOTOR functions ***/
 
+/*!******************************************************************
+ * \fn void STEP_MOTOR_init(STEP_MOTOR_context_t* step_motor)
+ * \brief Init step motor.
+ * \param[in]  	step_motor: Pointer to the step motor context to initialize.
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void STEP_MOTOR_init(STEP_MOTOR_context_t* step_motor);
+
+/*!******************************************************************
+ * \fn void STEP_MOTOR_up(STEP_MOTOR_context_t* step_motor)
+ * \brief Make an up step.
+ * \param[in]  	step_motor: Pointer to the step motor to control.
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void STEP_MOTOR_up(STEP_MOTOR_context_t* step_motor);
+
+/*!******************************************************************
+ * \fn void STEP_MOTOR_down(STEP_MOTOR_context_t* step_motor)
+ * \brief Make a down step.
+ * \param[in]  	step_motor: Pointer to the step motor to control.
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void STEP_MOTOR_down(STEP_MOTOR_context_t* step_motor);
 
 #endif /* __STEP_MOTOR_H__ */

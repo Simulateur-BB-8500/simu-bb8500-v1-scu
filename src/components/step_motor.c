@@ -28,10 +28,7 @@ STEP_MOTOR_context_t step_motor_cf2 = {&GPIO_MCF2_1, &GPIO_MCF2_2, &GPIO_MCF2_SD
 
 /*** STEP_MOTOR local functions ***/
 
-/* CONTROL THE STEP_MOTOR GPIO.
- * @param step_motor:	Step motor to control.
- * @return:				None.
- */
+/*******************************************************************/
 static void _STEP_MOTOR_single_step(STEP_MOTOR_context_t* step_motor) {
 	// Convert step to state.
 	switch ((step_motor -> step) % 4) {
@@ -58,10 +55,7 @@ static void _STEP_MOTOR_single_step(STEP_MOTOR_context_t* step_motor) {
 	}
 }
 
-/* CHECK IF A MOTOR STEP IS AT STOP DETECT POSITION.
- * @param step_motor:	Step motor to check.
- * @return:				1 if the motor is at stop detect position, 0 otherwise.
- */
+/*******************************************************************/
 void _STEP_MOTOR_check_stop_detect(STEP_MOTOR_context_t* step_motor) {
 	// Check GPIO.
 	if (GPIO_read(step_motor -> gpio_stop_detection) == 0) {
@@ -74,10 +68,7 @@ void _STEP_MOTOR_check_stop_detect(STEP_MOTOR_context_t* step_motor) {
 	}
 }
 
-/* CALIBRATE STEP MOTOR WITH STOP DETECTION.
- * @param step_motor:	Step motor to control.
- * @return:				None.
- */
+/*******************************************************************/
 static void _STEP_MOTOR_calibrate(STEP_MOTOR_context_t* step_motor) {
 	// Go to stop detection.
 	while ((step_motor -> stop_detect_flag) == 0) {
@@ -91,10 +82,7 @@ static void _STEP_MOTOR_calibrate(STEP_MOTOR_context_t* step_motor) {
 
 /*** STEP_MOTOR functions ***/
 
-/* INIT STEP MOTOR.
- * @param step_motor:	Step motor to init.
- * @return:				None.
- */
+/*******************************************************************/
 void STEP_MOTOR_init(STEP_MOTOR_context_t* step_motor) {
 	// Init GPIOs.
 	GPIO_configure((step_motor -> gpio_command_1), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
@@ -104,10 +92,7 @@ void STEP_MOTOR_init(STEP_MOTOR_context_t* step_motor) {
 	_STEP_MOTOR_calibrate(step_motor);
 }
 
-/* PERFORM A MOTOR STEP UP.
- * @param step_motor:	Step motor to control.
- * @return:				None.
- */
+/*******************************************************************/
 void STEP_MOTOR_up(STEP_MOTOR_context_t* step_motor) {
 	// Update and perform step.
 	if ((step_motor -> step) < STEP_MOTOR_STEP_MAX_VALUE) {
@@ -116,10 +101,7 @@ void STEP_MOTOR_up(STEP_MOTOR_context_t* step_motor) {
 	_STEP_MOTOR_single_step(step_motor);
 }
 
-/* PERFORM A MOTOR STEP DOWN.
- * @param step_motor:	Step motor to control.
- * @return:				None.
- */
+/*******************************************************************/
 void STEP_MOTOR_down(STEP_MOTOR_context_t* step_motor) {
 	// Check stop detection.
 	_STEP_MOTOR_check_stop_detect(step_motor);

@@ -13,13 +13,7 @@
 
 /*** SW2 functions ***/
 
-/* INITIALISE AN SW2 STRUCTURE.
- * @param sw2:				Switch structure to initialize.
- * @param gpio:				GPIO attached to the switch.
- * @param active_state:		GPIO state ('0' or '1') for which the switch is considered on.
- * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
- * @return:					None.
- */
+/*******************************************************************/
 void SW2_init(SW2_context_t* sw2, const GPIO_pin_t* gpio, uint8_t active_state, uint32_t debouncing_ms) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
@@ -32,10 +26,7 @@ void SW2_init(SW2_context_t* sw2, const GPIO_pin_t* gpio, uint8_t active_state, 
 	(sw2 -> confirm_start_time) = 0;
 }
 
-/* UPDATE THE STATE OF AN SW2 STRUCTURE.
- * @param sw2:	The switch to analyze.
- * @return:		None.
- */
+/*******************************************************************/
 void SW2_update_state(SW2_context_t* sw2) {
 	switch((sw2 -> internal_state)) {
 	case SW2_STATE_OFF:

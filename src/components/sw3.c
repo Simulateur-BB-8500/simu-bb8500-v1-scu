@@ -15,7 +15,7 @@
 
 /*** SW3 local macros ***/
 
-#define SW3_DEFAULT_VOLTAGE_MV		(ADC_VCC_DEFAULT_MV / 2); // Neutral = Vcc/2.
+#define SW3_DEFAULT_VOLTAGE_MV		(ADC_VCC_DEFAULT_MV / 2); // Neutral = VCC/2.
 #define SW3_DELTA_HYSTERESIS_MV		100 // Set the voltage difference (in mV) between low and high thresholds.
 #define SW3_BACK_THRESHOLD_LOW		((ADC_VCC_DEFAULT_MV / 4) - (SW3_DELTA_HYSTERESIS_MV / 2))
 #define SW3_BACK_THRESHOLD_HIGH 	((ADC_VCC_DEFAULT_MV / 4) + (SW3_DELTA_HYSTERESIS_MV / 2))
@@ -28,10 +28,7 @@ extern LSMCU_Context lsmcu_ctx;
 
 /*** SW3 local functions ***/
 
-/* CHECK IF A SW3 IS IN NEUTRAL POSITION.
- * @param sw3:		The switch to analyze.
- * @return result:	'1' if switch voltage indicates a neutral position, '0' otherwise.
- */
+/*******************************************************************/
 static uint8_t _SW3_voltage_is_neutral(SW3_context_t* sw3) {
 	uint8_t result = 0;
 	if (((sw3 -> voltage_mv) > SW3_BACK_THRESHOLD_HIGH) && ((sw3 -> voltage_mv) < SW3_FRONT_THRESHOLD_LOW)) {
@@ -40,10 +37,7 @@ static uint8_t _SW3_voltage_is_neutral(SW3_context_t* sw3) {
 	return result;
 }
 
-/* CHECK IF A SW3 IS IN BACK POSITION.
- * @param sw3:		The switch to analyze.
- * @return result:	'1' if switch voltage indicates a back position, '0' otherwise.
- */
+/*******************************************************************/
 static uint8_t _SW3_voltage_is_back(SW3_context_t* sw3) {
 	uint8_t result = 0;
 	if ((sw3 -> voltage_mv) < SW3_BACK_THRESHOLD_LOW) {
@@ -52,10 +46,7 @@ static uint8_t _SW3_voltage_is_back(SW3_context_t* sw3) {
 	return result;
 }
 
-/* CHECK IF A SW3 IS IN FRONT POSITION.
- * @param sw3:		The switch to analyze.
- * @return result:	'1' if switch voltage indicates a front position, '0' otherwise.
- */
+/*******************************************************************/
 static uint8_t _SW3_voltage_is_front(SW3_context_t* sw3) {
 	uint8_t result = 0;
 	if ((sw3 -> voltage_mv) > SW3_FRONT_THRESHOLD_HIGH) {
@@ -66,13 +57,7 @@ static uint8_t _SW3_voltage_is_front(SW3_context_t* sw3) {
 
 /*** SW3 functions ***/
 
-/* INITIALISE AN SW3 STRUCTURE.
- * @param sw3:				Switch structure to initialize.
- * @param gpio:				GPIO attached to the switch.
- * @param debouncing_ms:	Delay before validating ON/OFF state (in ms).
- * @param adc_data_ptr:		Pointer to the 12-bits ADC data.
- * @return:					None.
- */
+/*******************************************************************/
 void SW3_init(SW3_context_t* sw3, const GPIO_pin_t* gpio, uint32_t debouncing_ms, uint32_t* adc_data_ptr) {
 	// Init GPIO.
 	GPIO_configure(gpio, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
@@ -85,10 +70,7 @@ void SW3_init(SW3_context_t* sw3, const GPIO_pin_t* gpio, uint32_t debouncing_ms
 	(sw3 -> confirm_start_time) = 0;
 }
 
-/* UPDATE THE STATE OF AN SW3 STRUCTURE PERFORMING HYSTERESIS AND CONFIRMATION.
- * @param sw3:	The switch to analyze.
- * @return:		None.
- */
+/*******************************************************************/
 void SW3_update_state(SW3_context_t* sw3) {
 	// Update voltage (only if ZBA is closed).
 	(sw3 -> voltage_mv) = (lsmcu_ctx.zba_closed != 0) ? ADC1_convert_to_mv(*(sw3 -> adc_data_ptr)) : SW3_DEFAULT_VOLTAGE_MV;
