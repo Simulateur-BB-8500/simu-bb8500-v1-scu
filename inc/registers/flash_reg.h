@@ -10,8 +10,17 @@
 
 #include "stdint.h"
 
-/*** FLASH interface registers ***/
+/*** FLASH REG macros ***/
 
+// Peripheral base address.
+#define FLASH	((FLASH_registers_t*) ((uint32_t) 0x40023C00))
+
+/*** FLASH REG structures ***/
+
+/*!******************************************************************
+ * \enum FLASH_registers_t
+ * \brief FLASH registers map.
+ *******************************************************************/
 typedef struct {
 	volatile uint32_t ACR;    	// FLASH interface access control register.
 	volatile uint32_t KEYR;    	// FLASH interface key register.
@@ -21,9 +30,5 @@ typedef struct {
 	volatile uint32_t OPTCR;    // FLASH interface option control register.
 	volatile uint32_t OPTCR1;	// FLASH interface option control register.
 } FLASH_registers_t;
-
-/*** FLASH interface base address ***/
-
-#define FLASH	((FLASH_registers_t*) ((uint32_t) 0x40023C00))
 
 #endif /* __FLASH_REG_H__ */

@@ -10,8 +10,18 @@
 
 #include "stdint.h"
 
-/*** DMA registers ***/
+/*** DMA REG macros ***/
 
+// Peripherals base address.
+#define DMA1	((DMA_registers_t*) ((uint32_t) 0x40026000))
+#define DMA2	((DMA_registers_t*) ((uint32_t) 0x40026400))
+
+/*** DMA REG structures ***/
+
+/*!******************************************************************
+ * \enum DMA_registers_t
+ * \brief DMA registers map.
+ *******************************************************************/
 typedef struct {
 	volatile uint32_t LISR;		// DMA low interrupt status register.
 	volatile uint32_t HISR;		// DMA high interrupt status register.
@@ -66,10 +76,5 @@ typedef struct {
 	volatile uint32_t S7M1AR;	// DMA stream 7 memory 1 address register.
 	volatile uint32_t S7FCR;	// DMA stream 7 FIFO control register.
 } DMA_registers_t;
-
-/*** DMA registers base address ***/
-
-#define DMA1	((DMA_registers_t*) ((uint32_t) 0x40026000))
-#define DMA2	((DMA_registers_t*) ((uint32_t) 0x40026400))
 
 #endif /* __DMA_REG_H__ */

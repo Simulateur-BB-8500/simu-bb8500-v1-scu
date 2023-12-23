@@ -1,7 +1,7 @@
 /*
  * adc_reg.h
  *
- *  Created on: 19 sept. 2017
+ *  Created on: 19 sep. 2017
  *      Author: Ludo
  */
 
@@ -10,8 +10,20 @@
 
 #include "stdint.h"
 
-/*** ADC registers ***/
+/*** ADC REG macros ***/
 
+// Peripherals base address.
+#define ADC1	((ADC_registers_t*) ((uint32_t) 0x40012000))
+#define ADC2	((ADC_registers_t*) ((uint32_t) 0x40012100))
+#define ADC3	((ADC_registers_t*) ((uint32_t) 0x40012200))
+#define ADCCR	((ADC_common_registers_t*) ((uint32_t) 0x40012300))
+
+/*** ADC REG structures ***/
+
+/*!******************************************************************
+ * \enum ADC_registers_t
+ * \brief ADC registers map.
+ *******************************************************************/
 typedef struct {
 	volatile uint32_t SR;    	// ADC status register.
 	volatile uint32_t CR1;    	// ADC control register 1.
@@ -35,19 +47,14 @@ typedef struct {
 	volatile uint32_t DR;    	// ADC regular data register.
 } ADC_registers_t;
 
-/*** Common ADC registers ***/
-
+/*!******************************************************************
+ * \enum ADC_common_registers_t
+ * \brief ADC common registers map.
+ *******************************************************************/
 typedef struct {
 	volatile uint32_t CSR;    	// ADC common status register.
 	volatile uint32_t CCR;    	// ADC common control register.
 	volatile uint32_t CDR;    	// ADC common regular data register.
 } ADC_common_registers_t;
-
-/*** ADC base addresses ***/
-
-#define ADC1	((ADC_registers_t*) ((uint32_t) 0x40012000))
-#define ADC2	((ADC_registers_t*) ((uint32_t) 0x40012100))
-#define ADC3	((ADC_registers_t*) ((uint32_t) 0x40012200))
-#define ADCCR	((ADC_common_registers_t*) ((uint32_t) 0x40012300))
 
 #endif /* __ADC_REG_H__ */

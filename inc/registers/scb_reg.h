@@ -10,8 +10,17 @@
 
 #include "stdint.h"
 
-/*** SCB registers ***/
+/*** SCB REG macros ***/
 
+// Peripheral base address.
+#define SCB		((SCB_registers_t*) ((uint32_t) 0xE000ED00))
+
+/*** SCB REG structures ***/
+
+/*!******************************************************************
+ * \enum SCB_registers_t
+ * \brief SCB registers map.
+ *******************************************************************/
 typedef struct {
 	volatile uint32_t CPUID;	// SCB CPU ID base register.
 	volatile uint32_t ICSR;		// SCB interrupt control and state register.
@@ -28,9 +37,5 @@ typedef struct {
 	volatile uint32_t MMAR;		// SCB memory manage fault address register.
 	volatile uint32_t BFAR;		// SCB bus fault address register.
 } SCB_registers_t;
-
-/*** SCB base address ***/
-
-#define SCB		((SCB_registers_t*) ((uint32_t) 0xE000ED00))
 
 #endif /* __SCB_REG_H__ */

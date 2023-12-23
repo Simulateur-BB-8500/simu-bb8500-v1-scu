@@ -1,7 +1,7 @@
 /*
  * dac_reg.h
  *
- *  Created on: 18 sept. 2017
+ *  Created on: 18 sep. 2017
  *      Author: Ludo
  */
 
@@ -10,8 +10,17 @@
 
 #include "stdint.h"
 
-/*** DAC registers ***/
+/*** DAC REG macros ***/
 
+// Peripheral base address.
+#define DAC	((DAC_registers_t*) ((uint32_t) 0x40007400))
+
+/*** DAC REG structures ***/
+
+/*!******************************************************************
+ * \enum DAC_registers_t
+ * \brief DAC registers map.
+ *******************************************************************/
 typedef struct {
 	volatile uint32_t CR;    		// DAC control register.
 	volatile uint32_t SWTRIGR;    	// DAC software trigger register.
@@ -24,13 +33,9 @@ typedef struct {
 	volatile uint32_t DHR12RD;    	// Dual DAC 12-bits right-aligned data holding register.
 	volatile uint32_t DHR12LD;    	// Dual DAC 12-bits left-aligned data holding register.
 	volatile uint32_t DHR8RD;    	// Dual DAC 8-bits right-aligned data holding register.
-	uint32_t DOR1;    				// DAC channel 1 data output register.
-	uint32_t DOR2;    				// DAC channel 2 data output register.
+	volatile uint32_t DOR1;    		// DAC channel 1 data output register.
+	volatile uint32_t DOR2;    		// DAC channel 2 data output register.
 	volatile uint32_t SR;    		// DAC status register.
 } DAC_registers_t;
-
-/*** DAC base addresses ***/
-
-#define DAC	((DAC_registers_t*) ((uint32_t) 0x40007400))
 
 #endif /* __DAC_REG_H__ */

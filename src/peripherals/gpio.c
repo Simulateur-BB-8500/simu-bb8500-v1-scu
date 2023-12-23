@@ -1,7 +1,7 @@
 /*
  * gpio.c
  *
- *  Created on: 12 sept. 2017
+ *  Created on: 12 sep. 2017
  *      Author: Ludo
  */
 
