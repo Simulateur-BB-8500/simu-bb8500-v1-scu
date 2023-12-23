@@ -10,7 +10,22 @@
 
 /*** BPGD functions ***/
 
+/*!******************************************************************
+ * \fn void BPGD_init(void)
+ * \brief Init BPGD driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void BPGD_init(void);
-void BPGD_task(void);
+
+/*!******************************************************************
+ * \fn void BPGD_process(void)
+ * \brief Main task of BPGD driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void BPGD_process(void);
 
 #endif /* __BPGD_H__ */

@@ -27,26 +27,24 @@
 
 /*** BPGD local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	SW2_context_t sw2;
 	uint8_t enable;
 	uint32_t inhibit_start_ms;
-} BPGD_Context;
+} BPGD_context_t;
 
 /*** BPGD external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** BPGD local global variables ***/
 
-static BPGD_Context bpgd_ctx;
+static BPGD_context_t bpgd_ctx;
 
 /*** BPGD functions ***/
 
-/* INIT BPGD MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void BPGD_init(void) {
 	// Init GPIO.
 	SW2_init(&bpgd_ctx.sw2, &GPIO_BPGD, 0, 100); // BPGD active low.
@@ -55,11 +53,8 @@ void BPGD_init(void) {
 	bpgd_ctx.enable = 1;
 }
 
-/* MAIN TASK OF BPGD MODULE.
- * @param:	None.
- * @return:	None.
- */
-void BPGD_task(void) {
+/*******************************************************************/
+void BPGD_process(void) {
 	// Update BPGD state.
 	SW2_update_state(&bpgd_ctx.sw2);
 	if (bpgd_ctx.sw2.state == SW2_ON) {

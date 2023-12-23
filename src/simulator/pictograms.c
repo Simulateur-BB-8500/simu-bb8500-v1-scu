@@ -25,20 +25,20 @@
 
 /*** PICTOGRAMS local structures ***/
 
-// PICTOGRAMS bit index.
+/*******************************************************************/
 typedef enum {
-	PICTOGRAMS_LSDJ_BIT_INDEX = 0,
-	PICTOGRAMS_LSGR_BIT_INDEX,
-	PICTOGRAMS_LSS_BIT_INDEX,
-	PICTOGRAMS_LSCB_BIT_INDEX,
-	PICTOGRAMS_LSP_BIT_INDEX,
-	PICTOGRAMS_LSPAT_BIT_INDEX,
-	PICTOGRAMS_LSBA_BIT_INDEX,
-	PICTOGRAMS_LSPI_BIT_INDEX,
-	PICTOGRAMS_LSRH_BIT_INDEX,
-} PICTOGRAMS_BitIndex;
+	PICTOGRAMS_BIT_INDEX_LSDJ = 0,
+	PICTOGRAMS_BIT_INDEX_LSGR,
+	PICTOGRAMS_BIT_INDEX_LSS,
+	PICTOGRAMS_BIT_INDEX_LSCB,
+	PICTOGRAMS_BIT_INDEX_LSP,
+	PICTOGRAMS_BIT_INDEX_LSPAT,
+	PICTOGRAMS_BIT_INDEX_LSBA,
+	PICTOGRAMS_BIT_INDEX_LSPI,
+	PICTOGRAMS_BIT_INDEX_LSRH,
+} PICTOGRAMS_bit_index_t;
 
-// PICTOGRAMS internal state machine.
+/*******************************************************************/
 typedef enum {
 	PICTOGRAMS_STATE_OFF,
 	PICTOGRAMS_STATE_ZBA_CLOSED_TRANSITION1,
@@ -51,45 +51,40 @@ typedef enum {
 	PICTOGRAMS_STATE_DJ_LOCKED
 } PICTOGRAMS_state_t;
 
+/*******************************************************************/
 typedef struct {
 	PICTOGRAMS_state_t state;
 	unsigned long switch_state_time; // In ms.
 	unsigned long lsrh_blink_start_time; // In ms.
-} PICTOGRAMS_Context;
+} PICTOGRAMS_context_t;
 
 /*** PICTOGRAMS external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** PICTOGRAMS local global variables ***/
 
-static PICTOGRAMS_Context pictograms_ctx;
+static PICTOGRAMS_context_t pictograms_ctx;
 
 /*** PICTOGRAMS local functions ***/
 
-/* SET THE STATE OF ALL LIGHTS.
- * @param pictograms_state_mask:	Lights mask defined as [LSRH|LSPI|LSBA|LSPAT|LSP|LSCB|LSS|LSGR|LSDJ].
- * @return:					None.
- */
+/*******************************************************************/
 static void _PICTOGRAMS_set_state(uint32_t pictograms_state_mask) {
 	// Set all lights state.
-	GPIO_write(&GPIO_LSDJ, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSDJ_BIT_INDEX)));
-	GPIO_write(&GPIO_LSGR, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSGR_BIT_INDEX)));
-	GPIO_write(&GPIO_LSS, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSS_BIT_INDEX)));
-	GPIO_write(&GPIO_LSCB, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSCB_BIT_INDEX)));
-	GPIO_write(&GPIO_LSP, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSP_BIT_INDEX)));
-	GPIO_write(&GPIO_LSPAT, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSPAT_BIT_INDEX)));
-	GPIO_write(&GPIO_LSBA, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSBA_BIT_INDEX)));
-	GPIO_write(&GPIO_LSPI, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSPI_BIT_INDEX)));
-	GPIO_write(&GPIO_LSRH, (pictograms_state_mask & (0b1 << PICTOGRAMS_LSRH_BIT_INDEX)));
+	GPIO_write(&GPIO_LSDJ,  (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSDJ)));
+	GPIO_write(&GPIO_LSGR,  (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSGR)));
+	GPIO_write(&GPIO_LSS,   (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSS)));
+	GPIO_write(&GPIO_LSCB,  (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSCB)));
+	GPIO_write(&GPIO_LSP,   (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSP)));
+	GPIO_write(&GPIO_LSPAT, (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSPAT)));
+	GPIO_write(&GPIO_LSBA,  (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSBA)));
+	GPIO_write(&GPIO_LSPI,  (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSPI)));
+	GPIO_write(&GPIO_LSRH,  (pictograms_state_mask & (0b1 << PICTOGRAMS_BIT_INDEX_LSRH)));
 }
 
 /*** PICTOGRAMS functions ***/
 
-/* INIT PICTOGRAMS MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void PICTOGRAMS_init(void) {
 	// Init GPIOs.
 	GPIO_configure(&GPIO_LSDJ, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
@@ -108,11 +103,8 @@ void PICTOGRAMS_init(void) {
 	lsmcu_ctx.lsrh_blink_request = 0;
 }
 
-/* MAIN TASK OF PICTOGRAMS MODULE.
- * @param:	None.
- * @return:	None.
- */
-void PICTOGRAMS_task(void) {
+/*******************************************************************/
+void PICTOGRAMS_process(void) {
 	// Perform state machine.
 	switch (pictograms_ctx.state) {
 	case PICTOGRAMS_STATE_OFF:

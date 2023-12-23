@@ -16,36 +16,31 @@
 
 /*** WHISTLE local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	SW3_context_t sw3;
 	SW3_state_t previous_state;
-} WHISTLE_Context;
+} WHISTLE_context_t;
 
 /*** WHISTLE external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** WHISTLE local global variables ***/
 
-static WHISTLE_Context whistle_ctx;
+static WHISTLE_context_t whistle_ctx;
 
 /*** WHISTLE functions ***/
 
-/* INIT WHISTLE MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void WHISTLE_init(void) {
 	// Init GPIO.
 	SW3_init(&whistle_ctx.sw3, &GPIO_WHISTLE, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_S]));
 	whistle_ctx.previous_state = SW3_NEUTRAL;
 }
 
-/* MAIN ROUTINE OF WHISTLE MODULE.
- * @param:	None.
- * @return:	None.
- */
-void WHISTLE_task(void) {
+/*******************************************************************/
+void WHISTLE_process(void) {
 	// Update current state.
 	SW3_update_state(&whistle_ctx.sw3);
 	// Perform actions according to state.

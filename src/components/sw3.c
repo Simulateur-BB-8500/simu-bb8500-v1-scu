@@ -24,7 +24,7 @@
 
 /*** SW3 external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** SW3 local functions ***/
 

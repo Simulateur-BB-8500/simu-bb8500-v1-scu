@@ -38,7 +38,7 @@ extern STEP_MOTOR_context_t step_motor_re;
 extern STEP_MOTOR_context_t step_motor_cg;
 extern STEP_MOTOR_context_t step_motor_cf1;
 extern STEP_MOTOR_context_t step_motor_cf2;
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** MANOMETER local global variables ***/
 
@@ -50,10 +50,7 @@ static MANOMETER_context_t manometer_cf2 = {&step_motor_cf2, 4200, 6000,  (MANOM
 
 /*** MANOMETER local functions ***/
 
-/* MANOMETER MAIN TASK (CALLED BY TIM7 INTERRUPT HANDLER EVERY 100us).
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void __attribute__((optimize("-O0"))) _MANOMETER_needle_task(MANOMETER_context_t* manometer) {
 	// Local variables.
 	uint32_t current_step = (manometer -> step_motor -> step);
@@ -113,6 +110,7 @@ static void __attribute__((optimize("-O0"))) _MANOMETER_needle_task(MANOMETER_co
 	}
 }
 
+/*******************************************************************/
 static void _MANOMETER_needle_task_all(void) {
 	// Perform manometers needle control.
 	_MANOMETER_needle_task(lsmcu_ctx.manometer_cp);
@@ -122,10 +120,7 @@ static void _MANOMETER_needle_task_all(void) {
 	_MANOMETER_needle_task(lsmcu_ctx.manometer_cf2);
 }
 
-/* POWER MANOMETER DRIVERS.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void _MANOMETER_power_on_all(void) {
 	// Turn step motors on.
 	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 1);
@@ -133,10 +128,7 @@ static void _MANOMETER_power_on_all(void) {
 	TIM7_start();
 }
 
-/* POWER MANOMETER DRIVERS.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void _MANOMETER_power_off_all(void) {
 	// Stop timer.
 	TIM7_stop();
@@ -144,10 +136,7 @@ static void _MANOMETER_power_off_all(void) {
 	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 0);
 }
 
-/* UPDATE MANOMETER ZERO TARGET FLAG.
- * @param manometer:	Manometer to update.
- * @return:				None.
- */
+/*******************************************************************/
 static void _MANOMETER_update_zero_target_flag(MANOMETER_context_t* manometer) {
 	// Update flag.
 	(manometer -> step_target_zero_flag) = ((manometer -> step_target) == (manometer -> step_motor -> step_zero_offset)) ? 1 : 0;
@@ -155,11 +144,8 @@ static void _MANOMETER_update_zero_target_flag(MANOMETER_context_t* manometer) {
 
 /*** MANOMETER functions ***/
 
-/* MANOMETER COMMON INIT.
- * @param:	None.
- * @return:	None.
- */
-void MANOMETER_init_all(void) {
+/*******************************************************************/
+void MANOMETER_init(void) {
 	// Init GPIOs.
 	GPIO_configure(&GPIO_MANOMETER_POWER_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init step motors.
@@ -180,11 +166,8 @@ void MANOMETER_init_all(void) {
 	TIM7_init(MANOMETER_STEP_IRQ_PERIOD_US, &_MANOMETER_needle_task_all);
 }
 
-/* CONTROL MANOMETER POWER.
- * @param:	None.
- * @return:	None.
- */
-void MANOMETER_manage_power_all(void) {
+/*******************************************************************/
+void MANOMETER_manage_power(void) {
 	// Check all manometer.
 	if ((manometer_cp.is_moving  == 0) &&
 		(manometer_re.is_moving  == 0) &&
@@ -196,11 +179,7 @@ void MANOMETER_manage_power_all(void) {
 	}
 }
 
-/* UPDATE PRESSURE TARGET.
- * @param manometer:				Manometer to control.
- * @param pressure_mbar:			New pressure expressed in millibar.
- * @param speed_mbar_per_second:	Needle speed in millibar per second.
- */
+/*******************************************************************/
 void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_mbar, uint32_t speed_mbar_per_second) {
 	// Local variables.
 	uint32_t new_step_target = 0;
@@ -229,10 +208,7 @@ void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_mb
 	}
 }
 
-/* GET CURRENT MANOMETER PRESSURE.
- * @param manometer:		Manometer to read.
- * @return pressure_mbar:	Current pressure displayed by the manometer in millibar.
- */
+/*******************************************************************/
 uint32_t MANOMETER_get_pressure(MANOMETER_context_t* manometer) {
 	// Convert step to pressure.
 	uint32_t pressure_mbar = 0;
@@ -244,10 +220,7 @@ uint32_t MANOMETER_get_pressure(MANOMETER_context_t* manometer) {
 	return pressure_mbar;
 }
 
-/* CHECK IF PRESSURE IS INCREASING.
- * @param manometer:	Manometer to read.
- * @return increasing:	1 if the pressure is currently increasing, 0 otherwise.
- */
+/*******************************************************************/
 uint8_t MANOMETER_is_pressure_increasing(MANOMETER_context_t* manometer) {
 	uint8_t increasing = 0;
 	if ((manometer -> step_motor -> step) < (manometer -> step_target)) {
@@ -256,10 +229,7 @@ uint8_t MANOMETER_is_pressure_increasing(MANOMETER_context_t* manometer) {
 	return increasing;
 }
 
-/* STOP NEEDLE MOVEMENT.
- * @param manometer:	Manometer to control.
- * @return:				None.
- */
+/*******************************************************************/
 void MANOMETER_needle_stop(MANOMETER_context_t* manometer) {
 	// Update target to perform inertia.
 	// Up direction.

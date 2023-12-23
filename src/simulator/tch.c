@@ -19,7 +19,7 @@
 
 /*** TCH local structures ***/
 
-// Internal state machine.
+/*******************************************************************/
 typedef enum {
 	TCH_STATE_OFF,
 	TCH_STATE_STEP1,
@@ -28,11 +28,11 @@ typedef enum {
 	TCH_STATE_STEP4,
 	TCH_STATE_STEP5,
 	TCH_STATE_STEP6,
-} TCH_State;
+} TCH_state_t;
 
 /*** TCH external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** TCH local global variables ***/
 
@@ -53,14 +53,11 @@ static const uint32_t tch_step_delay_us[TCH_SPEED_MAX_KMH + 1] = {500000, 500000
 																  14195,  14088,  13983,  13879,  13777,  13676,  13577,  13480,  13383,  13288,
 																  13195,  13102,  13011,  12922,  12833,  12746,  12660,  12575,  12491,  12408,
 																  12326,  12246,  12166,  12088,  12010,  11934,  11858,  11784,  11710,  11637};
-static TCH_State tch_state;
+static TCH_state_t tch_state;
 
 /*** TCH local functions ***/
 
-/* DISABLE ALL MOTOR PHASES.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 #define _TCH_inhibit_all_drivers(void) { \
 	GPIO_write(&GPIO_TCH_INH_A, 0); \
 	GPIO_write(&GPIO_TCH_INH_B, 0); \
@@ -69,10 +66,7 @@ static TCH_State tch_state;
 
 /*** TCH functions ***/
 
-/* CONFIGURE TCH CONTROL INTERFACE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void TCH_init(void) {
 	// Init INH outputs.
 	GPIO_configure(&GPIO_TCH_INH_A, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
@@ -91,11 +85,8 @@ void TCH_init(void) {
 	TIM5_init();
 }
 
-/* MAIN ROUTINE OF TCH CONTROL INTERFACE.
- * @param:	None.
- * @return:	None.
- */
-void TCH_task(void) {
+/*******************************************************************/
+void TCH_process(void) {
 	// Perform state machine.
 	switch (tch_state) {
 	case TCH_STATE_OFF:

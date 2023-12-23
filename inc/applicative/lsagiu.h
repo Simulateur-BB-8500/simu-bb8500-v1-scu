@@ -17,6 +17,10 @@
 
 /*** LSAGIU structures ***/
 
+/*!******************************************************************
+ * \enum LSMCU_output_command_t
+ * \brief LSMCU output commands to LSAGIU.
+ *******************************************************************/
 typedef enum {
 	LSMCU_OUT_ZBA_ON = 0,
 	LSMCU_OUT_ZBA_OFF,
@@ -74,8 +78,12 @@ typedef enum {
 	LSMCU_OUT_ZLFRD_OFF,
 	LSMCU_OUT_EMERGENCY,
 	LSMCU_OUT_NOP = 0xFF
-} LSMCU_To_LSAGIU;
+} LSMCU_output_command_t;
 
+/*!******************************************************************
+ * \enum LSMCU_input_commands_t
+ * \brief LSMCU input commands from LSAGIU.
+ *******************************************************************/
 typedef enum {
 	// First range is reserved for coding speed in km/h.
 	LSMCU_TCH_SPEED_OFFSET = 0,
@@ -85,12 +93,35 @@ typedef enum {
 	LSMCU_SPEED_LIMIT_LAST = (LSMCU_SPEED_LIMIT_OFFSET + 1 + (TCH_SPEED_MAX_KMH / LSAGIU_SPEED_LIMIT_FACTOR)),
 	// NOP.
 	LSMCU_IN_NOP = 0xFF
-} LSAGIU_To_LSMCU;
+} LSMCU_input_commands_t;
 
 /*** LSAGIU functions ***/
 
+/*!******************************************************************
+ * \fn void LSAGIU_init(void)
+ * \brief Init LSAGIU interface.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void LSAGIU_init(void);
-void LSAGIU_write(uint8_t command);
-void LSAGIU_task(void);
+
+/*!******************************************************************
+ * \fn void LSAGIU_write(uint8_t command)
+ * \brief Send a command to LSAGIU.
+ * \param[in]  	command: Command to send.
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void LSAGIU_write(LSMCU_output_command_t command);
+
+/*!******************************************************************
+ * \fn void LSAGIU_process(void)
+ * \brief Main task of LSAGIU interface.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void LSAGIU_process(void);
 
 #endif /* LSAGIU_H */

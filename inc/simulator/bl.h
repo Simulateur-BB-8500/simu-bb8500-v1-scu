@@ -10,7 +10,22 @@
 
 /*** BL functions ***/
 
+/*!******************************************************************
+ * \fn void BL_init(void)
+ * \brief Init BL driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void BL_init(void);
-void BL_task(void);
+
+/*!******************************************************************
+ * \fn void BL_process(void)
+ * \brief Main task of BL driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void BL_process(void);
 
 #endif /* __BL_H__ */

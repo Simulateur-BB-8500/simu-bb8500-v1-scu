@@ -23,25 +23,23 @@
 
 /*** EMERGENCY local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	SW2_context_t bpurg;
 	uint8_t previous_state;
-} EMERGENCY_Context;
+} EMERGENCY_context_t;
 
 /*** EMERGENCY external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** EMERGENCY local global variables ***/
 
-static EMERGENCY_Context emergency_ctx;
+static EMERGENCY_context_t emergency_ctx;
 
 /*** EMERGENCY functions ***/
 
-/* INIT EMERGENCY MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void EMERGENCY_init(void) {
 	// Init GPIO.
 	SW2_init(&emergency_ctx.bpurg, &GPIO_BPURG, 0, 100); // EMERGENCY active low.
@@ -50,11 +48,8 @@ void EMERGENCY_init(void) {
 	lsmcu_ctx.emergency = 0;
 }
 
-/* MAIN TAS OF EMERGENCY MODULE.
- * @param:	None.
- * @return:	None.
- */
-void EMERGENCY_task(void) {
+/*******************************************************************/
+void EMERGENCY_process(void) {
 	// Update BPURG state.
 	SW2_update_state(&emergency_ctx.bpurg);
 	if (emergency_ctx.bpurg.state == SW2_ON) {

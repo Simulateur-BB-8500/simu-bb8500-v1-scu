@@ -25,7 +25,7 @@
 
 /*** PBL2 external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** PBL2 local global variables ***/
 
@@ -33,10 +33,7 @@ static SW4_context_t pbl2_sw4;
 
 /*** PBL2 functions ***/
 
-/* INIT PBL2 MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void PBL2_init(void) {
 	// Init GPIO.
 	SW4_init(&pbl2_sw4, &GPIO_PBL2, 500, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_PBL2]));
@@ -44,11 +41,8 @@ void PBL2_init(void) {
 	lsmcu_ctx.pbl2_on = 0;
 }
 
-/* MAIN ROUTINE OF PBL2 MODULE.
- * @param:	None.
- * @return:	None.
- */
-void PBL2_task(void) {
+/*******************************************************************/
+void PBL2_process(void) {
 	// Update current state.
 	SW4_update_state(&pbl2_sw4);
 	// Perform actions according to state.

@@ -23,6 +23,7 @@
 
 /*** FD local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	SW3_context_t sw3;
 	SW3_state_t previous_state;
@@ -30,7 +31,7 @@ typedef struct {
 
 /*** FD external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** FD local global variables ***/
 
@@ -38,21 +39,15 @@ static FD_context_t fd_ctx;
 
 /*** FD functions ***/
 
-/* INIT FD MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void FD_init(void) {
 	// Init GPIO.
 	SW3_init(&fd_ctx.sw3, &GPIO_FD, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_FD]));
 	fd_ctx.previous_state = SW3_NEUTRAL;
 }
 
-/* MAIN ROUTINE OF FD MODULE.
- * @param:	None.
- * @return:	None.
- */
-void FD_task(void) {
+/*******************************************************************/
+void FD_process(void) {
 	// Local variables.
 	uint8_t command_required = 0;
 	// Update current state.

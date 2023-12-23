@@ -8,11 +8,24 @@
 #ifndef __PBL2_H__
 #define __PBL2_H__
 
-#include "stdint.h"
-
 /*** PBL2 functions ***/
 
+/*!******************************************************************
+ * \fn void BL_init(void)
+ * \brief Init BL driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void PBL2_init(void);
-void PBL2_task(void);
+
+/*!******************************************************************
+ * \fn void BL_process(void)
+ * \brief Main task of BL driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void PBL2_process(void);
 
 #endif /* __PBL2_H__ */

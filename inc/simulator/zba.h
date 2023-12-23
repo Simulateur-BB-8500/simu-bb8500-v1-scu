@@ -10,7 +10,22 @@
 
 /*** ZBA functions ***/
 
+/*!******************************************************************
+ * \fn void ZBA_init(void)
+ * \brief Init ZBA driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void ZBA_init(void);
-void ZBA_task(void);
+
+/*!******************************************************************
+ * \fn void ZBA_process(void)
+ * \brief Main task of ZBA driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void ZBA_process(void);
 
 #endif /* __ZBA_H__ */

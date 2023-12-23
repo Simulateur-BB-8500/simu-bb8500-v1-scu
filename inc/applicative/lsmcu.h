@@ -14,6 +14,10 @@
 
 /*** LSMCU structure ***/
 
+/*!******************************************************************
+ * \struct LSMCU_context_t
+ * \brief Global simulator context.
+ *******************************************************************/
 typedef struct {
 	uint8_t zba_closed;
 	uint8_t bl_unlocked;
@@ -33,6 +37,6 @@ typedef struct {
 	MANOMETER_context_t* manometer_cg;
 	MANOMETER_context_t* manometer_cf1;
 	MANOMETER_context_t* manometer_cf2;
-} LSMCU_Context;
+} LSMCU_context_t;
 
 #endif /* LSMCU_H */

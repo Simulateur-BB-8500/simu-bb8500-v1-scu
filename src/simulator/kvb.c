@@ -50,6 +50,7 @@
 
 /*** KVB local structures ***/
 
+/*******************************************************************/
 typedef enum {
 	KVB_STATE_OFF,
 	KVB_STATE_PA400,
@@ -59,12 +60,12 @@ typedef enum {
 	KVB_STATE_WAIT_VALIDATION,
 	KVB_STATE_IDLE,
 	KVB_STATE_EMERGENCY
-} KVB_State;
+} KVB_state_t;
 
-// KVB context.
+/*******************************************************************/
 typedef struct KVB_context_t {
 	// State machine.
-	KVB_State state;
+	KVB_state_t state;
 	uint32_t state_switch_time_ms;
 	// Buttons.
 	SW2_context_t bpval;
@@ -86,7 +87,7 @@ typedef struct KVB_context_t {
 
 /*** KVB external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** KVB local global variables ***/
 
@@ -96,11 +97,20 @@ static const GPIO_pin_t* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_Z
 
 /*** KVB local functions ***/
 
-/* RETURNS THE SEGMENT CONFIGURATION TO DISPLAY A GIVEN ASCII CHARACTER.
- * @param ascii:	ASCII code of the input character.
- * @param segment:	The corresponding segment configuration, coded as <dot G F E D B C B A>.
- * 					0 (all segments off) if the input character is unknown or can't be displayed with 7 segments.
- */
+/*******************************************************************/
+static void __attribute__((optimize("-O0"))) _KVB_sweep(void) {
+	// Read register.
+	volatile uint32_t reg_value = (GPIOG -> ODR);
+	// Set bits.
+	reg_value &= KVB_GPIO_MASK;
+	reg_value |= kvb_ctx.segment_buf[kvb_ctx.display_idx];
+	// Write register.
+	GPIOG -> ODR = reg_value;
+	// Increment and manage index.
+	kvb_ctx.display_idx = (kvb_ctx.display_idx + 1) % KVB_NUMBER_OF_DISPLAYS;
+}
+
+/*******************************************************************/
 static uint8_t _KVB_ascii_to_7_segments(uint8_t ascii) {
 	uint8_t segment = 0;
 	switch (ascii) {
@@ -201,10 +211,7 @@ static uint8_t _KVB_ascii_to_7_segments(uint8_t ascii) {
 	return segment;
 }
 
-/* COMPUTE THE DUTY CYCLE TO MAKE LVAL BLINK.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void _KVB_blink_lval(void) {
 	// TBC: add time offset to start at 0%.
 	uint32_t t = TIM2_get_milliseconds() % KVB_LVAL_BLINK_PERIOD_MS;
@@ -220,10 +227,7 @@ static void _KVB_blink_lval(void) {
 	TIM8_set_duty_cycle(lvalDutyCycle);
 }
 
-/* COMPUTE THE DUTY CYCLE TO MAKE LVAL BLINK.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void _KVB_blink_lssf(void) {
 	// TBC: add time offset to start at 0.
 	uint32_t t = TIM2_get_milliseconds() % KVB_LSSF_BLINK_PERIOD_MS;
@@ -236,10 +240,7 @@ static void _KVB_blink_lssf(void) {
 	}
 }
 
-/* FILL KVB ASCII BUFFER FOR FUTURE DISPLAYING.
- * @param display:	String to display (cut if too long, padded with null character if too short).
- * @return:			None.
- */
+/*******************************************************************/
 static void _KVB_display(uint8_t* display) {
 	// Local variables.
 	uint8_t idx = 0;
@@ -265,10 +266,7 @@ static void _KVB_display(uint8_t* display) {
 	TIM6_start();
 }
 
-/* TURN ALL KVB DISPLAYS OFF.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void _KVB_display_off(void) {
 	uint32_t i = 0;
 	// Flush buffers and switch off GPIOs.
@@ -284,26 +282,7 @@ static void _KVB_display_off(void) {
 	TIM6_stop();
 }
 
-/* PROCESS KVB DISPLAY (CALLED BY TIM6 INTERRUPT HANDLER EVERY 2ms).
- * @param:	None.
- * @return:	None.
- */
-static void __attribute__((optimize("-O0"))) _KVB_sweep(void) {
-	// Read register.
-	volatile uint32_t reg_value = (GPIOG -> ODR);
-	// Set bits.
-	reg_value &= KVB_GPIO_MASK;
-	reg_value |= kvb_ctx.segment_buf[kvb_ctx.display_idx];
-	// Write register.
-	GPIOG -> ODR = reg_value;
-	// Increment and manage index.
-	kvb_ctx.display_idx = (kvb_ctx.display_idx + 1) % KVB_NUMBER_OF_DISPLAYS;
-}
-
-/* TURN ALL KVB LIGHTS OFF.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void _KVB_lights_off(void) {
 	// Turn all GPIOs off.
 	TIM8_stop();
@@ -321,10 +300,7 @@ static void _KVB_lights_off(void) {
 
 /*** KVB functions ***/
 
-/* INITIALISE KVB MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void KVB_init(void) {
 	// Local variables.
 	uint8_t idx = 0;
@@ -364,11 +340,8 @@ void KVB_init(void) {
 	TIM8_init();
 }
 
-/* MAIN ROUTINE OF KVB.
- * @param:	None.
- * @return:	None.
- */
-void KVB_task(void) {
+/*******************************************************************/
+void KVB_process(void) {
 	// Update buttons state.
 	SW2_update_state(&kvb_ctx.bpval);
 	SW2_update_state(&kvb_ctx.bpmv);

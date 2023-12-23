@@ -24,6 +24,7 @@
 
 /*** MP local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	// GPIOs.
 	SW2_context_t zero;
@@ -42,25 +43,22 @@ typedef struct {
 	uint8_t f_fast_on;
 	SW2_context_t transition;
 	uint8_t transition_on;
-	// Rheostat management.
+	// RH management.
 	uint8_t gear_count;
 	unsigned long gear_switch_next_time;
-} MP_Context;
+} MP_context_t;
 
 /*** MP external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** MP local global variables ***/
 
-static MP_Context mp_ctx;
+static MP_context_t mp_ctx;
 
 /*** MP local functions ***/
 
-/* INCREASE GEAR COUNT.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void _MP_increase_gear(void) {
 	// Check gear count.
 	if (mp_ctx.gear_count < MP_GEAR_MAX) {
@@ -71,10 +69,7 @@ static void _MP_increase_gear(void) {
 	}
 }
 
-/* DECREASE GEAR COUNT.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 static void _MP_decrease_gear(void) {
 	// Check gear count.
 	if (mp_ctx.gear_count > 0) {
@@ -87,10 +82,7 @@ static void _MP_decrease_gear(void) {
 
 /*** MP functions ***/
 
-/* INIT MP MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void MP_init(void) {
 	// Init GPIOs.
 	SW2_init(&mp_ctx.zero, &GPIO_MP_0, 1, 100); // MP_0 active high.
@@ -118,11 +110,8 @@ void MP_init(void) {
 	lsmcu_ctx.series_traction = 1;
 }
 
-/* MAIN ROUTINE OF MP MODULE.
- * @param:	None.
- * @return:	None.
- */
-void MP_task(void) {
+/*******************************************************************/
+void MP_process(void) {
 	// Update global context.
 	lsmcu_ctx.rheostat_0 = (mp_ctx.gear_count == 0) ? 1 : 0;
 	// MP.0.

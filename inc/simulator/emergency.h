@@ -8,7 +8,22 @@
 #ifndef __EMERGENCY_H__
 #define __EMERGENCY_H__
 
+/*!******************************************************************
+ * \fn void EMERGENCY_init(void)
+ * \brief Init EMERGENCY driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void EMERGENCY_init(void);
-void EMERGENCY_task(void);
+
+/*!******************************************************************
+ * \fn void EMERGENCY_process(void)
+ * \brief Main task of emergency driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void EMERGENCY_process(void);
 
 #endif /* __EMERGENCY_H__ */

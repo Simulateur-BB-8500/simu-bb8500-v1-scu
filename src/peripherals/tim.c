@@ -20,7 +20,7 @@
 
 /*** TIM external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 static TIM_completion_irq_cb_t tim6_update_irq_callback = NULL;
 static TIM_completion_irq_cb_t tim7_update_irq_callback = NULL;
 

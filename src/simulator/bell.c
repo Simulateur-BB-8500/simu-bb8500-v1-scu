@@ -16,38 +16,37 @@
 
 /*** BELL local macros ***/
 
-#define BELL_RING_PULSE_DURATION_MS	250
+#define BELL_RING_PULSE_DURATION_MS		250
 
 /*** BELL local structures ***/
 
+/*******************************************************************/
 typedef enum {
 	BELL_STATE_ENABLED,
 	BELL_STATE_RING1,
 	BELL_STATE_RELEASE1,
 	BELL_STATE_RING2,
 	BELL_STATE_DISABLED
-} BELL_State;
+} BELL_state_t;
 
+/*******************************************************************/
 typedef struct {
 	// Input.
 	SW2_context_t zlct;
 	// State machine.
-	BELL_State state;
+	BELL_state_t state;
 	uint32_t switch_state_time; // In ms.
-} BELL_Context;
+} BELL_context_t;
 
 /*** BELL external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** BELL local global variables ***/
 
-static BELL_Context bell_ctx;
+static BELL_context_t bell_ctx;
 
-/* INIT BELL MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void BELL_init(void) {
 	// Init GPIO.
 	SW2_init(&bell_ctx.zlct, &GPIO_ZLCT, 0, 100); // ZLCT active low.
@@ -57,7 +56,8 @@ void BELL_init(void) {
 	bell_ctx.switch_state_time = 0;
 }
 
-void BELL_task(void) {
+/*******************************************************************/
+void BELL_process(void) {
 	// Perform state machine.
 	SW2_update_state(&bell_ctx.zlct);
 	switch (bell_ctx.state) {

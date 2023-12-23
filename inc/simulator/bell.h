@@ -10,7 +10,22 @@
 
 /*** BELL functions ***/
 
+/*!******************************************************************
+ * \fn void BELL_init(void)
+ * \brief Init BELL driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void BELL_init(void);
-void BELL_task(void);
+
+/*!******************************************************************
+ * \fn void BELL_process(void)
+ * \brief Main task of BELL driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void BELL_process(void);
 
 #endif /* __BELL_H___ */

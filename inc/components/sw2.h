@@ -34,8 +34,8 @@ typedef enum {
 } SW2_internal_state_t;
 
 /*!******************************************************************
- * \enum SW2_context_t
- * \brief 2-positions context structure.
+ * \struct SW2_context_t
+ * \brief 2-positions switch context structure.
  *******************************************************************/
 typedef struct {
 	const GPIO_pin_t* gpio;

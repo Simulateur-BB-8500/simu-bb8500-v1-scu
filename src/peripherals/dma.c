@@ -15,7 +15,7 @@
 
 /*** DMA external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** DMA functions ***/
 

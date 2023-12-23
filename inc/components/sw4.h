@@ -40,8 +40,8 @@ typedef enum {
 } SW4_internal_state_t;
 
 /*!******************************************************************
- * \enum SW4_context_t
- * \brief 4-positions context structure.
+ * \struct SW4_context_t
+ * \brief 4-positions switch context structure.
  *******************************************************************/
 typedef struct {
 	uint32_t* adc_data_ptr; // Pointer to the 14-bits ADC data.

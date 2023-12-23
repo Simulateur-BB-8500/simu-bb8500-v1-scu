@@ -17,6 +17,7 @@
 
 /*** MPINV local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	SW3_context_t sw3;
 	SW3_state_t previous_state;
@@ -24,7 +25,7 @@ typedef struct {
 
 /*** MPINV external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** MPINV local global variables ***/
 
@@ -32,21 +33,15 @@ static MPINV_context_t mpinv_ctx;
 
 /*** MPINV functions ***/
 
-/* INIT MPINV MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void MPINV_init(void) {
 	// Init GPIO.
 	SW3_init(&mpinv_ctx.sw3, &GPIO_MPINV, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_MPINV]));
 	mpinv_ctx.previous_state = SW3_NEUTRAL;
 }
 
-/* MAIN ROUTINE OF MPINV MODULE.
- * @param:	None.
- * @return:	None.
- */
-void MPINV_task(void) {
+/*******************************************************************/
+void MPINV_process(void) {
 	// Update current state.
 	SW3_update_state(&mpinv_ctx.sw3);
 	// Perform actions according to state.

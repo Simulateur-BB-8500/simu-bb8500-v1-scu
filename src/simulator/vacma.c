@@ -22,6 +22,7 @@
 
 /*** VACMA local structures ***/
 
+/*******************************************************************/
 typedef enum {
 	VACMA_STATE_OFF,
 	VACMA_STATE_HOLD,
@@ -29,31 +30,29 @@ typedef enum {
 	VACMA_STATE_RELEASED,
 	VACMA_STATE_RELEASED_ALARM,
 	VACMA_STATE_EMERGENCY
-} VACMA_State;
+} VACMA_state_t;
 
+/*******************************************************************/
 typedef struct {
 	// Inputs.
 	SW2_context_t bl_zva;
 	SW2_context_t mp_va;
 	// State machine.
-	VACMA_State state;
+	VACMA_state_t state;
 	uint32_t switch_state_time; // In ms.
-} VACMA_Context;
+} VACMA_context_t;
 
 /*** VACMA external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** VACMA local global variables ***/
 
-static VACMA_Context vacma_ctx;
+static VACMA_context_t vacma_ctx;
 
 /*** VACMA functions ***/
 
-/* INIT VACMA MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void VACMA_init(void) {
 	// Init GPIOs.
 	SW2_init(&vacma_ctx.bl_zva, &GPIO_BL_ZVA, 0, 100); // MP_0 active low.
@@ -67,11 +66,8 @@ void VACMA_init(void) {
 	vacma_ctx.switch_state_time = 0;
 }
 
-/* MAIN ROUTINE OF VACMA MODULE.
- * @param:	None.
- * @return:	None.
- */
-void VACMA_task(void) {
+/*******************************************************************/
+void VACMA_process(void) {
 	// Update inputs.
 	SW2_update_state(&vacma_ctx.bl_zva);
 	SW2_update_state(&vacma_ctx.mp_va);

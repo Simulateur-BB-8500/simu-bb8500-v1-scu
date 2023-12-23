@@ -15,7 +15,7 @@
 
 /*** ZBA external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** ZBA local global variables ***/
 
@@ -23,10 +23,7 @@ static SW2_context_t zba;
 
 /*** ZBA functions ***/
 
-/* INIT ZDA MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void ZBA_init(void) {
 	// Init GPIO.
 	SW2_init(&zba, &GPIO_ZBA, 1, 100); // ZBA active high (+3.3V supply present).
@@ -34,11 +31,8 @@ void ZBA_init(void) {
 	lsmcu_ctx.zba_closed = 0;
 }
 
-/* MAIN TASK OF ZBA MODULE.
- * @param:	None.
- * @return:	None.
- */
-void ZBA_task(void) {
+/*******************************************************************/
+void ZBA_process(void) {
 	// Update ZBA state.
 	SW2_update_state(&zba);
 	if (zba.state == SW2_ON) {

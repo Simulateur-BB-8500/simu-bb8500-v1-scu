@@ -26,7 +26,7 @@
 
 /*** SW4 external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** SW4 local functions ***/
 

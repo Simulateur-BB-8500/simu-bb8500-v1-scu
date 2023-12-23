@@ -16,6 +16,7 @@
 
 /*** BL local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	SW2_context_t zdv;
 	SW2_context_t zdj;
@@ -29,22 +30,19 @@ typedef struct {
 	uint8_t zfd_on;
 	SW2_context_t zpr;
 	uint8_t zpr_on;
-} BL_Context;
+} BL_context_t;
 
 /*** BL external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** BL local global variables ***/
 
-static BL_Context bl_ctx;
+static BL_context_t bl_ctx;
 
 /*** BL functions ***/
 
-/* INIT BL MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void BL_init(void) {
 	// Init GPIOs.
 	SW2_init(&bl_ctx.zdv, &GPIO_BL_ZDV, 0, 100); // ZDV active low.
@@ -65,11 +63,8 @@ void BL_init(void) {
 	lsmcu_ctx.dj_locked = 0;
 }
 
-/* MAIN ROUTINE OF BL MODULE.
- * @param:	None.
- * @return:	None.
- */
-void BL_task(void) {
+/*******************************************************************/
+void BL_process(void) {
 	// ZDV.
 	SW2_update_state(&bl_ctx.zdv);
 	if ((bl_ctx.zdv.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {

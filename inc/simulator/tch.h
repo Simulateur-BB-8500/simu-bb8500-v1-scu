@@ -10,12 +10,26 @@
 
 /*** TACHRO macros ***/
 
-// Maximum speed displayed on the Tachro (in km/h).
 #define TCH_SPEED_MAX_KMH	160
 
 /*** TACHRO functions ***/
 
+/*!******************************************************************
+ * \fn void TCH_init(void)
+ * \brief Init Tachro driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void TCH_init(void);
-void TCH_task(void);
+
+/*!******************************************************************
+ * \fn void TCH_process(void)
+ * \brief Main task of Tachro driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void TCH_process(void);
 
 #endif /* __TCH_H__ */

@@ -13,6 +13,10 @@
 
 /*** MANOMETERS structures ***/
 
+/*!******************************************************************
+ * \enum MANOMETER_context_t
+ * \brief Manometer context structure.
+ *******************************************************************/
 typedef struct {
 	STEP_MOTOR_context_t* step_motor;
 	uint32_t pressure_limit_mbar; // Maximum operation pressure in millibar.
@@ -31,11 +35,60 @@ typedef struct {
 
 /*** MANOMETERS functions ***/
 
-void MANOMETER_init_all(void);
-void MANOMETER_manage_power_all(void);
+/*!******************************************************************
+ * \fn void MANOMETER_init(void)
+ * \brief Init manometers driver.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void MANOMETER_init(void);
+
+/*!******************************************************************
+ * \fn void MANOMETER_manage_power(void)
+ * \brief Manage manometers power supply.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void MANOMETER_manage_power(void);
+
+/*!******************************************************************
+ * \fn void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_mbar, uint32_t speed_mbar_per_second)
+ * \brief Set manometer pressure.
+ * \param[in]  	manometer: Pointer to the manometer to control.
+ * \param[in]	pressure_mbar: Pressure to set in millibar.
+ * \param[in]	speed_mbar_per_second: Manometer needle speed in millibar per second.
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_mbar, uint32_t speed_mbar_per_second);
+
+/*!******************************************************************
+ * \fn uint32_t MANOMETER_get_pressure(MANOMETER_context_t* manometer)
+ * \brief Read manometer pressure.
+ * \param[in]  	manometer: Pointer to the manometer to read.
+ * \param[out] 	none
+ * \retval		Current manometer pressure in millibar.
+ *******************************************************************/
 uint32_t MANOMETER_get_pressure(MANOMETER_context_t* manometer);
+
+/*!******************************************************************
+ * \fn uint8_t MANOMETER_is_pressure_increasing(MANOMETER_context_t* manometer)
+ * \brief Check is a manometer pressure is currently increasing.
+ * \param[in]  	manometer: Pointer to the manometer to read.
+ * \param[out] 	none
+ * \retval		1 if the pressure is increasing, 0 otherwise.
+ *******************************************************************/
 uint8_t MANOMETER_is_pressure_increasing(MANOMETER_context_t* manometer);
+
+/*!******************************************************************
+ * \fn void MANOMETER_needle_stop(MANOMETER_context_t* manometer)
+ * \brief Stop manometer needle.
+ * \param[in]  	manometer: Pointer to the manometer to control.
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
 void MANOMETER_needle_stop(MANOMETER_context_t* manometer);
 
 #endif /* __MANOMETERS_H__ */

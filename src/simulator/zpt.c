@@ -17,21 +17,23 @@
 
 /*** ZPT local structures ***/
 
+/*******************************************************************/
 typedef enum {
 	ZPT_STATE_0,
 	ZPT_STATE_AR,
 	ZPT_STATE_ARAV,
 	ZPT_STATE_AV
-} ZPT_State;
+} ZPT_state_t;
 
+/*******************************************************************/
 typedef struct {
 	SW4_context_t sw4;
-	ZPT_State state;
+	ZPT_state_t state;
 } ZPT_context_t;
 
 /*** ZPT external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** ZPT local global variables ***/
 
@@ -39,10 +41,7 @@ static ZPT_context_t zpt_ctx;
 
 /*** ZPT functions ***/
 
-/* INIT ZPT MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void ZPT_init(void) {
 	// Init GPIOs.
 	SW4_init(&zpt_ctx.sw4, &GPIO_ZPT, 500, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_ZPT]));
@@ -53,11 +52,8 @@ void ZPT_init(void) {
 	lsmcu_ctx.zpt_raised = 0;
 }
 
-/* MAIN ROUTINE OF ZPT MODULE.
- * @param:	None.
- * @return:	None.
- */
-void ZPT_task(void) {
+/*******************************************************************/
+void ZPT_process(void) {
 	// Update selector state.
 	SW4_update_state(&zpt_ctx.sw4);
 	// Perform state machine.

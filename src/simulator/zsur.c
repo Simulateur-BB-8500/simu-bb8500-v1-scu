@@ -21,36 +21,31 @@
 
 /*** ZSUR local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	SW2_context_t sw2;
 	SW2_state_t previous_state;
-} ZSUR_Context;
+} ZSUR_context_t;
 
 /*** ZSUR external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** ZSUR local global variables ***/
 
-static ZSUR_Context zsur_ctx;
+static ZSUR_context_t zsur_ctx;
 
 /*** ZSUR functions ***/
 
-/* INIT ZSUR MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void ZSUR_init(void) {
 	// Init GPIOs.
 	SW2_init(&zsur_ctx.sw2, &GPIO_ZSUR, 0, 100); // ZSUR active low.
 	GPIO_configure(&GPIO_LSUR, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 }
 
-/* MAIN TASK OF ZSUR MODULE.
- * @param:	None.
- * @return:	None.
- */
-void ZSUR_task(void) {
+/*******************************************************************/
+void ZSUR_process(void) {
 	// Update switch state.
 	SW2_update_state(&zsur_ctx.sw2);
 	// Check state.
@@ -71,5 +66,3 @@ void ZSUR_task(void) {
 		GPIO_write(&GPIO_LSUR, 0);
 	}
 }
-
-

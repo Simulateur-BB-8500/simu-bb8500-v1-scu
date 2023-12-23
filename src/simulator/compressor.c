@@ -25,25 +25,27 @@
 
 /*** COMPRESSOR local structures ***/
 
+/*******************************************************************/
 typedef enum {
 	COMPRESSOR_STATE_OFF,
 	COMPRESSOR_STATE_AUTO_ON,
 	COMPRESSOR_STATE_AUTO_OFF,
 	COMPRESSOR_STATE_DIRECT
-} COMPRESSOR_State;
+} COMPRESSOR_state_t;
 
+/*******************************************************************/
 typedef struct {
 	// Inputs.
 	SW2_context_t zca;
 	SW2_context_t zcd;
 	// State machine.
-	COMPRESSOR_State state;
+	COMPRESSOR_state_t state;
 	uint8_t sound_auto_off; // Set when off command is not required.
 } COMPRESSOR_context_t;
 
 /*** COMPRESSOR external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** COMPRESSOR local global variables ***/
 
@@ -51,10 +53,7 @@ static COMPRESSOR_context_t compressor_ctx;
 
 /*** COMPRESSOR functions ***/
 
-/* INIT COMPRESSORRESSOR MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void COMPRESSOR_init(void) {
 	// Init GPIOs.
 	SW2_init(&compressor_ctx.zca, &GPIO_BL_ZCA, 1, 100); // ZCA active high.
@@ -64,11 +63,8 @@ void COMPRESSOR_init(void) {
 	compressor_ctx.sound_auto_off = 0;
 }
 
-/* MAIN TASK OF COMPRESSOR MODULE.
- * @param:	None.
- * @return:	None.
- */
-void COMPRESSOR_task(void) {
+/*******************************************************************/
+void COMPRESSOR_process(void) {
 	// Update ZCA.
 	if (lsmcu_ctx.dj_locked != 0) {
 		SW2_update_state(&compressor_ctx.zca);

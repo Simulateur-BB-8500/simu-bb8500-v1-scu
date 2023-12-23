@@ -45,14 +45,11 @@
 
 /*** MAIN global variables ***/
 
-LSMCU_Context lsmcu_ctx;
+LSMCU_context_t lsmcu_ctx;
 
 /*** MAIN functions ***/
 
-/* MAIN FUNCTION.
- * @param: 	None.
- * @return: 0.
- */
+/*******************************************************************/
 int main(void) {
 	// Init interrupts, clocks and GPIOs.
 	NVIC_init();
@@ -61,7 +58,7 @@ int main(void) {
 	// Global time base.
 	TIM2_init();
 	// Analog.
-	TIM1_init(ADC_CONVERSION_PERIOD_MS); // ADC trigger.
+	TIM1_init(ADC_CONVERSION_PERIOD_MS);
 	DMA2_STR0_init();
 	ADC1_init();
 	DAC_init();
@@ -76,7 +73,7 @@ int main(void) {
 	FD_init();
 	FPB_init();
 	KVB_init();
-	MANOMETER_init_all();
+	MANOMETER_init();
 	MP_init();
 	MPINV_init();
 	PICTOGRAMS_init();
@@ -91,27 +88,27 @@ int main(void) {
 	// Main loop.
 	while (1) {
 		// Communication tasks.
-		LSAGIU_task();
+		LSAGIU_process();
 		// Simulator tasks.
-		BELL_task();
-		BL_task();
-		BPGD_task();
-		COMPRESSOR_task();
-		EMERGENCY_task();
-		FD_task();
-		FPB_task();
-		KVB_task();
-		MANOMETER_manage_power_all();
-		MP_task();
-		MPINV_task();
-		PBL2_task();
-		PICTOGRAMS_task();
-		TCH_task();
-		VACMA_task();
-		WHISTLE_task();
-		ZBA_task();
-		ZPT_task();
-		ZSUR_task();
+		BELL_process();
+		BL_process();
+		BPGD_process();
+		COMPRESSOR_process();
+		EMERGENCY_process();
+		FD_process();
+		FPB_process();
+		KVB_process();
+		MANOMETER_manage_power();
+		MP_process();
+		MPINV_process();
+		PBL2_process();
+		PICTOGRAMS_process();
+		TCH_process();
+		VACMA_process();
+		WHISTLE_process();
+		ZBA_process();
+		ZPT_process();
+		ZSUR_process();
 	}
 	return 0;
 }

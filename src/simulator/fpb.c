@@ -23,6 +23,7 @@
 
 /*** FPB local structures ***/
 
+/*******************************************************************/
 typedef struct {
 	SW3_context_t sw3;
 	SW3_state_t previous_state;
@@ -30,7 +31,7 @@ typedef struct {
 
 /*** FPB external global variables ***/
 
-extern LSMCU_Context lsmcu_ctx;
+extern LSMCU_context_t lsmcu_ctx;
 
 /*** FPB local global variables ***/
 
@@ -38,21 +39,15 @@ static FPB_context_t fpb_ctx;
 
 /*** FPB functions ***/
 
-/* INIT FPB MODULE.
- * @param:	None.
- * @return:	None.
- */
+/*******************************************************************/
 void FPB_init(void) {
 	// Init GPIO.
 	SW3_init(&fpb_ctx.sw3, &GPIO_FPB, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_FPB]));
 	fpb_ctx.previous_state = SW3_NEUTRAL;
 }
 
-/* MAIN ROUTINE OF FPB MODULE.
- * @param:	None.
- * @return:	None.
- */
-void FPB_task(void) {
+/*******************************************************************/
+void FPB_process(void) {
 	// Update current state.
 	SW3_update_state(&fpb_ctx.sw3);
 	// Check PBL2.
@@ -93,4 +88,3 @@ void FPB_task(void) {
 	// Update previous state.
 	fpb_ctx.previous_state = fpb_ctx.sw3.state;
 }
-

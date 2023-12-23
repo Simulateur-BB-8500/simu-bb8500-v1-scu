@@ -37,8 +37,8 @@ typedef enum {
 } SW3_internal_state_t;
 
 /*!******************************************************************
- * \enum SW3_context_t
- * \brief 3-positions context structure.
+ * \struct SW3_context_t
+ * \brief 3-positions switch context structure.
  *******************************************************************/
 typedef struct {
 	uint32_t* adc_data_ptr; // Pointer to the 13-bits ADC data.
