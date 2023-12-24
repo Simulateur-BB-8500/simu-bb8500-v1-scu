@@ -21,7 +21,7 @@ typedef enum {
 	ADC_CHANNEL_AM = 3,
 	ADC_CHANNEL_FD = 5,
 	ADC_CHANNEL_MPINV = 6,
-	ADC_CHANNEL_S = 7,
+	ADC_CHANNEL_WHISTLE = 7,
 	ADC_CHANNEL_ZLFR = 9,
 	ADC_CHANNEL_VREFINT = 17,
 	ADC_CHANNEL_TMCU = 18,
@@ -58,7 +58,7 @@ void ADC1_init(void) {
 	ADC1 -> SQR3 |= (ADC_CHANNEL_AM << 15);
 	ADC1 -> SQR3 |= (ADC_CHANNEL_FD << 20);
 	ADC1 -> SQR3 |= (ADC_CHANNEL_MPINV << 25);
-	ADC1 -> SQR2 |= (ADC_CHANNEL_S << 0);
+	ADC1 -> SQR2 |= (ADC_CHANNEL_WHISTLE << 0);
 	ADC1 -> SQR2 |= (ADC_CHANNEL_ZLFR << 5);
 	// Configure peripheral.
 	ADC1 -> CR1 |= (0b1 << 8); // Scan mode.

@@ -12,7 +12,7 @@
 
 /*** ADC macros ***/
 
-#define ADC_CONVERSION_PERIOD_MS	100
+#define ADC_CONVERSION_PERIOD_MS	10
 #define ADC_FULL_SCALE				4095
 #define ADC_VCC_DEFAULT_MV			3300
 
