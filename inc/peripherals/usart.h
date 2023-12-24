@@ -30,13 +30,13 @@ typedef void (*USART_rx_irq_cb_t)(uint8_t data);
 void USART1_init(USART_rx_irq_cb_t irq_callback);
 
 /*!******************************************************************
- * \fn USART_status_t USART1_write(uint8_t* data, uint32_t data_size_bytes)
+ * \fn USART_status_t USART1_write(uint8_t* data, uint8_t data_size_bytes)
  * \brief Send data over USART1.
  * \param[in]	data: Byte array to send.
  * \param[in]	data_size_bytes: Number of bytes to send.
  * \param[out] 	none
  * \retval		Function execution status.
  *******************************************************************/
-void USART1_write(uint8_t* data, uint32_t data_size_bytes);
+void USART1_write(uint8_t* data, uint8_t data_size_bytes);
 
 #endif /* __USART_H__ */

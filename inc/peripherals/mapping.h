@@ -15,7 +15,7 @@
 
 // Serial link to LSSGKCU.
 static const GPIO_pin_t GPIO_USART1_TX =				(GPIO_pin_t) {GPIOA, 0, 9, 7};	// AF7 = USART1 TX.
-static const GPIO_pin_t GPIO_USART1_RX =				(GPIO_pin_t) {GPIOA, 0, 10, 7}; 	// AF7 = USART1 RX.
+static const GPIO_pin_t GPIO_USART1_RX =				(GPIO_pin_t) {GPIOA, 0, 10, 7}; // AF7 = USART1 RX.
 // ZBA.
 #ifdef RCC_OUTPUT_CLOCK
 static const GPIO_pin_t GPIO_MCO1 =						(GPIO_pin_t) {GPIOA, 0, 8, 0}; 	// AF0 = MCO1.
@@ -103,7 +103,7 @@ static const GPIO_pin_t GPIO_VACMA_RELEASED_ALARM =		(GPIO_pin_t) {GPIOD, 3, 10,
 static const GPIO_pin_t GPIO_VACMA_HOLD_ALARM =			(GPIO_pin_t) {GPIOD, 3, 11, 0};
 // DEP.
 static const GPIO_pin_t GPIO_BELL =						(GPIO_pin_t) {GPIOC, 2, 2, 0};
-// Motor amperemeters.
+// Motor ammeter.
 static const GPIO_pin_t GPIO_AMCS =						(GPIO_pin_t) {GPIOA, 0, 3, 0};	// ADC1_IN3 or GPIO input.
 static const GPIO_pin_t GPIO_AM =						(GPIO_pin_t) {GPIOA, 0, 4, 0}; 	// DAC1_OUT1.
 // VLG.

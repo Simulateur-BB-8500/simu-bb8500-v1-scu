@@ -19,7 +19,7 @@
 
 /*** USART local macros ***/
 
-#define USART_BAUD_RATE 		9600
+#define USART_BAUD_RATE 		115200
 #define USART_TIMEOUT_COUNT		100000
 
 /*** USART local global variables ***/
@@ -77,7 +77,7 @@ void USART1_init(USART_rx_irq_cb_t irq_callback) {
 }
 
 /*******************************************************************/
-void USART1_write(uint8_t* data, uint32_t data_size_bytes) {
+void USART1_write(uint8_t* data, uint8_t data_size_bytes) {
 	// Local variables.
 	uint8_t idx = 0;
 	uint32_t loop_count = 0;

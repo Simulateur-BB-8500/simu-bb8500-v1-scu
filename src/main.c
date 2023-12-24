@@ -1,7 +1,7 @@
 /*
  * main.c
  *
- *  Created on: 5 sept. 2017
+ *  Created on: 5 sep. 2017
  *      Author: Ludo
  */
 
@@ -13,7 +13,6 @@
 #include "nvic.h"
 #include "rcc.h"
 #include "tim.h"
-#include "usart.h"
 // Simulator.
 #include "bell.h"
 #include "bl.h"
