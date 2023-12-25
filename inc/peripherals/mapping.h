@@ -13,7 +13,7 @@
 
 /*** MCU pins mapping ***/
 
-// Serial link to LSSGKCU.
+// Serial link to LS-AGIU.
 static const GPIO_pin_t GPIO_USART1_TX =				(GPIO_pin_t) {GPIOA, 0, 9, 7};	// AF7 = USART1 TX.
 static const GPIO_pin_t GPIO_USART1_RX =				(GPIO_pin_t) {GPIOA, 0, 10, 7}; // AF7 = USART1 RX.
 // ZBA.
@@ -61,7 +61,7 @@ static const GPIO_pin_t GPIO_KVB_ACSF =					(GPIO_pin_t) {GPIOF, 5, 8, 0};
 static const GPIO_pin_t GPIO_KVB_LVAL =					(GPIO_pin_t) {GPIOC, 2, 6, 3}; 	// AF3 = TIM8_CH1.
 static const GPIO_pin_t GPIO_KVB_LMV =					(GPIO_pin_t) {GPIOF, 5, 9, 0};
 static const GPIO_pin_t GPIO_KVB_LFC =					(GPIO_pin_t) {GPIOF, 5, 10, 0};
-static const GPIO_pin_t GPIO_KVB_LV =						(GPIO_pin_t) {GPIOF, 5, 11, 0};
+static const GPIO_pin_t GPIO_KVB_LV =					(GPIO_pin_t) {GPIOF, 5, 11, 0};
 static const GPIO_pin_t GPIO_KVB_LFU =					(GPIO_pin_t) {GPIOF, 5, 12, 0};
 static const GPIO_pin_t GPIO_KVB_LPS =					(GPIO_pin_t) {GPIOF, 5, 13, 0};
 static const GPIO_pin_t GPIO_KVB_LPE =					(GPIO_pin_t) {GPIOF, 5, 14, 0};
@@ -114,7 +114,7 @@ static const GPIO_pin_t GPIO_LSGR =						(GPIO_pin_t) {GPIOD, 3, 13, 0};
 static const GPIO_pin_t GPIO_LSS =						(GPIO_pin_t) {GPIOD, 3, 14, 0};
 static const GPIO_pin_t GPIO_LSCB =						(GPIO_pin_t) {GPIOD, 3, 15, 0};
 static const GPIO_pin_t GPIO_LSP =						(GPIO_pin_t) {GPIOE, 4, 0, 0};
-static const GPIO_pin_t GPIO_LSPAT =						(GPIO_pin_t) {GPIOE, 4, 1, 0};
+static const GPIO_pin_t GPIO_LSPAT =					(GPIO_pin_t) {GPIOE, 4, 1, 0};
 static const GPIO_pin_t GPIO_LSBA =						(GPIO_pin_t) {GPIOE, 4, 2, 0};
 static const GPIO_pin_t GPIO_LSPI =						(GPIO_pin_t) {GPIOE, 4, 3, 0};
 static const GPIO_pin_t GPIO_LSRH =						(GPIO_pin_t) {GPIOE, 4, 4, 0};

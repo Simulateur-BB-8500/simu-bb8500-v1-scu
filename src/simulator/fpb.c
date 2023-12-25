@@ -19,7 +19,7 @@
 /*** FPB local macros ***/
 
 #define FPB_CG_RE_PRESSURE_MAX_MBAR		5000
-#define FPB_CG_RE_SPEED_MBAR_PER_SECOND	800
+#define FPB_CG_RE_SPEED_MBAR_PER_SECOND	500
 
 /*** FPB local structures ***/
 

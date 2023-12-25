@@ -22,15 +22,16 @@ typedef struct {
 	uint32_t pressure_limit_mbar; // Maximum operation pressure in millibar.
 	uint32_t pressure_max_mbar; // Maximum pressure displayed on the dial in millibar.
 	uint32_t pressure_max_steps; // Number of relative steps required to display the maximum pressure.
-	volatile uint32_t is_moving;
-	volatile uint32_t needle_inertia_steps;
-	volatile uint32_t needle_inertia_factor;
+	uint32_t needle_inertia_mbar; // Needle start and stop inertia effect in millibar.
+	uint32_t needle_inertia_factor;
+	uint32_t needle_inertia_steps; // Number of relative steps required for inertia.
 	volatile uint32_t step_start;
 	volatile uint32_t step_target;
-	volatile uint8_t step_target_zero_flag;
 	volatile uint32_t step_irq_count;
 	volatile uint32_t step_irq_period_min; // Maximum motor speed for a given movement.
 	volatile uint32_t step_irq_period;
+	volatile uint8_t flag_step_target_zero;
+	volatile uint8_t flag_is_moving;
 } MANOMETER_context_t;
 
 /*** MANOMETERS functions ***/

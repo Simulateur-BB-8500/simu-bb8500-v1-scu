@@ -24,9 +24,6 @@
 #define MANOMETER_PRESSURE_MAX_DEGREES		270
 #define MANOMETER_FULL_CIRCLE_DEGREES		360
 
-#define MANOMETER_PRESSURE_MAX_STEP_G1		((STEP_MOTOR_NUMBER_OF_STEPS * MANOMETER_PRESSURE_MAX_DEGREES * MANOMETER_GEAR_CENTER_Z) / (MANOMETER_GEAR_G1_Z * MANOMETER_FULL_CIRCLE_DEGREES))
-#define MANOMETER_PRESSURE_MAX_STEP_G2		((STEP_MOTOR_NUMBER_OF_STEPS * MANOMETER_PRESSURE_MAX_DEGREES * MANOMETER_GEAR_CENTER_Z) / (MANOMETER_GEAR_G2_Z * MANOMETER_FULL_CIRCLE_DEGREES))
-
 #define MANOMETER_STEP_IRQ_PER_SECOND		(1000000 / MANOMETER_STEP_IRQ_PERIOD_US)
 #define MANOMETER_STEP_IRQ_PERIOD_MIN_US	2000 // Minimum delay between coil pins change.
 #define MANOMETER_STEP_IRQ_COUNT_MIN		(MANOMETER_STEP_IRQ_PERIOD_MIN_US / MANOMETER_STEP_IRQ_PERIOD_US)
@@ -42,11 +39,11 @@ extern LSMCU_context_t lsmcu_ctx;
 
 /*** MANOMETER local global variables ***/
 
-static MANOMETER_context_t manometer_cp =  {&step_motor_cp,  9500, 10000, (MANOMETER_PRESSURE_MAX_STEP_G1 + 0),  0, 0,  0, 0, 0, 0, 0, 0, 0};
-static MANOMETER_context_t manometer_re =  {&step_motor_re,  5400, 10000, (MANOMETER_PRESSURE_MAX_STEP_G2 + 20), 0, 30, 3, 0, 0, 0, 0, 0, 0};
-static MANOMETER_context_t manometer_cg =  {&step_motor_cg,  5400, 10000, (MANOMETER_PRESSURE_MAX_STEP_G1 + 60), 0, 50, 2, 0, 0, 0, 0, 0, 0};
-static MANOMETER_context_t manometer_cf1 = {&step_motor_cf1, 4100, 6000,  (MANOMETER_PRESSURE_MAX_STEP_G1 + 35), 0, 50, 2, 0, 0, 0, 0, 0, 0};
-static MANOMETER_context_t manometer_cf2 = {&step_motor_cf2, 4200, 6000,  (MANOMETER_PRESSURE_MAX_STEP_G2 + 30), 0, 30, 3, 0, 0, 0, 0, 0, 0};
+static MANOMETER_context_t manometer_cp =  {&step_motor_cp,  9500, 10000, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0};
+static MANOMETER_context_t manometer_re =  {&step_motor_re,  5400, 10000, 0, 500, 3, 0, 0, 0, 0, 0, 0, 0, 0};
+static MANOMETER_context_t manometer_cg =  {&step_motor_cg,  5400, 10000, 0, 500, 2, 0, 0, 0, 0, 0, 0, 0, 0};
+static MANOMETER_context_t manometer_cf1 = {&step_motor_cf1, 4100, 6000,  0, 500, 2, 0, 0, 0, 0, 0, 0, 0, 0};
+static MANOMETER_context_t manometer_cf2 = {&step_motor_cf2, 4200, 6000,  0, 500, 3, 0, 0, 0, 0, 0, 0, 0, 0};
 
 /*** MANOMETER local functions ***/
 
@@ -94,7 +91,7 @@ static void __attribute__((optimize("-O0"))) _MANOMETER_needle_task(MANOMETER_co
 			}
 		}
 		// Force step down if current step and target are equal but stop detect is not reached.
-		if ((current_step == (manometer -> step_target)) && ((manometer -> step_target_zero_flag) != 0) && ((manometer -> step_motor -> stop_detect_flag) == 0)) {
+		if ((current_step == (manometer -> step_target)) && ((manometer -> flag_step_target_zero) != 0) && ((manometer -> step_motor -> stop_detect_flag) == 0)) {
 			// Maximum speed.
 			(manometer -> step_irq_period) = (manometer -> step_irq_period_min);
 			// Step down.
@@ -104,10 +101,22 @@ static void __attribute__((optimize("-O0"))) _MANOMETER_needle_task(MANOMETER_co
 		}
 		else {
 			if (current_step == (manometer -> step_target)) {
-				(manometer -> is_moving) = 0;
+				(manometer -> flag_is_moving) = 0;
 			}
 		}
 	}
+}
+
+/*******************************************************************/
+static uint32_t _MANOMETER_mbar_to_step(uint32_t pressure_delta_mbar, uint32_t pressure_max_mbar, uint32_t motor_gear_z) {
+	// Local variables.
+	uint32_t number_of_steps = 0;
+	uint64_t tmp_u64 = 0;
+	// Compute number of steps corresponding to the pressure delta.
+	tmp_u64 = ((uint64_t) MANOMETER_PRESSURE_MAX_DEGREES * (uint64_t) MANOMETER_GEAR_CENTER_Z * (uint64_t) STEP_MOTOR_NUMBER_OF_STEPS * (uint64_t) pressure_delta_mbar);
+	number_of_steps = (uint32_t) ((tmp_u64) / ((uint64_t) pressure_max_mbar * (uint64_t) motor_gear_z * (uint64_t) MANOMETER_FULL_CIRCLE_DEGREES));
+	// Return result.
+	return number_of_steps;
 }
 
 /*******************************************************************/
@@ -139,7 +148,7 @@ static void _MANOMETER_power_off_all(void) {
 /*******************************************************************/
 static void _MANOMETER_update_zero_target_flag(MANOMETER_context_t* manometer) {
 	// Update flag.
-	(manometer -> step_target_zero_flag) = ((manometer -> step_target) == (manometer -> step_motor -> step_zero_offset)) ? 1 : 0;
+	(manometer -> flag_step_target_zero) = ((manometer -> step_target) == (manometer -> step_motor -> step_zero_offset)) ? 1 : 0;
 }
 
 /*** MANOMETER functions ***/
@@ -156,10 +165,21 @@ void MANOMETER_init(void) {
 	STEP_MOTOR_init(manometer_cf1.step_motor);
 	STEP_MOTOR_init(manometer_cf2.step_motor);
 	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 0);
+	// Init manometers factors.
+	manometer_cp.pressure_max_steps =    _MANOMETER_mbar_to_step(manometer_cp.pressure_max_mbar,    manometer_cp.pressure_max_mbar,  MANOMETER_GEAR_G1_Z) + 0;
+	manometer_cp.needle_inertia_steps =  _MANOMETER_mbar_to_step(manometer_cp.needle_inertia_mbar,  manometer_cp.pressure_max_mbar,  MANOMETER_GEAR_G1_Z);
+	manometer_re.pressure_max_steps =    _MANOMETER_mbar_to_step(manometer_re.pressure_max_mbar,    manometer_re.pressure_max_mbar,  MANOMETER_GEAR_G2_Z) + 11;
+	manometer_re.needle_inertia_steps =  _MANOMETER_mbar_to_step(manometer_re.needle_inertia_mbar,  manometer_re.pressure_max_mbar,  MANOMETER_GEAR_G2_Z);
+	manometer_cg.pressure_max_steps =    _MANOMETER_mbar_to_step(manometer_cg.pressure_max_mbar,    manometer_cg.pressure_max_mbar,  MANOMETER_GEAR_G1_Z) + 45;
+	manometer_cg.needle_inertia_steps =  _MANOMETER_mbar_to_step(manometer_cg.needle_inertia_mbar,  manometer_cg.pressure_max_mbar,  MANOMETER_GEAR_G1_Z);
+	manometer_cf1.pressure_max_steps =   _MANOMETER_mbar_to_step(manometer_cf1.pressure_max_mbar,   manometer_cf1.pressure_max_mbar, MANOMETER_GEAR_G1_Z) + 25;
+	manometer_cf1.needle_inertia_steps = _MANOMETER_mbar_to_step(manometer_cf1.needle_inertia_mbar, manometer_cf1.pressure_max_mbar, MANOMETER_GEAR_G1_Z);
+	manometer_cf2.pressure_max_steps =   _MANOMETER_mbar_to_step(manometer_cf2.pressure_max_mbar,   manometer_cf2.pressure_max_mbar, MANOMETER_GEAR_G2_Z) + 10;
+	manometer_cf2.needle_inertia_steps = _MANOMETER_mbar_to_step(manometer_cf2.needle_inertia_mbar, manometer_cf2.pressure_max_mbar, MANOMETER_GEAR_G2_Z);
 	// Link to global context.
-	lsmcu_ctx.manometer_cp = &manometer_cp;
-	lsmcu_ctx.manometer_re = &manometer_re;
-	lsmcu_ctx.manometer_cg = &manometer_cg;
+	lsmcu_ctx.manometer_cp =  &manometer_cp;
+	lsmcu_ctx.manometer_re =  &manometer_re;
+	lsmcu_ctx.manometer_cg =  &manometer_cg;
 	lsmcu_ctx.manometer_cf1 = &manometer_cf1;
 	lsmcu_ctx.manometer_cf2 = &manometer_cf2;
 	// Init step motor control timer.
@@ -169,11 +189,11 @@ void MANOMETER_init(void) {
 /*******************************************************************/
 void MANOMETER_manage_power(void) {
 	// Check all manometer.
-	if ((manometer_cp.is_moving  == 0) &&
-		(manometer_re.is_moving  == 0) &&
-		(manometer_cg.is_moving  == 0) &&
-		(manometer_cf1.is_moving == 0) &&
-		(manometer_cf2.is_moving == 0)) {
+	if ((manometer_cp.flag_is_moving  == 0) &&
+		(manometer_re.flag_is_moving  == 0) &&
+		(manometer_cg.flag_is_moving  == 0) &&
+		(manometer_cf1.flag_is_moving == 0) &&
+		(manometer_cf2.flag_is_moving == 0)) {
 		// Turn manometer off.
 		_MANOMETER_power_off_all();
 	}
@@ -201,7 +221,7 @@ void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_mb
 		(manometer -> step_irq_period) = (manometer -> step_irq_period_min);
 		(manometer -> step_irq_count) = manometer -> step_irq_period;
 		// Update flags.
-		(manometer -> is_moving) = 1;
+		(manometer -> flag_is_moving) = 1;
 		_MANOMETER_update_zero_target_flag(manometer);
 		// Turn manometers on.
 		_MANOMETER_power_on_all();
@@ -234,16 +254,16 @@ void MANOMETER_needle_stop(MANOMETER_context_t* manometer) {
 	// Update target to perform inertia.
 	// Up direction.
 	if ((manometer -> step_motor -> step) < (manometer -> step_target)) {
-		// Current step < (max - inertia)
-		if ((manometer -> step_motor -> step) < ((manometer -> step_motor -> step_zero_offset) + (manometer -> pressure_max_steps) - (manometer -> needle_inertia_steps))) {
+		// Current step < (current target - inertia)
+		if ((manometer -> step_motor -> step) < ((manometer -> step_target) - (manometer -> needle_inertia_steps))) {
 			// New target = current + inertia.
 			(manometer -> step_target) = (manometer -> step_motor -> step) + (manometer -> needle_inertia_steps);
 		}
 	}
 	// Down direction.
 	if ((manometer -> step_motor -> step) > (manometer -> step_target)) {
-		// Current step > (0 + inertia).
-		if ((manometer -> step_motor -> step) > ((manometer -> step_motor -> step_zero_offset) + (manometer -> needle_inertia_steps))) {
+		// Current step > (current target + inertia).
+		if ((manometer -> step_motor -> step) > ((manometer -> step_target) + (manometer -> needle_inertia_steps))) {
 			// New target = current - inertia.
 			(manometer -> step_target) = (manometer -> step_motor -> step) - (manometer -> needle_inertia_steps);
 		}

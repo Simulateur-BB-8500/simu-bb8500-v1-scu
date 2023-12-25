@@ -21,7 +21,7 @@
 #define COMPRESSOR_CP_SOUND_AUTO_OFF_RANGE_MBAR		800 	// Pressure range within which no off command is sent (sound will stop by itself).
 
 #define COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND		54
-#define COMPRESSOR_CP_SPEED_DOWN_MBAR_PER_SECOND	100
+#define COMPRESSOR_CP_SPEED_DOWN_MBAR_PER_SECOND	150
 
 /*** COMPRESSOR local structures ***/
 

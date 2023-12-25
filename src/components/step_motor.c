@@ -14,7 +14,7 @@
 
 /*** STEP MOTOR local macros ***/
 
-#define STEP_MOTOR_STEP_MIN_VALUE				0
+#define STEP_MOTOR_STEP_MIN_VALUE				0x00000000
 #define STEP_MOTOR_STEP_MAX_VALUE				0xFFFFFFFF
 #define STEP_MOTOR_STEP_INITIAL_ZERO_OFFSET		0x80000000 // Must be an multiple of 4 to be aligned with initial GPIO state '00'.
 

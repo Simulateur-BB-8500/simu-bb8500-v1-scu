@@ -18,10 +18,10 @@
 /*** PBL2 local macros ***/
 
 #define PBL2_ON_CG_PRESSURE_MBAR			3500
-#define PBL2_ON_CG_SPEED_MBAR_PER_SECOND	1000
+#define PBL2_ON_CG_SPEED_MBAR_PER_SECOND	800
 
 #define PBL2_ON_RE_PRESSURE_MBAR			3500
-#define PBL2_ON_RE_SPEED_MBAR_PER_SECOND	1000
+#define PBL2_ON_RE_SPEED_MBAR_PER_SECOND	800
 
 /*** PBL2 external global variables ***/
 
