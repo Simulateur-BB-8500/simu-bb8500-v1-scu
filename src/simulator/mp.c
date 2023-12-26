@@ -20,7 +20,7 @@
 
 #define MP_T_MORE_PERIOD_MS		500
 #define MP_T_LESS_PERIOD_MS		350
-#define MP_GEAR_MAX				16
+#define MP_GEAR_MAX				32
 
 /*** MP local structures ***/
 

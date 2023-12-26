@@ -18,6 +18,15 @@
 void EMERGENCY_init(void);
 
 /*!******************************************************************
+ * \fn void EMERGENCY_trigger(void)
+ * \brief Trigger emergency brake.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void EMERGENCY_trigger(void);
+
+/*!******************************************************************
  * \fn void EMERGENCY_process(void)
  * \brief Main task of emergency driver.
  * \param[in]  	none

@@ -83,26 +83,16 @@ void BL_process(void) {
 	}
 	// ZDJ.
 	SW2_update_state(&bl_ctx.zdj);
-	if (lsmcu_ctx.zpt_raised != 0) {
-		if (bl_ctx.zdj.state == SW2_ON) {
-			lsmcu_ctx.dj_closed = 1;
-		}
-		else {
-			// Send command on change (only if DJ is locked).
-			if (lsmcu_ctx.dj_closed != 0) {
-				if (lsmcu_ctx.dj_locked != 0) {
-					LSAGIU_write(LSMCU_OUT_ZDJ_OFF);
-				}
-				lsmcu_ctx.dj_locked = 0;
-			}
-			lsmcu_ctx.dj_closed = 0;
-		}
+	if ((lsmcu_ctx.zpt_raised != 0) && (lsmcu_ctx.emergency == 0) && (bl_ctx.zdj.state == SW2_ON)) {
+		// DJ closed.
+		lsmcu_ctx.dj_closed = 1;
 	}
 	else {
-		if (lsmcu_ctx.dj_closed != 0) {
+		// Send command only if DJ is locked.
+		if ((lsmcu_ctx.dj_closed != 0) && (lsmcu_ctx.dj_locked != 0)) {
 			LSAGIU_write(LSMCU_OUT_ZDJ_OFF);
 		}
-		lsmcu_ctx.dj_closed = 0; // Hack.
+		lsmcu_ctx.dj_closed = 0;
 		lsmcu_ctx.dj_locked = 0;
 	}
 	// ZEN.

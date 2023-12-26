@@ -120,7 +120,7 @@ void VACMA_process(void) {
 				// Trigger emergency brake.
 				GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
 				GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
-				lsmcu_ctx.emergency = 1;
+				EMERGENCY_trigger();
 				vacma_ctx.state = VACMA_STATE_EMERGENCY;
 			}
 			else {
@@ -167,7 +167,7 @@ void VACMA_process(void) {
 				// Trigger emergency brake.
 				GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
 				GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
-				lsmcu_ctx.emergency = 1;
+				EMERGENCY_trigger();
 				vacma_ctx.state = VACMA_STATE_EMERGENCY;
 			}
 			else {

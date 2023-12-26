@@ -49,12 +49,17 @@ void EMERGENCY_init(void) {
 }
 
 /*******************************************************************/
+void EMERGENCY_trigger(void) {
+	// Set global flag.
+	lsmcu_ctx.emergency = 1;
+}
+
+/*******************************************************************/
 void EMERGENCY_process(void) {
 	// Update BPURG state.
 	SW2_update_state(&emergency_ctx.bpurg);
 	if (emergency_ctx.bpurg.state == SW2_ON) {
-		// Update global context.
-		lsmcu_ctx.emergency = 1;
+		EMERGENCY_trigger();
 	}
 	// Check global flag.
 	if ((lsmcu_ctx.emergency != 0) && (emergency_ctx.previous_state == 0)) {
@@ -63,8 +68,6 @@ void EMERGENCY_process(void) {
 		MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, EMERGENCY_RE_SPEED_MBAR_PER_SECOND);
 		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar), EMERGENCY_CF_SPEED_MBAR_PER_SECOND);
 		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar), EMERGENCY_CF_SPEED_MBAR_PER_SECOND);
-		// Open DJ.
-		lsmcu_ctx.dj_locked = 0;
 		// Send sound command.
 		LSAGIU_write(LSMCU_OUT_EMERGENCY);
 	}

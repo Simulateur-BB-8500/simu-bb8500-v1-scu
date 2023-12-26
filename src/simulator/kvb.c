@@ -17,36 +17,37 @@
 /*** KVB local macros ***/
 
 // KVB segments.
-#define KVB_NUMBER_OF_SEGMENTS 		7 		// 7 segments.
-#define KVB_NUMBER_OF_DISPLAYS 		6 		// KVB has 6 displays (3 yellow and 3 green).
+#define KVB_NUMBER_OF_SEGMENTS 				7 		// 7 segments.
+#define KVB_NUMBER_OF_DISPLAYS 				6 		// KVB has 6 displays (3 yellow and 3 green).
 // LVAL.
-#define KVB_LVAL_BLINK_PERIOD_MS	900		// Period of LVAL blinking.
+#define KVB_LVAL_BLINK_PERIOD_MS			900		// Period of LVAL blinking.
 // LSSF.
-#define KVB_LSSF_BLINK_PERIOD_MS	333		// Period of LSSF blinking.
+#define KVB_LSSF_BLINK_PERIOD_MS			333		// Period of LSSF blinking.
 // GPIO bits mask.
-#define KVB_GPIO_MASK				0xFFFFC080
+#define KVB_GPIO_MASK						0xFFFFC080
 // Display messages.
-#define KVB_YG_PA400				((uint8_t*) "PA 400")
-#define KVB_YG_UC512				((uint8_t*) "UC 512")
-#define KVB_YG_888					((uint8_t*) "888888")
-#define KVB_YG_DASH					((uint8_t*) "------")
-#define KVB_G_B						((uint8_t*) "    b ")
-#define KVB_Y_B						((uint8_t*) " b    ")
-#define KVB_G_P						((uint8_t*) "    P ")
-#define KVB_Y_P						((uint8_t*) " P    ")
-#define KVB_G_L						((uint8_t*) "    L ")
-#define KVB_Y_L						((uint8_t*) " L    ")
-#define KVB_G_00					((uint8_t*) "    00")
-#define KVB_Y_00					((uint8_t*) " 00   ")
-#define KVB_G_000					((uint8_t*) "   000")
-#define KVB_Y_000					((uint8_t*) "000   ")
+#define KVB_YG_PA400						((uint8_t*) "PA 400")
+#define KVB_YG_UC512						((uint8_t*) "UC 512")
+#define KVB_YG_888							((uint8_t*) "888888")
+#define KVB_YG_DASH							((uint8_t*) "------")
+#define KVB_G_B								((uint8_t*) "    b ")
+#define KVB_Y_B								((uint8_t*) " b    ")
+#define KVB_G_P								((uint8_t*) "    P ")
+#define KVB_Y_P								((uint8_t*) " P    ")
+#define KVB_G_L								((uint8_t*) "    L ")
+#define KVB_Y_L								((uint8_t*) " L    ")
+#define KVB_G_00							((uint8_t*) "    00")
+#define KVB_Y_00							((uint8_t*) " 00   ")
+#define KVB_G_000							((uint8_t*) "   000")
+#define KVB_Y_000							((uint8_t*) "000   ")
 // Initialization screens duration.
-#define KVB_PA400_DURATION_MS		2200
-#define KVB_PA400_OFF_DURATION_MS	2200
-#define KVB_UC512_DURATION_MS		2000
-#define KVB_888888_DURATION_MS		3000
+#define KVB_PA400_DURATION_MS				2200
+#define KVB_PA400_OFF_DURATION_MS			2200
+#define KVB_UC512_DURATION_MS				2000
+#define KVB_888888_DURATION_MS				3000
 // Security parameters.
-#define KVB_SPEED_LIMIT_MARGIN_KMH	5
+#define KVB_SPEED_THRESHOLD_LV_KMH			5
+#define KVB_SPEED_THRESHOLD_EMERGENCY_KMH	10
 
 /*** KVB local structures ***/
 
@@ -418,13 +419,23 @@ void KVB_process(void) {
 		break;
 	case KVB_STATE_IDLE:
 		// Speed check.
-		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_LIMIT_MARGIN_KMH)) {
+		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_LV_KMH)) {
+			GPIO_write(&GPIO_KVB_LV, 1);
+		}
+		else {
+			GPIO_write(&GPIO_KVB_LV, 0);
+		}
+		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_EMERGENCY_KMH)) {
 			// Trigger emergency brake.
-			lsmcu_ctx.emergency = 1;
+			EMERGENCY_trigger();
 			kvb_ctx.state = KVB_STATE_EMERGENCY;
 		}
 		break;
 	case KVB_STATE_EMERGENCY:
+		// Stay in this state while emergency flag is set.
+		if (lsmcu_ctx.emergency == 0) {
+			kvb_ctx.state = KVB_STATE_IDLE;
+		}
 		break;
 	default:
 		break;
