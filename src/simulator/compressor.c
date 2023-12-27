@@ -135,7 +135,6 @@ void COMPRESSOR_process(void) {
 				MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, ((lsmcu_ctx.manometer_cp) -> pressure_limit_mbar), COMPRESSOR_CP_SPEED_UP_MBAR_PER_SECOND);
 				// Compute next state.
 				compressor_ctx.state = COMPRESSOR_STATE_DIRECT;
-
 			}
 			else {
 				if (compressor_ctx.zca.state == SW2_ON) {
