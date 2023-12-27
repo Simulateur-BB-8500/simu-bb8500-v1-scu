@@ -7,9 +7,6 @@
 
 #include "tim.h"
 
-#include "kvb.h"
-#include "lsmcu.h"
-#include "manometer.h"
 #include "mapping.h"
 #include "nvic.h"
 #include "rcc.h"
@@ -20,7 +17,6 @@
 
 /*** TIM external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
 static TIM_completion_irq_cb_t tim6_update_irq_callback = NULL;
 static TIM_completion_irq_cb_t tim7_update_irq_callback = NULL;
 

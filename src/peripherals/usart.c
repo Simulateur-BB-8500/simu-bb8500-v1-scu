@@ -8,7 +8,6 @@
 #include "usart.h"
 
 #include "gpio.h"
-#include "lsagiu.h"
 #include "mapping.h"
 #include "nvic.h"
 #include "rcc.h"
