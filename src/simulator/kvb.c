@@ -7,6 +7,7 @@
 
 #include "kvb.h"
 
+#include "emergency.h"
 #include "gpio.h"
 #include "lsmcu.h"
 #include "mapping.h"
@@ -17,12 +18,12 @@
 /*** KVB local macros ***/
 
 // KVB segments.
-#define KVB_NUMBER_OF_SEGMENTS 				7 		// 7 segments.
-#define KVB_NUMBER_OF_DISPLAYS 				6 		// KVB has 6 displays (3 yellow and 3 green).
+#define KVB_NUMBER_OF_SEGMENTS 				7
+#define KVB_NUMBER_OF_DISPLAYS 				6
 // LVAL.
-#define KVB_LVAL_BLINK_PERIOD_MS			900		// Period of LVAL blinking.
+#define KVB_LVAL_BLINK_PERIOD_MS			900
 // LSSF.
-#define KVB_LSSF_BLINK_PERIOD_MS			333		// Period of LSSF blinking.
+#define KVB_LSSF_BLINK_PERIOD_MS			333
 // GPIO bits mask.
 #define KVB_GPIO_MASK						0xFFFFC080
 // Display messages.

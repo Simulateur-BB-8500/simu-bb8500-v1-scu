@@ -7,6 +7,7 @@
 
 #include "vacma.h"
 
+#include "emergency.h"
 #include "gpio.h"
 #include "lsmcu.h"
 #include "mapping.h"
