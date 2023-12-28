@@ -120,9 +120,9 @@ void MP_process(void) {
 		// Decrease gear count until 0.
 		if ((mp_ctx.gear_count > 0) && (TIM2_get_milliseconds() > (mp_ctx.gear_switch_next_time + MP_T_LESS_PERIOD_MS))) {
 			_MP_decrease_gear();
-			//if (mp_ctx.gear_count == 0) {
-				//LSAGIU_write(LSMCU_OUT_MP_0);
-			//}
+			if (mp_ctx.gear_count == 0) {
+				LSAGIU_write(LSMCU_OUT_MP_0);
+			}
 			// Update next time.
 			mp_ctx.gear_switch_next_time = TIM2_get_milliseconds() + MP_T_LESS_PERIOD_MS;
 		}
