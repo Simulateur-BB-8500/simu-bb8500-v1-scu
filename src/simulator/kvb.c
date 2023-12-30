@@ -8,6 +8,7 @@
 #include "kvb.h"
 
 #include "emergency.h"
+#include "font.h"
 #include "gpio.h"
 #include "lsmcu.h"
 #include "mapping.h"
@@ -113,107 +114,6 @@ static void __attribute__((optimize("-O0"))) _KVB_sweep(void) {
 }
 
 /*******************************************************************/
-static uint8_t _KVB_ascii_to_7_segments(uint8_t ascii) {
-	uint8_t segment = 0;
-	switch (ascii) {
-	case 'b':
-		segment = 0b01111100;
-		break;
-	case 'c':
-		segment = 0b01011000;
-		break;
-	case 'd':
-		segment = 0b01011110;
-		break;
-	case 'h':
-		segment = 0b01110100;
-		break;
-	case 'n':
-		segment = 0b01010100;
-		break;
-	case 'o':
-		segment = 0b01011100;
-		break;
-	case 'r':
-		segment = 0b01010000;
-		break;
-	case 't':
-		segment = 0b01111000;
-		break;
-	case 'u':
-		segment = 0b00011100;
-		break;
-	case 'A':
-		segment = 0b01110111;
-		break;
-	case 'C':
-		segment = 0b00111001;
-		break;
-	case 'E':
-		segment = 0b01111001;
-		break;
-	case 'F':
-		segment = 0b01110001;
-		break;
-	case 'H':
-		segment = 0b01110110;
-		break;
-	case 'J':
-		segment = 0b00001110;
-		break;
-	case 'L':
-		segment = 0b00111000;
-		break;
-	case 'P':
-		segment = 0b01110011;
-		break;
-	case 'U':
-		segment = 0b00111110;
-		break;
-	case 'Y':
-		segment = 0b01101110;
-		break;
-	case '0':
-		segment = 0b00111111;
-		break;
-	case '1':
-		segment = 0b00000110;
-		break;
-	case '2':
-		segment = 0b01011011;
-		break;
-	case '3':
-		segment = 0b01001111;
-		break;
-	case '4':
-		segment = 0b01100110;
-		break;
-	case '5':
-		segment = 0b01101101;
-		break;
-	case '6':
-		segment = 0b01111101;
-		break;
-	case '7':
-		segment = 0b00000111;
-		break;
-	case '8':
-		segment = 0b01111111;
-		break;
-	case '9':
-		segment = 0b01101111;
-		break;
-	case '-':
-		segment = 0b01000000;
-		break;
-	default:
-		segment = 0;
-		break;
-	}
-	return segment;
-}
-
-/*******************************************************************/
 static void _KVB_blink_lval(void) {
 	// TBC: add time offset to start at 0%.
 	uint32_t t = TIM2_get_milliseconds() % KVB_LVAL_BLINK_PERIOD_MS;
@@ -246,6 +146,7 @@ static void _KVB_blink_lssf(void) {
 static void _KVB_display(uint8_t* display) {
 	// Local variables.
 	uint8_t idx = 0;
+	uint8_t ascii_code = 0;
 	// Copy message into ascii_buf.
 	while (*display) {
 		kvb_ctx.ascii_buf[idx] = *display++;
@@ -261,8 +162,9 @@ static void _KVB_display(uint8_t* display) {
 	}
 	// Convert ASCII characters to segment configurations.
 	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) {
-		kvb_ctx.segment_buf[idx] = 0;
-		kvb_ctx.segment_buf[idx] = (0b1 << (8 + idx)) | _KVB_ascii_to_7_segments(kvb_ctx.ascii_buf[idx]);
+		ascii_code = kvb_ctx.ascii_buf[idx];
+		kvb_ctx.segment_buf[idx] = (ascii_code < FONT_ASCII_TABLE_OFFSET) ? FONT[0] : FONT[ascii_code - FONT_ASCII_TABLE_OFFSET];
+		kvb_ctx.segment_buf[idx] |= (0b1 << (8 + idx));
 	}
 	// Start sweep timer.
 	TIM6_start();
@@ -420,12 +322,6 @@ void KVB_process(void) {
 		break;
 	case KVB_STATE_IDLE:
 		// Speed check.
-		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_LV_KMH)) {
-			GPIO_write(&GPIO_KVB_LV, 1);
-		}
-		else {
-			GPIO_write(&GPIO_KVB_LV, 0);
-		}
 		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_EMERGENCY_KMH)) {
 			// Trigger emergency brake.
 			EMERGENCY_trigger();
@@ -447,11 +343,19 @@ void KVB_process(void) {
 		_KVB_lights_off();
 		kvb_ctx.state = KVB_STATE_OFF;
 	}
-	// Manage LVAL and LSSF blinking.
+	// LVAL blinking.
 	if (kvb_ctx.lssf_blink_enable != 0) {
 		_KVB_blink_lssf();
 	}
+	// LSSF blinking.
 	if (kvb_ctx.lval_blink_enable != 0) {
 		_KVB_blink_lval();
+	}
+	// LV.
+	if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_LV_KMH)) {
+		GPIO_write(&GPIO_KVB_LV, 1);
+	}
+	else {
+		GPIO_write(&GPIO_KVB_LV, 0);
 	}
 }

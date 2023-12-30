@@ -58,9 +58,9 @@ void TIM1_init(uint32_t period_ms) {
 	TIM1 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM1 -> CNT = 0;
 	TIM1 -> CR2 |= (0b010 << 4); // TRGO signal on update.
-	// Set PSC and ARR registers to reach 1ms.
-	TIM1 -> PSC = ((2 * RCC_get_frequency_hz(RCC_CLOCK_APB2) / 1000)) - 1; // TIM1 input clock = (2 * PCLK2) / ((2 * PLCK2 - 1) + 1) = 1kHz.
-	TIM1 -> ARR = period_ms;
+	// Set PSC and ARR registers to reach 0.5ms.
+	TIM1 -> PSC = ((RCC_get_frequency_hz(RCC_CLOCK_APB2)) / (1000)) - 1; // TIM1 input clock = (2 * PCLK2) / ((2 * PLCK2 - 1) + 1) = 2kHz.
+	TIM1 -> ARR = (period_ms << 1);
 	// Generate event to update registers.
 	TIM1 -> EGR |= (0b1 << 0); // UG='1'.
 	// Start counter.
@@ -76,9 +76,9 @@ void TIM2_init(void) {
 	TIM2 -> CNT = 0;
 	TIM2 -> DIER &= ~(0b1 << 0); // // Disable interrupt (UIE='0').
 	TIM2 -> SR &= ~(0b1 << 0); // UIF='0'.
-	// Set PSC and ARR registers to reach 1ms.
-	TIM2 -> PSC = ((2 * RCC_get_frequency_hz(RCC_CLOCK_APB1) / 1000)) - 1; // TIM2 input clock = (2 * PCLK1) / ((2 * PLCK1 - 1) + 1) = 1kHz.
-	TIM2 -> ARR = 0xFFFFFFFF; // No overflow (49 days).
+	// Set PSC and ARR registers to reach 0.5ms.
+	TIM2 -> PSC = ((RCC_get_frequency_hz(RCC_CLOCK_APB1)) / (1000)) - 1; // TIM2 input clock = (2 * PCLK1) / ((2 * PLCK1 - 1) + 1) = 2kHz.
+	TIM2 -> ARR = 0xFFFFFFFF; // No overflow (24 days).
 	// Generate event to update registers.
 	TIM2 -> EGR |= (0b1 << 0); // UG='1'.
 	// Start counter.
@@ -87,7 +87,7 @@ void TIM2_init(void) {
 
 /*******************************************************************/
 uint32_t TIM2_get_milliseconds(void) {
-	return (TIM2 -> CNT);
+	return ((TIM2 -> CNT) >> 1);
 }
 
 /*******************************************************************/

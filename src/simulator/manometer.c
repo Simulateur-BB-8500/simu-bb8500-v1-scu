@@ -242,7 +242,9 @@ uint32_t MANOMETER_get_pressure(MANOMETER_context_t* manometer) {
 
 /*******************************************************************/
 uint8_t MANOMETER_is_pressure_increasing(MANOMETER_context_t* manometer) {
+	// Local variables.
 	uint8_t increasing = 0;
+	// Check current step and target.
 	if ((manometer -> step_motor -> step) < (manometer -> step_target)) {
 		increasing = 1;
 	}

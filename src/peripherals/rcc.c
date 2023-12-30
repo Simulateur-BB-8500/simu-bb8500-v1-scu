@@ -31,9 +31,9 @@ static RCC_context_t rcc_ctx;
 /*******************************************************************/
 void RCC_init(void) {
 	// Peripherals clock prescalers:
-	// HPRE = 1 -> HCLK = SYSCLK = 100MHz (max 216).
-	// PPRE1 = 4 -> PCLK1 = HCLK/4 = 25MHz (max 54).
-	// PPRE2 = 4 -> PCLK2 = HCLK/4 = 25MHz (max 108).
+	// HPRE = 1 -> HCLK = SYSCLK = 200MHz (max 216).
+	// PPRE1 = 4 -> PCLK1 = HCLK/4 = 50MHz (max 54).
+	// PPRE2 = 4 -> PCLK2 = HCLK/4 = 50MHz (max 108).
 	RCC -> CFGR &= 0xFFE0030F; // Reset bits 4-7 and 10-15 + HPRE='0000' (1).
 	RCC -> CFGR |= (0b101 << 10) | (0b101 << 13); // PPRE1='101' (4) and PPRE2='101' (4).
 	RCC -> DKCFGR1 &= ~(0b1 << 24); // Timers clock is 2*PLCKx (PPRE1 and PPRE2 != 1).
@@ -41,18 +41,18 @@ void RCC_init(void) {
 	RCC -> CR &= ~(0b1 << 24);
 	// Source = HSI 16MHz
 	// M = 16 -> input clock = 1MHz (typical value).
-	// N = 200 -> VCO output clock = 200MHz (max 432).
-	// P = 2 -> PLLCLK = 100MHz (max 216).
-	// Q = 4 -> PLL48CLK = 50MHz (min 48 - max 75).
+	// N = 400 -> VCO output clock = 400MHz (max 432).
+	// P = 2 -> PLLCLK = 200MHz (max 216).
+	// Q = 8 -> PLL48CLK = 50MHz (min 48 - max 75).
 	RCC -> PLLCFGR = 0; // Reset all bits + PLLSRC='0' (HSI) + PLLP='00' (2)
-	RCC -> PLLCFGR |= (16 << 0) | (200 << 6) | (4 << 24);
+	RCC -> PLLCFGR |= (16 << 0) | (400 << 6) | (8 << 24);
 	// Enable PLL.
 	RCC -> CR |= (0b1 << 24);
 	// Wait for PLL to be ready.
 	while (((RCC -> CR) & (0b1 << 25)) == 0);
 	// Increase flash latency according to new system clock frequency (see p.74 of RM0385 datasheet).
-	// HCLK = SYSCLK = 100MHz -> flash latency must be set to 3 wait states (WS).
-	FLASH_set_latency(3);
+	// HCLK = SYSCLK = 200MHz -> flash latency must be set to 6 wait states (WS).
+	FLASH_set_latency(6);
 	// Switch to PLLCLK.
 	RCC -> CFGR |= (0b10 << 0); // SW='10'.
 	while (((RCC -> CFGR) & (0b11 << 0)) != 0b10); // // Wait for clock switch (SWS='00').
@@ -62,9 +62,9 @@ void RCC_init(void) {
 	RCC -> CFGR |= 0x36000000;
 #endif
 	// Update frequencies.
-	rcc_ctx.clock_frequency[RCC_CLOCK_SYSTEM] = 100000000;
-	rcc_ctx.clock_frequency[RCC_CLOCK_APB1] = 25000000;
-	rcc_ctx.clock_frequency[RCC_CLOCK_APB2] = 25000000;
+	rcc_ctx.clock_frequency[RCC_CLOCK_SYSTEM] = 200000000;
+	rcc_ctx.clock_frequency[RCC_CLOCK_APB1] = 50000000;
+	rcc_ctx.clock_frequency[RCC_CLOCK_APB2] = 50000000;
 }
 
 /*******************************************************************/

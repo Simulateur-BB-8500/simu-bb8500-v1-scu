@@ -65,11 +65,9 @@ void COMPRESSOR_init(void) {
 
 /*******************************************************************/
 void COMPRESSOR_process(void) {
-	// Update ZCA.
-	if (lsmcu_ctx.dj_locked != 0) {
-		SW2_update_state(&compressor_ctx.zca);
-		SW2_update_state(&compressor_ctx.zcd);
-	}
+	// Update switches.
+	SW2_update_state(&compressor_ctx.zca);
+	SW2_update_state(&compressor_ctx.zcd);
 	// Perform state machine.
 	switch (compressor_ctx.state) {
 	case COMPRESSOR_STATE_OFF:

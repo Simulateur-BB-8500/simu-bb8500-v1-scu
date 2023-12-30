@@ -24,8 +24,8 @@
 /*******************************************************************/
 typedef struct {
 	volatile uint8_t rx_buf[LSAGIU_RX_BUFFER_SIZE];
-	volatile uint32_t rx_write_idx;
-	uint32_t rx_read_idx;
+	volatile uint8_t rx_write_idx;
+	uint8_t rx_read_idx;
 } LSAGIU_context_t;
 
 /*** LSAGIU external global variables ***/
@@ -42,14 +42,15 @@ static LSAGIU_context_t lsagiu_ctx;
 static void _LSAGIU_fill_rx_buffer(uint8_t ls_cmd) {
 	// Store command.
 	lsagiu_ctx.rx_buf[lsagiu_ctx.rx_write_idx] = ls_cmd;
-	// Increment read index and manage roll-over.
-	lsagiu_ctx.rx_write_idx = ((lsagiu_ctx.rx_write_idx + 1) % LSAGIU_RX_BUFFER_SIZE);
+	// Increment write index.
+	lsagiu_ctx.rx_write_idx = (lsagiu_ctx.rx_write_idx + 1) % LSAGIU_RX_BUFFER_SIZE;
 }
 
 /*******************************************************************/
 static void _LSAGIU_decode(void) {
 	// Read last command.
 	uint8_t ls_cmd = lsagiu_ctx.rx_buf[lsagiu_ctx.rx_read_idx];
+	// Decode command.
 	if (ls_cmd <= LSMCU_TCH_SPEED_LAST) {
 		// Store current speed in global context.
 		lsmcu_ctx.speed_kmh = ls_cmd;
@@ -58,8 +59,8 @@ static void _LSAGIU_decode(void) {
 		// Store speed limit in global context.
 		lsmcu_ctx.speed_limit_kmh = LSAGIU_SPEED_LIMIT_FACTOR * (ls_cmd - LSMCU_SPEED_LIMIT_OFFSET);
 	}
-	// Increment read index and manage roll-over.
-	lsagiu_ctx.rx_read_idx = ((lsagiu_ctx.rx_read_idx + 1) % LSAGIU_RX_BUFFER_SIZE);
+	// Increment read index.
+	lsagiu_ctx.rx_read_idx = (lsagiu_ctx.rx_read_idx + 1) % LSAGIU_RX_BUFFER_SIZE;
 }
 
 /*** LSAGIU functions ***/
@@ -92,4 +93,5 @@ void LSAGIU_process(void) {
 		_LSAGIU_decode();
 		GPIO_toggle(&GPIO_LED_GREEN);
 	}
+	USART1_process();
 }

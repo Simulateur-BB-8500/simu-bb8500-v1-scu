@@ -84,6 +84,12 @@ int main(void) {
 	ZLFR_init();
 	ZPT_init();
 	ZSUR_init();
+	// Specific mode to start with CP full.
+	GPIO_configure(&GPIO_BPEV, GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
+	if (GPIO_read(&GPIO_BPEV) == 0) {
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, 9000, 2000);
+		while (((lsmcu_ctx.manometer_cp) -> flag_is_moving) != 0);
+	}
 	// Main loop.
 	while (1) {
 		// Communication tasks.

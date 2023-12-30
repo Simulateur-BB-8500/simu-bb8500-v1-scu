@@ -25,7 +25,7 @@ typedef void (*USART_rx_irq_cb_t)(uint8_t data);
  * \brief Init USART1 peripheral.
  * \param[in]  	irq_callback: Function to call on interrupt.
  * \param[out] 	none
- * \retval		Function execution status.
+ * \retval		none
  *******************************************************************/
 void USART1_init(USART_rx_irq_cb_t irq_callback);
 
@@ -35,8 +35,17 @@ void USART1_init(USART_rx_irq_cb_t irq_callback);
  * \param[in]	data: Byte array to send.
  * \param[in]	data_size_bytes: Number of bytes to send.
  * \param[out] 	none
- * \retval		Function execution status.
+ * \retval		none
  *******************************************************************/
 void USART1_write(uint8_t* data, uint8_t data_size_bytes);
+
+/*!******************************************************************
+ * \fn void USART1_process(void)
+ * \brief Process USART1 peripheral.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void USART1_process(void);
 
 #endif /* __USART_H__ */

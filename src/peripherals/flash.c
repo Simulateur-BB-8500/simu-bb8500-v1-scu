@@ -12,7 +12,7 @@
 
 /*** FLASH local macros ***/
 
-#define FLASH_TIMEOUT_COUNT		10000
+#define FLASH_TIMEOUT_COUNT		1000000
 
 /*** FLASH functions ***/
 
