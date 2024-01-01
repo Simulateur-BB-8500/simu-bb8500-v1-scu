@@ -14,6 +14,7 @@
 #include "rcc.h"
 #include "tim.h"
 // Simulator.
+#include "am.h"
 #include "bell.h"
 #include "bl.h"
 #include "bpgd.h"
@@ -60,10 +61,10 @@ int main(void) {
 	TIM1_init(ADC_CONVERSION_PERIOD_MS);
 	DMA2_STR0_init();
 	ADC1_init();
-	DAC_init();
 	// Communication interface.
 	LSAGIU_init();
 	// Simulator modules.
+	AM_init();
 	BELL_init();
 	BL_init();
 	BPGD_init();
@@ -86,6 +87,7 @@ int main(void) {
 	ZSUR_init();
 	// Specific mode to start with CP full.
 	GPIO_configure(&GPIO_BPEV, GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
+	TIM2_delay_milliseconds(1000);
 	if (GPIO_read(&GPIO_BPEV) == 0) {
 		MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, 9000, 2000);
 		while (((lsmcu_ctx.manometer_cp) -> flag_is_moving) != 0);
@@ -95,6 +97,7 @@ int main(void) {
 		// Communication tasks.
 		LSAGIU_process();
 		// Simulator tasks.
+		AM_process();
 		BELL_process();
 		BL_process();
 		BPGD_process();

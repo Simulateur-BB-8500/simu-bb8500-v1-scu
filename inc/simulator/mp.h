@@ -8,6 +8,22 @@
 #ifndef __MP_H__
 #define __MP_H__
 
+/*** MP macros ***/
+
+#define MP_VARIATOR_STEP_MAX_SERIES_COUPLING	20
+
+/*** MP structures ***/
+
+/*!******************************************************************
+ * \enum MP_motors_coupling_t
+ * \brief Motors coupling modes list.
+ *******************************************************************/
+typedef enum {
+	MP_MOTORS_COUPLING_SERIES = 0,
+	MP_MOTORS_COUPLING_PARALLEL,
+	MP_MOTORS_COUPLING_LAST
+} MP_motors_coupling_t;
+
 /*** MP functions ***/
 
 /*!******************************************************************

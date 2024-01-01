@@ -23,7 +23,7 @@ static TIM_completion_irq_cb_t tim7_update_irq_callback = NULL;
 /*** TIM local functions ***/
 
 /*******************************************************************/
-void __attribute__((optimize("-O0"))) TIM6_DAC_IRQHandler(void) {
+void TIM6_DAC_IRQHandler(void) {
 	// Check flag.
 	if (((TIM6 -> SR) & (0b1 << 0)) != 0) {
 		// Call callback.
@@ -36,7 +36,7 @@ void __attribute__((optimize("-O0"))) TIM6_DAC_IRQHandler(void) {
 }
 
 /*******************************************************************/
-void __attribute__((optimize("-O0"))) TIM7_IRQHandler(void) {
+void TIM7_IRQHandler(void) {
 	// Check flag.
 	if (((TIM7 -> SR) & (0b1 << 0)) != 0) {
 		// Call callback.

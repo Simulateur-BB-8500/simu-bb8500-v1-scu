@@ -10,6 +10,7 @@
 #include "gpio.h"
 #include "lsmcu.h"
 #include "mapping.h"
+#include "mp.h"
 #include "tim.h"
 #include "stdint.h"
 
@@ -229,11 +230,11 @@ void PICTOGRAMS_process(void) {
 		break;
 	case PICTOGRAMS_STATE_DJ_LOCKED:
 		// Manage LSGR, LSS and LSP.
-		GPIO_write(&GPIO_LSGR, (lsmcu_ctx.rheostat_0 != 0));
-		GPIO_write(&GPIO_LSS, ((lsmcu_ctx.rheostat_0 == 0) && (lsmcu_ctx.series_traction != 0)));
-		GPIO_write(&GPIO_LSP, ((lsmcu_ctx.rheostat_0 == 0) && (lsmcu_ctx.series_traction == 0)));
+		GPIO_write(&GPIO_LSGR, (lsmcu_ctx.variator_step == 0));
+		GPIO_write(&GPIO_LSS, ((lsmcu_ctx.variator_step != 0) && (lsmcu_ctx.motors_coupling == MP_MOTORS_COUPLING_SERIES)));
+		GPIO_write(&GPIO_LSP, ((lsmcu_ctx.variator_step != 0) && (lsmcu_ctx.motors_coupling == MP_MOTORS_COUPLING_PARALLEL)));
 		// Manage LSRH.
-		if (lsmcu_ctx.rheostat_0 == 0) {
+		if (lsmcu_ctx.variator_step != 0) {
 			if ((lsmcu_ctx.lsrh_blink_request != 0) && (GPIO_read(&GPIO_LSRH) != 0)) {
 				GPIO_write(&GPIO_LSRH, 0);
 				pictograms_ctx.lsrh_blink_start_time = TIM2_get_milliseconds();

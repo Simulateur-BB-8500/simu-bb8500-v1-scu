@@ -15,8 +15,6 @@
 
 /*** MANOMETER local macros ***/
 
-#define MANOMETER_STEP_IRQ_PERIOD_US		100
-
 #define MANOMETER_GEAR_G1_Z					36
 #define MANOMETER_GEAR_G2_Z					56
 #define MANOMETER_GEAR_CENTER_Z				20
@@ -24,9 +22,8 @@
 #define MANOMETER_PRESSURE_MAX_DEGREES		270
 #define MANOMETER_FULL_CIRCLE_DEGREES		360
 
+#define MANOMETER_STEP_IRQ_PERIOD_US		2000 // Minimum delay between coil pins change.
 #define MANOMETER_STEP_IRQ_PER_SECOND		(1000000 / MANOMETER_STEP_IRQ_PERIOD_US)
-#define MANOMETER_STEP_IRQ_PERIOD_MIN_US	2000 // Minimum delay between coil pins change.
-#define MANOMETER_STEP_IRQ_COUNT_MIN		(MANOMETER_STEP_IRQ_PERIOD_MIN_US / MANOMETER_STEP_IRQ_PERIOD_US)
 
 /*** MANOMETER external global variables ***/
 
@@ -48,7 +45,7 @@ static MANOMETER_context_t manometer_cf2 = {&step_motor_cf2, 4200, 6000,  0, 500
 /*** MANOMETER local functions ***/
 
 /*******************************************************************/
-static void __attribute__((optimize("-O0"))) _MANOMETER_needle_task(MANOMETER_context_t* manometer) {
+static void _MANOMETER_needle_task(MANOMETER_context_t* manometer) {
 	// Local variables.
 	uint32_t current_step = (manometer -> step_motor -> step);
 	uint32_t delta_start = 0;
@@ -213,10 +210,6 @@ void MANOMETER_set_pressure(MANOMETER_context_t* manometer, uint32_t pressure_mb
 		(manometer -> step_start) = (manometer -> step_motor -> step);
 		// Convert speed to IRQ period.
 		(manometer -> step_irq_period_min) = ((manometer -> pressure_max_mbar) * MANOMETER_STEP_IRQ_PER_SECOND) / (speed_mbar_per_second * (manometer -> pressure_max_steps));
-		// Clamp value.
-		if ((manometer -> step_irq_period_min) < MANOMETER_STEP_IRQ_COUNT_MIN) {
-			manometer -> step_irq_period_min = MANOMETER_STEP_IRQ_COUNT_MIN;
-		}
 		// Init step IRQ period to maximum speed for first interrupt.
 		(manometer -> step_irq_period) = (manometer -> step_irq_period_min);
 		(manometer -> step_irq_count) = manometer -> step_irq_period;

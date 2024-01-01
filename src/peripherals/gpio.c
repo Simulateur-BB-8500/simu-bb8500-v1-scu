@@ -191,7 +191,7 @@ void GPIO_configure(const GPIO_pin_t* gpio, GPIO_mode_t mode, GPIO_output_type_t
 }
 
 /*******************************************************************/
-void __attribute__((optimize("-O0"))) GPIO_write(const GPIO_pin_t* gpio, uint8_t state) {
+void GPIO_write(const GPIO_pin_t* gpio, uint8_t state) {
 	// Set bit.
 	if (state == 0) {
 		(gpio -> port) -> ODR &= ~(0b1 << (gpio -> pin));
@@ -202,7 +202,7 @@ void __attribute__((optimize("-O0"))) GPIO_write(const GPIO_pin_t* gpio, uint8_t
 }
 
 /*******************************************************************/
-uint8_t __attribute__((optimize("-O0"))) GPIO_read(const GPIO_pin_t* gpio) {
+uint8_t GPIO_read(const GPIO_pin_t* gpio) {
 	// Check mode.
 	uint8_t state = 0;
 	switch (_GPIO_get_mode(gpio)) {
@@ -225,7 +225,7 @@ uint8_t __attribute__((optimize("-O0"))) GPIO_read(const GPIO_pin_t* gpio) {
 }
 
 /*******************************************************************/
-void __attribute__((optimize("-O0"))) GPIO_toggle(const GPIO_pin_t* gpio) {
+void GPIO_toggle(const GPIO_pin_t* gpio) {
 	// Toggle ODR bit.
 	(gpio -> port) -> ODR ^= (0b1 << (gpio -> pin));
 }

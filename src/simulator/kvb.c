@@ -101,7 +101,7 @@ static const GPIO_pin_t* display_gpio_buf[KVB_NUMBER_OF_DISPLAYS] = {&GPIO_KVB_Z
 /*** KVB local functions ***/
 
 /*******************************************************************/
-static void __attribute__((optimize("-O0"))) _KVB_sweep(void) {
+static void _KVB_sweep(void) {
 	// Read register.
 	volatile uint32_t reg_value = (GPIOG -> ODR);
 	// Set bits.

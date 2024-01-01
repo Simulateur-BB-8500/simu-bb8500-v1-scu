@@ -10,6 +10,7 @@
 
 #include "adc.h"
 #include "manometer.h"
+#include "mp.h"
 #include "stdint.h"
 
 /*** LSMCU structure ***/
@@ -26,9 +27,10 @@ typedef struct {
 	uint8_t dj_locked;
 	uint8_t speed_kmh;
 	uint8_t speed_limit_kmh;
-	uint8_t rheostat_0;
+	int8_t variator_step;
+	uint8_t overcurrent;
 	uint8_t lsrh_blink_request;
-	uint8_t series_traction;
+	MP_motors_coupling_t motors_coupling;
 	uint8_t pbl2_on;
 	uint8_t emergency;
 	volatile uint32_t adc_data[ADC_DATA_INDEX_LAST];

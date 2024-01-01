@@ -83,7 +83,7 @@ void BL_process(void) {
 	}
 	// ZDJ.
 	SW2_update_state(&bl_ctx.zdj);
-	if ((lsmcu_ctx.zpt_raised != 0) && (lsmcu_ctx.emergency == 0) && (bl_ctx.zdj.state == SW2_ON)) {
+	if ((lsmcu_ctx.zpt_raised != 0) && (bl_ctx.zdj.state == SW2_ON) && (lsmcu_ctx.emergency == 0) && (lsmcu_ctx.overcurrent == 0)) {
 		// DJ closed.
 		lsmcu_ctx.dj_closed = 1;
 	}

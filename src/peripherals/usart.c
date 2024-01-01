@@ -41,7 +41,7 @@ static USART_context_t usart1_ctx;
 /*** USART local functions ***/
 
 /*******************************************************************/
-void __attribute__((optimize("-O0"))) USART1_IRQHandler(void) {
+void USART1_IRQHandler(void) {
 	// Local variables.
 	uint8_t rx_byte = 0;
 	// RX.

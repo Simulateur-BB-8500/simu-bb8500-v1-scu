@@ -1,33 +1,31 @@
 /*
- * dac.h
+ * am.h
  *
- *  Created on: 18 sep. 2017
+ *  Created on: 30 dec. 2023
  *      Author: Ludo
  */
 
-#ifndef __DAC_H__
-#define __DAC_H__
+#ifndef __AM_H__
+#define __AM_H__
 
-#include "stdint.h"
-
-/*** DAC functions ***/
+/*** AM functions ***/
 
 /*!******************************************************************
- * \fn void DAC_init(void)
- * \brief Init DAC peripheral.
+ * \fn void AM_init(void)
+ * \brief Init AM driver.
  * \param[in]  	none
  * \param[out] 	none
  * \retval		none
  *******************************************************************/
-void DAC_init(void);
+void AM_init(void);
 
 /*!******************************************************************
- * \fn void DAC_set_output(uint32_t output_12bits)
- * \brief Set DAC output voltage.
- * \param[in]  	output_12bits: 12-bits output voltage.
+ * \fn void AM_process(void)
+ * \brief Main task of AM driver.
+ * \param[in]  	none
  * \param[out] 	none
  * \retval		none
  *******************************************************************/
-void DAC_set_output(uint32_t output_12bits);
+void AM_process(void);
 
-#endif /* __DAC_H__ */
+#endif /* __AM_H__ */

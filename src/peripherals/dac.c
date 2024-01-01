@@ -14,10 +14,6 @@
 #include "rcc_reg.h"
 #include "stdint.h"
 
-/*** DAC local macros ***/
-
-#define DAC_FULL_SCALE 	4095
-
 /*** DAC functions ***/
 
 /*******************************************************************/
@@ -36,20 +32,7 @@ void DAC_init(void) {
 }
 
 /*******************************************************************/
-void DAC_set_voltage_mv(uint32_t voltage_mv) {
-	// Ensure new voltage is reachable.
-	uint32_t real_voltage_mv = voltage_mv;
-	if (real_voltage_mv < 0) {
-		real_voltage_mv = 0;
-	}
-	if (real_voltage_mv > ADC_VCC_DEFAULT_MV) {
-		real_voltage_mv = ADC_VCC_DEFAULT_MV;
-	}
-	DAC -> DHR12R1 = (DAC_FULL_SCALE * real_voltage_mv) / (ADC_VCC_DEFAULT_MV);
-}
-
-/*******************************************************************/
-uint32_t DAC_get_voltage_mv(void) {
-	uint32_t voltage_mv = ((DAC -> DOR1) * ADC_VCC_DEFAULT_MV) / (DAC_FULL_SCALE);
-	return voltage_mv;
+void DAC_set_output(uint32_t output_12bits) {
+	// Set register.
+	DAC -> DHR12R1 = (output_12bits & 0x3FFF);
 }
