@@ -131,10 +131,7 @@ void TIM5_set_delay_microseconds(uint32_t delay_us) {
 	TIM5 -> ARR = delay_us; // TIM5 clock is 1MHz.
 }
 
-/* GET TIM5 UPDATE EVENT FLAG.
- * @param:	None.
- * @return:	UIF flag status (0/1).
- */
+/*******************************************************************/
 uint8_t TIM5_get_uif_flag(void) {
 	return ((TIM5 -> SR) & (0b1 << 0));
 }
@@ -169,15 +166,18 @@ void TIM6_init(TIM_completion_irq_cb_t irq_callback) {
 void TIM6_start(void) {
 	// Enable counter.
 	TIM6 -> CR1 |= (0b1 << 0); // CEN='1'.
+	// Enable interrupt.
 	NVIC_enable_interrupt(NVIC_INTERRUPT_TIM6_DAC, NVIC_PRIORITY_TIM6);
 }
 
 /*******************************************************************/
 void TIM6_stop(void) {
+	// Disable interrupt.
+	NVIC_disable_interrupt(NVIC_INTERRUPT_TIM6_DAC);
 	// Disable and reset counter.
 	TIM6 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM6 -> CNT = 0;
-	NVIC_disable_interrupt(NVIC_INTERRUPT_TIM6_DAC);
+	TIM6 -> SR &= ~(0b1 << 0); // UIF='0'.
 }
 
 /*******************************************************************/
@@ -205,15 +205,18 @@ void TIM7_init(uint32_t period_us, TIM_completion_irq_cb_t irq_callback) {
 void TIM7_start(void) {
 	// Enable counter.
 	TIM7 -> CR1 |= (0b1 << 0); // CEN='1'.
+	// Enable interrupt.
 	NVIC_enable_interrupt(NVIC_INTERRUPT_TIM7, NVIC_PRIORITY_TIM7);
 }
 
 /*******************************************************************/
 void TIM7_stop(void) {
+	// Disable interrupt.
+	NVIC_disable_interrupt(NVIC_INTERRUPT_TIM7);
 	// Disable and reset counter.
 	TIM7 -> CR1 &= ~(0b1 << 0); // CEN='0'.
 	TIM7 -> CNT = 0;
-	NVIC_disable_interrupt(NVIC_INTERRUPT_TIM7);
+	TIM7 -> SR &= ~(0b1 << 0); // UIF='0'.
 }
 
 /*******************************************************************/

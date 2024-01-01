@@ -87,11 +87,17 @@ static void _MANOMETER_needle_task(MANOMETER_context_t* manometer) {
 				}
 			}
 		}
-		// Force step down if current step and target are equal but stop detect is not reached.
-		if ((current_step == (manometer -> step_target)) && ((manometer -> flag_step_target_zero) != 0) && ((manometer -> step_motor -> stop_detect_flag) == 0)) {
+		// Stop detection occurred before theoretical one.
+		if (((manometer -> flag_step_target_zero) != 0) && (manometer -> step_motor -> stop_detect_flag) != 0) {
+			// Align target value on current step.
+			(manometer -> step_target) = (manometer -> step_motor -> step);
+			(manometer -> flag_is_moving) = 0;
+		}
+		// Stop detection did not occurred whereas theoretical one was reached.
+		if (((manometer -> flag_step_target_zero) != 0) && ((manometer -> step_motor -> stop_detect_flag) == 0) && (current_step == (manometer -> step_target))) {
 			// Maximum speed.
 			(manometer -> step_irq_period) = (manometer -> step_irq_period_min);
-			// Step down.
+			// Force step down.
 			STEP_MOTOR_down(manometer -> step_motor);
 			// Align target value on new step.
 			(manometer -> step_target) = (manometer -> step_motor -> step);

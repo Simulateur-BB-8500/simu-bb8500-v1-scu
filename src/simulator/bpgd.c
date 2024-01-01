@@ -59,7 +59,7 @@ void BPGD_process(void) {
 	SW2_update_state(&bpgd_ctx.sw2);
 	if (bpgd_ctx.sw2.state == SW2_ON) {
 		// Send commands on change.
-		if (bpgd_ctx.enable != 0) {
+		if ((bpgd_ctx.enable != 0) && (lsmcu_ctx.pbl2_on != 0)) {
 			// Update manometers.
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, BPGD_CG_RE_PRESSURE_MBAR, BPGD_CG_RE_SPEED_MBAR_PER_SECOND);
 			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, BPGD_CG_RE_PRESSURE_MBAR, BPGD_CG_RE_SPEED_MBAR_PER_SECOND);

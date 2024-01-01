@@ -97,8 +97,8 @@ void STEP_MOTOR_up(STEP_MOTOR_context_t* step_motor) {
 	// Update and perform step.
 	if ((step_motor -> step) < STEP_MOTOR_STEP_MAX_VALUE) {
 		(step_motor -> step)++;
+		_STEP_MOTOR_single_step(step_motor);
 	}
-	_STEP_MOTOR_single_step(step_motor);
 }
 
 /*******************************************************************/
@@ -110,7 +110,7 @@ void STEP_MOTOR_down(STEP_MOTOR_context_t* step_motor) {
 		// Update and perform step.
 		if ((step_motor -> step) > STEP_MOTOR_STEP_MIN_VALUE) {
 			(step_motor -> step)--;
+			_STEP_MOTOR_single_step(step_motor);
 		}
-		_STEP_MOTOR_single_step(step_motor);
 	}
 }
