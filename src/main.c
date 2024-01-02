@@ -18,6 +18,7 @@
 #include "bell.h"
 #include "bl.h"
 #include "bpgd.h"
+#include "bpsa.h"
 #include "compressor.h"
 #include "emergency.h"
 #include "fpb.h"
@@ -68,6 +69,7 @@ int main(void) {
 	BELL_init();
 	BL_init();
 	BPGD_init();
+	BPSA_init();
 	COMPRESSOR_init();
 	EMERGENCY_init();
 	FD_init();
@@ -101,6 +103,7 @@ int main(void) {
 		BELL_process();
 		BL_process();
 		BPGD_process();
+		BPSA_process();
 		COMPRESSOR_process();
 		EMERGENCY_process();
 		FD_process();
