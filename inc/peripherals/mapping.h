@@ -66,6 +66,8 @@ static const GPIO_pin_t GPIO_KVB_LFU =					(GPIO_pin_t) {GPIOF, 5, 12, 0};
 static const GPIO_pin_t GPIO_KVB_LPS =					(GPIO_pin_t) {GPIOF, 5, 13, 0};
 static const GPIO_pin_t GPIO_KVB_LPE =					(GPIO_pin_t) {GPIOF, 5, 14, 0};
 static const GPIO_pin_t GPIO_KVB_LSSF =					(GPIO_pin_t) {GPIOF, 5, 15, 0};
+// KVB sounds.
+static const GPIO_pin_t GPIO_KVB_BIP = 					(GPIO_pin_t) {GPIOB, 1, 0, 0};
 // S.
 static const GPIO_pin_t GPIO_WHISTLE =					(GPIO_pin_t) {GPIOA, 0, 7, 0}; 	// ADC1_IN7.
 // PBL2.
@@ -156,7 +158,6 @@ static const GPIO_pin_t GPIO_TCH_INH_C =				(GPIO_pin_t) {GPIOC, 2, 12, 0};
 static const GPIO_pin_t GPIO_RS =						(GPIO_pin_t) {GPIOF, 5, 2, 0};
 // LEDs.
 static const GPIO_pin_t GPIO_LED_RED =					(GPIO_pin_t) {GPIOB, 1, 14, 0};
-static const GPIO_pin_t GPIO_LED_GREEN = 				(GPIO_pin_t) {GPIOB, 1, 0, 0};
 static const GPIO_pin_t GPIO_LED_BLUE =					(GPIO_pin_t) {GPIOB, 1, 7, 0};
 
 #endif /* __MAPPING_H__ */

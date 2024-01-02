@@ -91,7 +91,6 @@ void LSAGIU_process(void) {
 	// LSAGIU routine.
 	if (lsagiu_ctx.rx_read_idx != lsagiu_ctx.rx_write_idx) {
 		_LSAGIU_decode();
-		GPIO_toggle(&GPIO_LED_GREEN);
 	}
 	USART1_process();
 }

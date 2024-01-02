@@ -18,7 +18,10 @@
 
 /*** KVB local macros ***/
 
-// KVB segments.
+// BPAT.
+#define KVB_BPAT_PRESS_DURATION				2000
+#define KVB_SELF_TEST_DURATION				2000
+// Segments.
 #define KVB_NUMBER_OF_SEGMENTS 				7
 #define KVB_NUMBER_OF_DISPLAYS 				6
 // LVAL.
@@ -61,7 +64,9 @@ typedef enum {
 	KVB_STATE_UC512,
 	KVB_STATE_888888,
 	KVB_STATE_WAIT_VALIDATION,
-	KVB_STATE_IDLE,
+	KVB_STATE_BPAT_PRESSED,
+	KVB_STATE_SELF_TEST,
+	KVB_STATE_RUNNING,
 	KVB_STATE_EMERGENCY
 } KVB_state_t;
 
@@ -190,12 +195,12 @@ static void _KVB_display_off(void) {
 static void _KVB_lights_off(void) {
 	// Turn all GPIOs off.
 	TIM8_stop();
-	GPIO_write(&GPIO_KVB_LMV, 0);
-	GPIO_write(&GPIO_KVB_LFC, 0);
-	GPIO_write(&GPIO_KVB_LV, 0);
-	GPIO_write(&GPIO_KVB_LFU, 0);
-	GPIO_write(&GPIO_KVB_LPE, 0);
-	GPIO_write(&GPIO_KVB_LPS, 0);
+	GPIO_write(&GPIO_KVB_LMV,  0);
+	GPIO_write(&GPIO_KVB_LFC,  0);
+	GPIO_write(&GPIO_KVB_LV,   0);
+	GPIO_write(&GPIO_KVB_LFU,  0);
+	GPIO_write(&GPIO_KVB_LPE,  0);
+	GPIO_write(&GPIO_KVB_LPS,  0);
 	GPIO_write(&GPIO_KVB_LSSF, 0);
 	// Update flags.
 	kvb_ctx.lval_blink_enable = 0;
@@ -225,20 +230,22 @@ void KVB_init(void) {
 	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init lights (except LVAL configured in TIM8 driver).
-	GPIO_configure(&GPIO_KVB_LMV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_configure(&GPIO_KVB_LFC, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_configure(&GPIO_KVB_LV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_configure(&GPIO_KVB_LFU, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_configure(&GPIO_KVB_LPE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_configure(&GPIO_KVB_LPS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LMV,  GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LFC,  GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LV,   GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LFU,  GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LPE,  GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	GPIO_configure(&GPIO_KVB_LPS,  GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_configure(&GPIO_KVB_LSSF, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init buttons.
 	SW2_init(&kvb_ctx.bpval, &GPIO_KVB_BPVAL, 0, 100); // BPVAL active low.
-	SW2_init(&kvb_ctx.bpmv, &GPIO_KVB_BPMV, 0, 100); // BPMV active low.
-	SW2_init(&kvb_ctx.bpfc, &GPIO_KVB_BPFC, 0, 100); // BPFC active low.
-	SW2_init(&kvb_ctx.bpat, &GPIO_KVB_BPAT, 0, 100); // BPAT active low.
-	SW2_init(&kvb_ctx.bpsf, &GPIO_KVB_BPSF, 0, 100); // BPSF active low.
-	SW2_init(&kvb_ctx.acsf, &GPIO_KVB_ACSF, 0, 100); // ACSF active low.
+	SW2_init(&kvb_ctx.bpmv,  &GPIO_KVB_BPMV,  0, 100); // BPMV active low.
+	SW2_init(&kvb_ctx.bpfc,  &GPIO_KVB_BPFC,  0, 100); // BPFC active low.
+	SW2_init(&kvb_ctx.bpat,  &GPIO_KVB_BPAT,  0, 100); // BPAT active low.
+	SW2_init(&kvb_ctx.bpsf,  &GPIO_KVB_BPSF,  0, 100); // BPSF active low.
+	SW2_init(&kvb_ctx.acsf,  &GPIO_KVB_ACSF,  0, 100); // ACSF active low.
+	// Init sounds.
+	GPIO_configure(&GPIO_KVB_BIP, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	// Init sweep and LVAL timers.
 	TIM6_init(&_KVB_sweep);
 	TIM8_init();
@@ -305,6 +312,12 @@ void KVB_process(void) {
 		}
 		break;
 	case KVB_STATE_WAIT_VALIDATION:
+		// Check BPAT.
+		if (kvb_ctx.bpat.state == SW2_ON) {
+			// Check press duration.
+			kvb_ctx.state = KVB_STATE_BPAT_PRESSED;
+			kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
+		}
 		// Check BPVAL.
 		if (kvb_ctx.bpval.state == SW2_ON) {
 			// Parameters validated, go to idle state.
@@ -317,10 +330,50 @@ void KVB_process(void) {
 		}
 		if ((kvb_ctx.lssf_blink_enable == 0) && (kvb_ctx.lval_blink_enable == 0)) {
 			// KVB ready.
-			kvb_ctx.state = KVB_STATE_IDLE;
+			kvb_ctx.state = KVB_STATE_RUNNING;
 		}
 		break;
-	case KVB_STATE_IDLE:
+	case KVB_STATE_BPAT_PRESSED:
+		// Check button.
+		if (kvb_ctx.bpat.state == SW2_OFF) {
+			kvb_ctx.state = KVB_STATE_WAIT_VALIDATION;
+		}
+		else {
+			// Check press duration.
+			if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_BPAT_PRESS_DURATION)) {
+				// Start self test.
+				kvb_ctx.lval_blink_enable = 0;
+				TIM8_set_duty_cycle(100);
+				GPIO_write(&GPIO_KVB_LMV, 1);
+				GPIO_write(&GPIO_KVB_LFC, 1);
+				GPIO_write(&GPIO_KVB_LV,  1);
+				GPIO_write(&GPIO_KVB_LFU, 1);
+				GPIO_write(&GPIO_KVB_LPE, 1);
+				GPIO_write(&GPIO_KVB_LPS, 1);
+				GPIO_write(&GPIO_KVB_BIP, 1);
+				// Switch state.
+				kvb_ctx.state = KVB_STATE_SELF_TEST;
+				kvb_ctx.state_switch_time_ms = TIM2_get_milliseconds();
+			}
+		}
+		break;
+	case KVB_STATE_SELF_TEST:
+		if (TIM2_get_milliseconds() > (kvb_ctx.state_switch_time_ms + KVB_SELF_TEST_DURATION)) {
+			// Switch lights off.
+			kvb_ctx.lval_blink_enable = 1;
+			GPIO_write(&GPIO_KVB_LMV, 0);
+			GPIO_write(&GPIO_KVB_LFC, 0);
+			GPIO_write(&GPIO_KVB_LV,  0);
+			GPIO_write(&GPIO_KVB_LFU, 0);
+			GPIO_write(&GPIO_KVB_LPE, 0);
+			GPIO_write(&GPIO_KVB_LPS, 0);
+			GPIO_write(&GPIO_KVB_BIP, 0);
+			// Emergency test.
+			EMERGENCY_trigger();
+			kvb_ctx.state = KVB_STATE_WAIT_VALIDATION;
+		}
+		break;
+	case KVB_STATE_RUNNING:
 		// Speed check.
 		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_EMERGENCY_KMH)) {
 			// Trigger emergency brake.
@@ -331,7 +384,7 @@ void KVB_process(void) {
 	case KVB_STATE_EMERGENCY:
 		// Stay in this state while emergency flag is set.
 		if (lsmcu_ctx.emergency == 0) {
-			kvb_ctx.state = KVB_STATE_IDLE;
+			kvb_ctx.state = KVB_STATE_RUNNING;
 		}
 		break;
 	default:
@@ -352,10 +405,12 @@ void KVB_process(void) {
 		_KVB_blink_lval();
 	}
 	// LV.
-	if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_LV_KMH)) {
-		GPIO_write(&GPIO_KVB_LV, 1);
-	}
-	else {
-		GPIO_write(&GPIO_KVB_LV, 0);
+	if (kvb_ctx.state != KVB_STATE_SELF_TEST) {
+		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_LV_KMH)) {
+			GPIO_write(&GPIO_KVB_LV, 1);
+		}
+		else {
+			GPIO_write(&GPIO_KVB_LV, 0);
+		}
 	}
 }
