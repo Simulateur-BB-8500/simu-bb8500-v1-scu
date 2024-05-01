@@ -52,8 +52,6 @@ void USART1_IRQHandler(void) {
 		if (usart1_ctx.rx_irq_callback != NULL) {
 			usart1_ctx.rx_irq_callback(rx_byte);
 		}
-		// Clear flag.
-		USART1 -> RQR |= (0b1 << 3);
 	}
 	// Overrun error interrupt.
 	if (((USART1 -> ISR) & (0b1 << 3)) != 0) {
