@@ -93,6 +93,10 @@ int main(void) {
 	if (GPIO_read(&GPIO_BPEV) == 0) {
 		MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, 9000, 2000);
 		while (((lsmcu_ctx.manometer_cp) -> flag_is_moving) != 0);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 2900, 1500);
+		while (((lsmcu_ctx.manometer_cf1) -> flag_is_moving) != 0);
+		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 3100, 1500);
+		while (((lsmcu_ctx.manometer_cf2) -> flag_is_moving) != 0);
 	}
 	// Main loop.
 	while (1) {

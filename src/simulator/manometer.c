@@ -168,6 +168,17 @@ void MANOMETER_init(void) {
 	STEP_MOTOR_init(manometer_cf1.step_motor);
 	STEP_MOTOR_init(manometer_cf2.step_motor);
 	GPIO_write(&GPIO_MANOMETER_POWER_ENABLE, 0);
+	// Align start and target on calibration value.
+	manometer_cp.step_start =   ((manometer_cp.step_motor)  -> step);
+	manometer_cp.step_target =  ((manometer_cp.step_motor)  -> step);
+	manometer_re.step_start =   ((manometer_re.step_motor)  -> step);
+	manometer_re.step_target =  ((manometer_re.step_motor)  -> step);
+	manometer_cg.step_start =   ((manometer_cg.step_motor)  -> step);
+	manometer_cg.step_target =  ((manometer_cg.step_motor)  -> step);
+	manometer_cf1.step_start =  ((manometer_cf1.step_motor) -> step);
+	manometer_cf1.step_target = ((manometer_cf1.step_motor) -> step);
+	manometer_cf2.step_start =  ((manometer_cf2.step_motor) -> step);
+	manometer_cf2.step_target = ((manometer_cf2.step_motor) -> step);
 	// Init manometers factors.
 	manometer_cp.pressure_max_steps =    _MANOMETER_mbar_to_step(manometer_cp.pressure_max_mbar,    manometer_cp.pressure_max_mbar,  MANOMETER_GEAR_G1_Z) + 0;
 	manometer_cp.needle_inertia_steps =  _MANOMETER_mbar_to_step(manometer_cp.needle_inertia_mbar,  manometer_cp.pressure_max_mbar,  MANOMETER_GEAR_G1_Z);
