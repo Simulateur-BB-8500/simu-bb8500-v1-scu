@@ -15,6 +15,7 @@
 #include "sw2.h"
 #include "tim.h"
 #include "stdint.h"
+#include "version.h"
 
 /*** KVB local macros ***/
 
@@ -263,6 +264,9 @@ void KVB_process(void) {
 	// Perform internal state machine.
 	switch (kvb_ctx.state) {
 	case KVB_STATE_OFF:
+		// Turn display off.
+		_KVB_display_off();
+		// Check BL.
 		if (lsmcu_ctx.bl_unlocked != 0) {
 			// Start KVB init.
 			_KVB_display(KVB_YG_PA400);
@@ -413,4 +417,35 @@ void KVB_process(void) {
 			GPIO_write(&GPIO_KVB_LV, 0);
 		}
 	}
+}
+
+/*******************************************************************/
+void KVB_print_software_version(void) {
+	// Local variables.
+	uint8_t sw_version[KVB_NUMBER_OF_DISPLAYS];
+	uint8_t tens = 0;
+	// Check dirty flag.
+	if (GIT_DIRTY_FLAG != 0) {
+		sw_version[0] = 'd';
+		sw_version[1] = 'i';
+		sw_version[2] = 'r';
+		sw_version[3] = 't';
+		sw_version[4] = 'y';
+		sw_version[5] = ' ';
+	}
+	else {
+		// Build string.
+		tens = (GIT_MAJOR_VERSION / 10);
+		sw_version[0] = ('0' + tens);
+		sw_version[1] = ('0' + (GIT_MAJOR_VERSION - (tens * 10)));
+		tens = (GIT_MINOR_VERSION / 10);
+		sw_version[2] = ('0' + tens);
+		sw_version[3] = ('0' + (GIT_MINOR_VERSION - (tens * 10)));
+		tens = (GIT_COMMIT_INDEX / 10);
+		sw_version[4] = ('0' + tens);
+		sw_version[5] = ('0' + (GIT_COMMIT_INDEX - (tens * 10)));
+	}
+
+	// Start display.
+	_KVB_display((uint8_t*) sw_version);
 }

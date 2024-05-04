@@ -28,4 +28,13 @@ void KVB_init(void);
  *******************************************************************/
 void KVB_process(void);
 
+/*!******************************************************************
+ * \fn void KVB_print_software_version(void)
+ * \brief Print software version on KVB.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		none
+ *******************************************************************/
+void KVB_print_software_version(void);
+
 #endif /* __KVB_H__ */

@@ -75,6 +75,7 @@ int main(void) {
 	FD_init();
 	FPB_init();
 	KVB_init();
+	KVB_print_software_version();
 	MANOMETER_init();
 	MP_init();
 	MPINV_init();
@@ -91,12 +92,12 @@ int main(void) {
 	GPIO_configure(&GPIO_BPEV, GPIO_MODE_INPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
 	TIM2_delay_milliseconds(1000);
 	if (GPIO_read(&GPIO_BPEV) == 0) {
+		// Set CP and CF pressures.
 		MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, 9000, 2000);
-		while (((lsmcu_ctx.manometer_cp) -> flag_is_moving) != 0);
 		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 2900, 1500);
-		while (((lsmcu_ctx.manometer_cf1) -> flag_is_moving) != 0);
 		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 3100, 1500);
-		while (((lsmcu_ctx.manometer_cf2) -> flag_is_moving) != 0);
+		// Wait for needles to be ready.
+		while ((((lsmcu_ctx.manometer_cp) -> flag_is_moving) != 0) || (((lsmcu_ctx.manometer_cf1) -> flag_is_moving) != 0) || (((lsmcu_ctx.manometer_cf2) -> flag_is_moving) != 0));
 	}
 	// Main loop.
 	while (1) {
