@@ -1,0 +1,6 @@
+r
+loadfile nucleo-f746zg/scu.hex
+verifyfile nucleo-f746zg/scu.hex
+r
+g
+qc

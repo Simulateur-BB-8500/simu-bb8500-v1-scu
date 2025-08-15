@@ -9,13 +9,13 @@
 
 #include "adc_reg.h"
 #include "dma_reg.h"
-#include "lsmcu.h"
 #include "rcc_reg.h"
+#include "scu.h"
 #include "stdint.h"
 
 /*** DMA external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** DMA functions ***/
 
@@ -42,7 +42,7 @@ void DMA2_STR0_init(void) {
 	// Set peripheral address.
 	DMA2 -> S0PAR = (uint32_t) &(ADC1 -> DR);
 	// Set memory address.
-	DMA2 -> S0M0AR = (uint32_t) &(lsmcu_ctx.adc_data[0]);
+	DMA2 -> S0M0AR = (uint32_t) &(scu_ctx.adc_data[0]);
 	// Number of data to transfer.
 	DMA2 -> S0NDTR = ADC_DATA_INDEX_LAST;
 	// Start stream.

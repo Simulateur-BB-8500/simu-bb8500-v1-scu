@@ -9,9 +9,9 @@
 
 #include "adc.h"
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw4.h"
 #include "stdint.h"
 
@@ -25,7 +25,7 @@
 
 /*** PBL2 external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** PBL2 local global variables ***/
 
@@ -36,9 +36,9 @@ static SW4_context_t pbl2_sw4;
 /*******************************************************************/
 void PBL2_init(void) {
 	// Init GPIO.
-	SW4_init(&pbl2_sw4, &GPIO_PBL2, 500, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_PBL2]));
+	SW4_init(&pbl2_sw4, &GPIO_PBL2, 500, (uint32_t*) &(scu_ctx.adc_data[ADC_DATA_INDEX_PBL2]));
 	// Init global context.
-	lsmcu_ctx.pbl2_on = 0;
+	scu_ctx.pbl2_on = 0;
 }
 
 /*******************************************************************/
@@ -49,14 +49,14 @@ void PBL2_process(void) {
 	switch (pbl2_sw4.state) {
 	case SW4_P0:
 		// Retrait.
-		if (lsmcu_ctx.pbl2_on != 0) {
+		if (scu_ctx.pbl2_on != 0) {
 			// Send command on change.
-			LSAGIU_write(LSMCU_OUT_PBL2_OFF);
+			SGDU_write(SCU_OUT_PBL2_OFF);
 			// Empty CG and RE.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_cg, 0, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_re, 0, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);
 			// Update global context.
-			lsmcu_ctx.pbl2_on = 0;
+			scu_ctx.pbl2_on = 0;
 		}
 		break;
 	case SW4_P1:
@@ -64,16 +64,16 @@ void PBL2_process(void) {
 		break;
 	case SW4_P2:
 		// Service.
-		if ((lsmcu_ctx.pbl2_on == 0) &&
-		   (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > ((lsmcu_ctx.manometer_cg) -> pressure_limit_mbar)) &&
-		   (MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > ((lsmcu_ctx.manometer_re) -> pressure_limit_mbar))) {
+		if ((scu_ctx.pbl2_on == 0) &&
+		   (MANOMETER_get_pressure(scu_ctx.manometer_cp) > ((scu_ctx.manometer_cg) -> pressure_limit_mbar)) &&
+		   (MANOMETER_get_pressure(scu_ctx.manometer_cp) > ((scu_ctx.manometer_re) -> pressure_limit_mbar))) {
 			// Send command on change.
-			LSAGIU_write(LSMCU_OUT_PBL2_ON);
+			SGDU_write(SCU_OUT_PBL2_ON);
 			// Start CG and RE manometers.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_MBAR, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, PBL2_ON_RE_PRESSURE_MBAR, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_cg, PBL2_ON_CG_PRESSURE_MBAR, PBL2_ON_CG_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_re, PBL2_ON_RE_PRESSURE_MBAR, PBL2_ON_RE_SPEED_MBAR_PER_SECOND);
 			// Update global context.
-			lsmcu_ctx.pbl2_on = 1;
+			scu_ctx.pbl2_on = 1;
 		}
 		break;
 	case SW4_P3:

@@ -9,10 +9,10 @@
 
 #include "adc.h"
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "manometer.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw3.h"
 #include "stdint.h"
 
@@ -31,7 +31,7 @@ typedef struct {
 
 /*** FPB external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** FPB local global variables ***/
 
@@ -42,7 +42,7 @@ static FPB_context_t fpb_ctx;
 /*******************************************************************/
 void FPB_init(void) {
 	// Init GPIO.
-	SW3_init(&fpb_ctx.sw3, &GPIO_FPB, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_FPB]));
+	SW3_init(&fpb_ctx.sw3, &GPIO_FPB, 100, (uint32_t*) &(scu_ctx.adc_data[ADC_DATA_INDEX_FPB]));
 	fpb_ctx.previous_state = SW3_NEUTRAL;
 }
 
@@ -51,33 +51,33 @@ void FPB_process(void) {
 	// Update current state.
 	SW3_update_state(&fpb_ctx.sw3);
 	// Check PBL2.
-	if (lsmcu_ctx.pbl2_on != 0) {
+	if (scu_ctx.pbl2_on != 0) {
 		switch (fpb_ctx.sw3.state) {
 		case SW3_BACK:
 			if (fpb_ctx.previous_state != SW3_BACK) {
 				// Backward.
-				LSAGIU_write(LSMCU_OUT_FPB_RELEASE);
+				SGDU_write(SCU_OUT_FPB_RELEASE);
 				// Start CG and RE manometers.
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, FPB_CG_RE_PRESSURE_MAX_MBAR, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_re, FPB_CG_RE_PRESSURE_MAX_MBAR, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(scu_ctx.manometer_cg, FPB_CG_RE_PRESSURE_MAX_MBAR, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(scu_ctx.manometer_re, FPB_CG_RE_PRESSURE_MAX_MBAR, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
 			}
 			break;
 		case SW3_NEUTRAL:
 			if (fpb_ctx.previous_state != SW3_NEUTRAL) {
 				// Forward.
-				LSAGIU_write(LSMCU_OUT_FPB_NEUTRAL);
+				SGDU_write(SCU_OUT_FPB_NEUTRAL);
 				// Stop manometers.
-				MANOMETER_needle_stop(lsmcu_ctx.manometer_cg);
-				MANOMETER_needle_stop(lsmcu_ctx.manometer_re);
+				MANOMETER_needle_stop(scu_ctx.manometer_cg);
+				MANOMETER_needle_stop(scu_ctx.manometer_re);
 			}
 			break;
 		case SW3_FRONT:
 			if (fpb_ctx.previous_state != SW3_FRONT) {
 				// Forward.
-				LSAGIU_write(LSMCU_OUT_FPB_APPLY);
+				SGDU_write(SCU_OUT_FPB_APPLY);
 				// Start CG and RE manometers.
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, 0, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_re, 0, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(scu_ctx.manometer_cg, 0, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(scu_ctx.manometer_re, 0, FPB_CG_RE_SPEED_MBAR_PER_SECOND);
 			}
 			break;
 		default:

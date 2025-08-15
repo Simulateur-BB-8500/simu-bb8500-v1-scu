@@ -8,9 +8,9 @@
 #include "zsur.h"
 
 #include "gpio.h"
-#include "lsmcu.h"
 #include "manometer.h"
 #include "mapping.h"
+#include "scu.h"
 #include "sw2.h"
 #include "stdint.h"
 
@@ -31,7 +31,7 @@ typedef struct {
 
 /*** ZSUR external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** ZSUR local global variables ***/
 
@@ -54,16 +54,16 @@ void ZSUR_process(void) {
 	if (zsur_ctx.sw2.state == SW2_ON) {
 		// Send command on change.
 		if ((zsur_ctx.previous_state != SW2_ON) &&
-			(MANOMETER_get_pressure(lsmcu_ctx.manometer_cg) > ZSUR_CG_PRESSURE_MIN_MBAR) &&
-			(MANOMETER_get_pressure(lsmcu_ctx.manometer_cp) > ((lsmcu_ctx.manometer_cg) -> pressure_limit_mbar))) {
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, ((lsmcu_ctx.manometer_cg) -> pressure_limit_mbar), ZSUR_CG_RE_SPEED_MBAR_PER_SECOND);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, ((lsmcu_ctx.manometer_re) -> pressure_limit_mbar), ZSUR_CG_RE_SPEED_MBAR_PER_SECOND);
+			(MANOMETER_get_pressure(scu_ctx.manometer_cg) > ZSUR_CG_PRESSURE_MIN_MBAR) &&
+			(MANOMETER_get_pressure(scu_ctx.manometer_cp) > ((scu_ctx.manometer_cg) -> pressure_limit_mbar))) {
+			MANOMETER_set_pressure(scu_ctx.manometer_cg, ((scu_ctx.manometer_cg) -> pressure_limit_mbar), ZSUR_CG_RE_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_re, ((scu_ctx.manometer_re) -> pressure_limit_mbar), ZSUR_CG_RE_SPEED_MBAR_PER_SECOND);
 		}
 	}
 	// Update previous state.
 	zsur_ctx.previous_state = zsur_ctx.sw2.state;
 	// Manage LSUR indicator.
-	if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cg) > LSUR_CG_PRESSURE_THRESHOLD_MBAR) {
+	if (MANOMETER_get_pressure(scu_ctx.manometer_cg) > LSUR_CG_PRESSURE_THRESHOLD_MBAR) {
 		GPIO_write(&GPIO_LSUR, 1);
 	}
 	else {

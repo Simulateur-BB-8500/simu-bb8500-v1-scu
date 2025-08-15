@@ -9,10 +9,10 @@
 
 #include "adc.h"
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "manometer.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw3.h"
 #include "stdint.h"
 
@@ -31,7 +31,7 @@ typedef struct {
 
 /*** FD external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** FD local global variables ***/
 
@@ -42,7 +42,7 @@ static FD_context_t fd_ctx;
 /*******************************************************************/
 void FD_init(void) {
 	// Init GPIO.
-	SW3_init(&fd_ctx.sw3, &GPIO_FD, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_FD]));
+	SW3_init(&fd_ctx.sw3, &GPIO_FD, 100, (uint32_t*) &(scu_ctx.adc_data[ADC_DATA_INDEX_FD]));
 	fd_ctx.previous_state = SW3_NEUTRAL;
 }
 
@@ -57,48 +57,48 @@ void FD_process(void) {
 	case SW3_BACK:
 		if (fd_ctx.previous_state != SW3_BACK) {
 			// Check current pressure.
-			if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cf1) > 0) {
+			if (MANOMETER_get_pressure(scu_ctx.manometer_cf1) > 0) {
 				// Update CF1.
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0, FD_CF1_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(scu_ctx.manometer_cf1, 0, FD_CF1_SPEED_MBAR_PER_SECOND);
 				command_required = 1;
 			}
-			if (MANOMETER_get_pressure(lsmcu_ctx.manometer_cf2) > 0) {
+			if (MANOMETER_get_pressure(scu_ctx.manometer_cf2) > 0) {
 				// Update CF2.
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0, FD_CF2_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(scu_ctx.manometer_cf2, 0, FD_CF2_SPEED_MBAR_PER_SECOND);
 				command_required = 1;
 
 			}
 			if (command_required != 0) {
-				LSAGIU_write(LSMCU_OUT_FD_RELEASE);
+				SGDU_write(SCU_OUT_FD_RELEASE);
 			}
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (fd_ctx.previous_state != SW3_NEUTRAL) {
 			// Stop CF1/CF2 manometers.
-			MANOMETER_needle_stop(lsmcu_ctx.manometer_cf1);
-			MANOMETER_needle_stop(lsmcu_ctx.manometer_cf2);
+			MANOMETER_needle_stop(scu_ctx.manometer_cf1);
+			MANOMETER_needle_stop(scu_ctx.manometer_cf2);
 			// Neutral.
-			LSAGIU_write(LSMCU_OUT_FD_NEUTRAL);
+			SGDU_write(SCU_OUT_FD_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (fd_ctx.previous_state != SW3_FRONT) {
 			// Check current pressure.
-			if ((MANOMETER_get_pressure(lsmcu_ctx.manometer_cf1) < ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar)) &&
-				(MANOMETER_get_pressure(lsmcu_ctx.manometer_cp)  > ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar))) {
+			if ((MANOMETER_get_pressure(scu_ctx.manometer_cf1) < ((scu_ctx.manometer_cf1) -> pressure_limit_mbar)) &&
+				(MANOMETER_get_pressure(scu_ctx.manometer_cp)  > ((scu_ctx.manometer_cf1) -> pressure_limit_mbar))) {
 				// Update CF1.
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, ((lsmcu_ctx.manometer_cf1) -> pressure_limit_mbar), FD_CF1_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(scu_ctx.manometer_cf1, ((scu_ctx.manometer_cf1) -> pressure_limit_mbar), FD_CF1_SPEED_MBAR_PER_SECOND);
 				command_required = 1;
 			}
-			if ((MANOMETER_get_pressure(lsmcu_ctx.manometer_cf2) < ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar)) &&
-				(MANOMETER_get_pressure(lsmcu_ctx.manometer_cp)  > ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar))) {
+			if ((MANOMETER_get_pressure(scu_ctx.manometer_cf2) < ((scu_ctx.manometer_cf2) -> pressure_limit_mbar)) &&
+				(MANOMETER_get_pressure(scu_ctx.manometer_cp)  > ((scu_ctx.manometer_cf2) -> pressure_limit_mbar))) {
 				// Update CF2.
-				MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, ((lsmcu_ctx.manometer_cf2) -> pressure_limit_mbar), FD_CF2_SPEED_MBAR_PER_SECOND);
+				MANOMETER_set_pressure(scu_ctx.manometer_cf2, ((scu_ctx.manometer_cf2) -> pressure_limit_mbar), FD_CF2_SPEED_MBAR_PER_SECOND);
 				command_required = 1;
 			}
 			if (command_required != 0) {
-				LSAGIU_write(LSMCU_OUT_FD_APPLY);
+				SGDU_write(SCU_OUT_FD_APPLY);
 			}
 		}
 		break;

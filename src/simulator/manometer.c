@@ -7,8 +7,8 @@
 
 #include "manometer.h"
 
-#include "lsmcu.h"
 #include "mapping.h"
+#include "scu.h"
 #include "step_motor.h"
 #include "tim.h"
 #include "stdint.h"
@@ -32,7 +32,7 @@ extern STEP_MOTOR_context_t step_motor_re;
 extern STEP_MOTOR_context_t step_motor_cg;
 extern STEP_MOTOR_context_t step_motor_cf1;
 extern STEP_MOTOR_context_t step_motor_cf2;
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** MANOMETER local global variables ***/
 
@@ -125,11 +125,11 @@ static uint32_t _MANOMETER_mbar_to_step(uint32_t pressure_delta_mbar, uint32_t p
 /*******************************************************************/
 static void _MANOMETER_needle_task_all(void) {
 	// Perform manometers needle control.
-	_MANOMETER_needle_task(lsmcu_ctx.manometer_cp);
-	_MANOMETER_needle_task(lsmcu_ctx.manometer_re);
-	_MANOMETER_needle_task(lsmcu_ctx.manometer_cg);
-	_MANOMETER_needle_task(lsmcu_ctx.manometer_cf1);
-	_MANOMETER_needle_task(lsmcu_ctx.manometer_cf2);
+	_MANOMETER_needle_task(scu_ctx.manometer_cp);
+	_MANOMETER_needle_task(scu_ctx.manometer_re);
+	_MANOMETER_needle_task(scu_ctx.manometer_cg);
+	_MANOMETER_needle_task(scu_ctx.manometer_cf1);
+	_MANOMETER_needle_task(scu_ctx.manometer_cf2);
 }
 
 /*******************************************************************/
@@ -191,11 +191,11 @@ void MANOMETER_init(void) {
 	manometer_cf2.pressure_max_steps =   _MANOMETER_mbar_to_step(manometer_cf2.pressure_max_mbar,   manometer_cf2.pressure_max_mbar, MANOMETER_GEAR_G2_Z) + 10;
 	manometer_cf2.needle_inertia_steps = _MANOMETER_mbar_to_step(manometer_cf2.needle_inertia_mbar, manometer_cf2.pressure_max_mbar, MANOMETER_GEAR_G2_Z);
 	// Link to global context.
-	lsmcu_ctx.manometer_cp =  &manometer_cp;
-	lsmcu_ctx.manometer_re =  &manometer_re;
-	lsmcu_ctx.manometer_cg =  &manometer_cg;
-	lsmcu_ctx.manometer_cf1 = &manometer_cf1;
-	lsmcu_ctx.manometer_cf2 = &manometer_cf2;
+	scu_ctx.manometer_cp =  &manometer_cp;
+	scu_ctx.manometer_re =  &manometer_re;
+	scu_ctx.manometer_cg =  &manometer_cg;
+	scu_ctx.manometer_cf1 = &manometer_cf1;
+	scu_ctx.manometer_cf2 = &manometer_cf2;
 	// Init step motor control timer.
 	TIM7_init(MANOMETER_STEP_IRQ_PERIOD_US, &_MANOMETER_needle_task_all);
 }

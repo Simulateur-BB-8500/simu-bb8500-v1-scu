@@ -9,9 +9,9 @@
 
 #include "adc.h"
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw4.h"
 #include "stdint.h"
 
@@ -33,7 +33,7 @@ typedef struct {
 
 /*** ZPT external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** ZPT local global variables ***/
 
@@ -44,12 +44,12 @@ static ZPT_context_t zpt_ctx;
 /*******************************************************************/
 void ZPT_init(void) {
 	// Init GPIOs.
-	SW4_init(&zpt_ctx.sw4, &GPIO_ZPT, 500, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_ZPT]));
+	SW4_init(&zpt_ctx.sw4, &GPIO_ZPT, 500, (uint32_t*) &(scu_ctx.adc_data[ADC_DATA_INDEX_ZPT]));
 	zpt_ctx.state = ZPT_STATE_0;
 	GPIO_configure(&GPIO_VLG, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_write(&GPIO_VLG, 1);
 	// Init global context.
-	lsmcu_ctx.zpt_raised = 0;
+	scu_ctx.zpt_raised = 0;
 }
 
 /*******************************************************************/
@@ -59,31 +59,31 @@ void ZPT_process(void) {
 	// Perform state machine.
 	switch (zpt_ctx.state) {
 	case ZPT_STATE_0:
-		if (lsmcu_ctx.bl_unlocked != 0) {
+		if (scu_ctx.bl_unlocked != 0) {
 			switch (zpt_ctx.sw4.state) {
 			case SW4_P0:
 				// Nothing to do.
 				break;
 			case SW4_P1:
 				// Rise back pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_REAR_UP);
+				SGDU_write(SCU_OUT_ZPT_REAR_UP);
 				zpt_ctx.state = ZPT_STATE_AR;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			case SW4_P2:
 				// Rise both pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_REAR_UP);
-				LSAGIU_write(LSMCU_OUT_ZPT_FRONT_UP);
+				SGDU_write(SCU_OUT_ZPT_REAR_UP);
+				SGDU_write(SCU_OUT_ZPT_FRONT_UP);
 				zpt_ctx.state = ZPT_STATE_ARAV;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			case SW4_P3:
 				// Rise front pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_FRONT_UP);
+				SGDU_write(SCU_OUT_ZPT_FRONT_UP);
 				zpt_ctx.state = ZPT_STATE_AV;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			default:
@@ -92,13 +92,13 @@ void ZPT_process(void) {
 		}
 		break;
 	case ZPT_STATE_AR:
-		if (lsmcu_ctx.bl_unlocked != 0) {
+		if (scu_ctx.bl_unlocked != 0) {
 			switch (zpt_ctx.sw4.state) {
 			case SW4_P0:
 				// Lower back pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_REAR_DOWN);
+				SGDU_write(SCU_OUT_ZPT_REAR_DOWN);
 				zpt_ctx.state = ZPT_STATE_0;
-				lsmcu_ctx.zpt_raised = 0;
+				scu_ctx.zpt_raised = 0;
 				GPIO_write(&GPIO_VLG, 1);
 				break;
 			case SW4_P1:
@@ -106,45 +106,45 @@ void ZPT_process(void) {
 				break;
 			case SW4_P2:
 				// Rise front pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_FRONT_UP);
+				SGDU_write(SCU_OUT_ZPT_FRONT_UP);
 				zpt_ctx.state = ZPT_STATE_ARAV;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			case SW4_P3:
 				// Lower back and raise front pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_REAR_DOWN);
-				LSAGIU_write(LSMCU_OUT_ZPT_FRONT_UP);
+				SGDU_write(SCU_OUT_ZPT_REAR_DOWN);
+				SGDU_write(SCU_OUT_ZPT_FRONT_UP);
 				zpt_ctx.state = ZPT_STATE_AV;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			}
 		}
 		else {
 			// Disable ZPT.
-			LSAGIU_write(LSMCU_OUT_ZPT_REAR_DOWN);
+			SGDU_write(SCU_OUT_ZPT_REAR_DOWN);
 			zpt_ctx.state = ZPT_STATE_0;
-			lsmcu_ctx.zpt_raised = 0;
+			scu_ctx.zpt_raised = 0;
 			GPIO_write(&GPIO_VLG, 1);
 		}
 		break;
 	case ZPT_STATE_ARAV:
-		if (lsmcu_ctx.bl_unlocked != 0) {
+		if (scu_ctx.bl_unlocked != 0) {
 			switch (zpt_ctx.sw4.state) {
 			case SW4_P0:
 				// Lower both pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_REAR_DOWN);
-				LSAGIU_write(LSMCU_OUT_ZPT_FRONT_DOWN);
+				SGDU_write(SCU_OUT_ZPT_REAR_DOWN);
+				SGDU_write(SCU_OUT_ZPT_FRONT_DOWN);
 				zpt_ctx.state = ZPT_STATE_0;
-				lsmcu_ctx.zpt_raised = 0;
+				scu_ctx.zpt_raised = 0;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			case SW4_P1:
 				// Lower back and raise front pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_FRONT_DOWN);
+				SGDU_write(SCU_OUT_ZPT_FRONT_DOWN);
 				zpt_ctx.state = ZPT_STATE_AR;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			case SW4_P2:
@@ -152,45 +152,45 @@ void ZPT_process(void) {
 				break;
 			case SW4_P3:
 				// Lower back pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_REAR_DOWN);
+				SGDU_write(SCU_OUT_ZPT_REAR_DOWN);
 				zpt_ctx.state = ZPT_STATE_AV;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			}
 		}
 		else {
 			// Disable ZPT.
-			LSAGIU_write(LSMCU_OUT_ZPT_REAR_DOWN);
-			LSAGIU_write(LSMCU_OUT_ZPT_FRONT_DOWN);
+			SGDU_write(SCU_OUT_ZPT_REAR_DOWN);
+			SGDU_write(SCU_OUT_ZPT_FRONT_DOWN);
 			zpt_ctx.state = ZPT_STATE_0;
-			lsmcu_ctx.zpt_raised = 0;
+			scu_ctx.zpt_raised = 0;
 			GPIO_write(&GPIO_VLG, 1);
 		}
 		break;
 	case ZPT_STATE_AV:
-		if (lsmcu_ctx.bl_unlocked != 0) {
+		if (scu_ctx.bl_unlocked != 0) {
 			switch (zpt_ctx.sw4.state) {
 			case SW4_P0:
 				// Lower front pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_FRONT_DOWN);
+				SGDU_write(SCU_OUT_ZPT_FRONT_DOWN);
 				zpt_ctx.state = ZPT_STATE_0;
-				lsmcu_ctx.zpt_raised = 0;
+				scu_ctx.zpt_raised = 0;
 				GPIO_write(&GPIO_VLG, 1);
 				break;
 			case SW4_P1:
 				// Rise back and lower front pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_REAR_UP);
-				LSAGIU_write(LSMCU_OUT_ZPT_FRONT_DOWN);
+				SGDU_write(SCU_OUT_ZPT_REAR_UP);
+				SGDU_write(SCU_OUT_ZPT_FRONT_DOWN);
 				zpt_ctx.state = ZPT_STATE_AR;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			case SW4_P2:
 				// Rise back pantograph.
-				LSAGIU_write(LSMCU_OUT_ZPT_REAR_UP);
+				SGDU_write(SCU_OUT_ZPT_REAR_UP);
 				zpt_ctx.state = ZPT_STATE_ARAV;
-				lsmcu_ctx.zpt_raised = 1;
+				scu_ctx.zpt_raised = 1;
 				GPIO_write(&GPIO_VLG, 0);
 				break;
 			case SW4_P3:
@@ -200,9 +200,9 @@ void ZPT_process(void) {
 		}
 		else {
 			// Disable ZPT.
-			LSAGIU_write(LSMCU_OUT_ZPT_FRONT_DOWN);
+			SGDU_write(SCU_OUT_ZPT_FRONT_DOWN);
 			zpt_ctx.state = ZPT_STATE_0;
-			lsmcu_ctx.zpt_raised = 0;
+			scu_ctx.zpt_raised = 0;
 			GPIO_write(&GPIO_VLG, 1);
 		}
 		break;

@@ -10,8 +10,8 @@
 #include "emergency.h"
 #include "font.h"
 #include "gpio.h"
-#include "lsmcu.h"
 #include "mapping.h"
+#include "scu.h"
 #include "sw2.h"
 #include "tim.h"
 #include "stdint.h"
@@ -96,7 +96,7 @@ typedef struct KVB_context_t {
 
 /*** KVB external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** KVB local global variables ***/
 
@@ -226,7 +226,7 @@ void KVB_init(void) {
 	kvb_ctx.lval_blink_enable = 0;
 	kvb_ctx.lval_blinking = 0;
 	// Init global context.
-	lsmcu_ctx.speed_limit_kmh = 0;
+	scu_ctx.speed_limit_kmh = 0;
 	// Init 7-segments displays.
 	for (idx=0 ; idx<KVB_NUMBER_OF_SEGMENTS ; idx++) GPIO_configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	for (idx=0 ; idx<KVB_NUMBER_OF_DISPLAYS ; idx++) GPIO_configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
@@ -267,7 +267,7 @@ void KVB_process(void) {
 		// Turn display off.
 		_KVB_display_off();
 		// Check BL.
-		if (lsmcu_ctx.bl_unlocked != 0) {
+		if (scu_ctx.bl_unlocked != 0) {
 			// Start KVB init.
 			_KVB_display(KVB_YG_PA400);
 			kvb_ctx.lssf_blink_enable = 1;
@@ -379,7 +379,7 @@ void KVB_process(void) {
 		break;
 	case KVB_STATE_RUNNING:
 		// Speed check.
-		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_EMERGENCY_KMH)) {
+		if (scu_ctx.speed_kmh > (scu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_EMERGENCY_KMH)) {
 			// Trigger emergency brake.
 			EMERGENCY_trigger();
 			kvb_ctx.state = KVB_STATE_EMERGENCY;
@@ -387,7 +387,7 @@ void KVB_process(void) {
 		break;
 	case KVB_STATE_EMERGENCY:
 		// Stay in this state while emergency flag is set.
-		if (lsmcu_ctx.emergency == 0) {
+		if (scu_ctx.emergency == 0) {
 			kvb_ctx.state = KVB_STATE_RUNNING;
 		}
 		break;
@@ -395,7 +395,7 @@ void KVB_process(void) {
 		break;
 	}
 	// Force OFF state if BL is locked.
-	if (lsmcu_ctx.bl_unlocked == 0) {
+	if (scu_ctx.bl_unlocked == 0) {
 		_KVB_display_off();
 		_KVB_lights_off();
 		kvb_ctx.state = KVB_STATE_OFF;
@@ -410,7 +410,7 @@ void KVB_process(void) {
 	}
 	// LV.
 	if (kvb_ctx.state != KVB_STATE_SELF_TEST) {
-		if (lsmcu_ctx.speed_kmh > (lsmcu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_LV_KMH)) {
+		if (scu_ctx.speed_kmh > (scu_ctx.speed_limit_kmh + KVB_SPEED_THRESHOLD_LV_KMH)) {
 			GPIO_write(&GPIO_KVB_LV, 1);
 		}
 		else {

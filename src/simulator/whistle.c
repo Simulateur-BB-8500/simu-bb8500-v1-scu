@@ -8,9 +8,9 @@
 #include "whistle.h"
 
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw3.h"
 #include "stdint.h"
 
@@ -24,7 +24,7 @@ typedef struct {
 
 /*** WHISTLE external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** WHISTLE local global variables ***/
 
@@ -35,7 +35,7 @@ static WHISTLE_context_t whistle_ctx;
 /*******************************************************************/
 void WHISTLE_init(void) {
 	// Init GPIO.
-	SW3_init(&whistle_ctx.sw3, &GPIO_WHISTLE, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_S]));
+	SW3_init(&whistle_ctx.sw3, &GPIO_WHISTLE, 100, (uint32_t*) &(scu_ctx.adc_data[ADC_DATA_INDEX_S]));
 	whistle_ctx.previous_state = SW3_NEUTRAL;
 }
 
@@ -48,19 +48,19 @@ void WHISTLE_process(void) {
 	case SW3_BACK:
 		if (whistle_ctx.previous_state != SW3_BACK) {
 			// Low tone.
-			LSAGIU_write(LSMCU_OUT_WHISTLE_LOW_TONE);
+			SGDU_write(SCU_OUT_WHISTLE_LOW_TONE);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (whistle_ctx.previous_state != SW3_NEUTRAL) {
 			// Whistle off
-			LSAGIU_write(LSMCU_OUT_WHISTLE_NEUTRAL);
+			SGDU_write(SCU_OUT_WHISTLE_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (whistle_ctx.previous_state != SW3_FRONT) {
 			// High tone.
-			LSAGIU_write(LSMCU_OUT_WHISTLE_HIGH_TONE);
+			SGDU_write(SCU_OUT_WHISTLE_HIGH_TONE);
 		}
 		break;
 	default:

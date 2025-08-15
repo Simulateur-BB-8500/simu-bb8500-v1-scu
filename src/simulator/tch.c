@@ -7,8 +7,8 @@
 
 #include "tch.h"
 
-#include "lsmcu.h"
 #include "mapping.h"
+#include "scu.h"
 #include "tim.h"
 #include "stdint.h"
 
@@ -32,7 +32,7 @@ typedef enum {
 
 /*** TCH external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** TCH local global variables ***/
 
@@ -80,7 +80,7 @@ void TCH_init(void) {
 	_TCH_inhibit_all_drivers();
 	tch_state = TCH_STATE_OFF;
 	// Init global context.
-	lsmcu_ctx.speed_kmh = 0;
+	scu_ctx.speed_kmh = 0;
 	// Init phase control timer.
 	TIM5_init();
 }
@@ -96,10 +96,10 @@ void TCH_process(void) {
 		GPIO_write(&GPIO_TCH_PWM_B, 0);
 		GPIO_write(&GPIO_TCH_PWM_C, 0);
 		// State evolution.
-		if (lsmcu_ctx.speed_kmh >= TCH_SPEED_MIN_KMH) {
+		if (scu_ctx.speed_kmh >= TCH_SPEED_MIN_KMH) {
 			// Start timer and go to first step.
 			TIM5_start();
-			TIM5_set_delay_microseconds(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
+			TIM5_set_delay_microseconds(tch_step_delay_us[scu_ctx.speed_kmh]);
 			TIM5_clear_uif_flag();
 			tch_state = TCH_STATE_STEP1;
 		}
@@ -115,7 +115,7 @@ void TCH_process(void) {
 		// State evolution.
 		if (TIM5_get_uif_flag() != 0) {
 			// Clear flag, update delay and go to next step.
-			TIM5_set_delay_microseconds(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
+			TIM5_set_delay_microseconds(tch_step_delay_us[scu_ctx.speed_kmh]);
 			TIM5_clear_uif_flag();
 			tch_state = TCH_STATE_STEP2;
 		}
@@ -131,7 +131,7 @@ void TCH_process(void) {
 		// State evolution.
 		if (TIM5_get_uif_flag() != 0) {
 			// Clear flag, update delay and go to next step.
-			TIM5_set_delay_microseconds(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
+			TIM5_set_delay_microseconds(tch_step_delay_us[scu_ctx.speed_kmh]);
 			TIM5_clear_uif_flag();
 			tch_state = TCH_STATE_STEP3;
 		}
@@ -147,7 +147,7 @@ void TCH_process(void) {
 		// State evolution.
 		if (TIM5_get_uif_flag() != 0) {
 			// Clear flag, update delay and go to next step.
-			TIM5_set_delay_microseconds(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
+			TIM5_set_delay_microseconds(tch_step_delay_us[scu_ctx.speed_kmh]);
 			TIM5_clear_uif_flag();
 			tch_state = TCH_STATE_STEP4;
 		}
@@ -163,7 +163,7 @@ void TCH_process(void) {
 		// State evolution.
 		if (TIM5_get_uif_flag() != 0) {
 			// Clear flag, update delay and go to next step.
-			TIM5_set_delay_microseconds(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
+			TIM5_set_delay_microseconds(tch_step_delay_us[scu_ctx.speed_kmh]);
 			TIM5_clear_uif_flag();
 			tch_state = TCH_STATE_STEP5;
 		}
@@ -179,7 +179,7 @@ void TCH_process(void) {
 		// State evolution.
 		if (TIM5_get_uif_flag() != 0) {
 			// Clear flag, update delay and go to next step.
-			TIM5_set_delay_microseconds(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
+			TIM5_set_delay_microseconds(tch_step_delay_us[scu_ctx.speed_kmh]);
 			TIM5_clear_uif_flag();
 			tch_state = TCH_STATE_STEP6;
 		}
@@ -195,7 +195,7 @@ void TCH_process(void) {
 		// Check delay.
 		if (TIM5_get_uif_flag() != 0) {
 			// Clear flag, update delay and go to next step.
-			TIM5_set_delay_microseconds(tch_step_delay_us[lsmcu_ctx.speed_kmh]);
+			TIM5_set_delay_microseconds(tch_step_delay_us[scu_ctx.speed_kmh]);
 			TIM5_clear_uif_flag();
 			tch_state = TCH_STATE_STEP1;
 		}
@@ -205,7 +205,7 @@ void TCH_process(void) {
 		break;
 	}
 	// Check speed.
-	if ((lsmcu_ctx.speed_kmh < TCH_SPEED_MIN_KMH) || (lsmcu_ctx.bl_unlocked == 0)) {
+	if ((scu_ctx.speed_kmh < TCH_SPEED_MIN_KMH) || (scu_ctx.bl_unlocked == 0)) {
 		// Stop timer and switch Tachro off.
 		TIM5_stop();
 		tch_state = TCH_STATE_OFF;

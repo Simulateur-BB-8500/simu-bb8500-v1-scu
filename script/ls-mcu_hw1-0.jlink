@@ -1,6 +1,0 @@
-r
-loadfile hw1-0/ls-mcu.hex
-verifyfile hw1-0/ls-mcu.hex
-r
-g
-qc

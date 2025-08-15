@@ -9,7 +9,7 @@
 
 #include "adc.h"
 #include "gpio.h"
-#include "lsmcu.h"
+#include "scu.h"
 #include "tim.h"
 #include "stdint.h"
 
@@ -24,7 +24,7 @@
 
 /*** SW3 external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** SW3 local functions ***/
 
@@ -73,7 +73,7 @@ void SW3_init(SW3_context_t* sw3, const GPIO_pin_t* gpio, uint32_t debouncing_ms
 /*******************************************************************/
 void SW3_update_state(SW3_context_t* sw3) {
 	// Update voltage (only if ZBA is closed).
-	(sw3 -> voltage_mv) = (lsmcu_ctx.zba_closed != 0) ? ADC1_convert_to_mv(*(sw3 -> adc_data_ptr)) : SW3_DEFAULT_VOLTAGE_MV;
+	(sw3 -> voltage_mv) = (scu_ctx.zba_closed != 0) ? ADC1_convert_to_mv(*(sw3 -> adc_data_ptr)) : SW3_DEFAULT_VOLTAGE_MV;
 	// Perform debouncing state machine.
 	switch((sw3 -> internal_state)) {
 	case SW3_STATE_CONFIRM_NEUTRAL:

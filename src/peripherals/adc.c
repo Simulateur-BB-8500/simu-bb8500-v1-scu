@@ -8,8 +8,8 @@
 #include "adc.h"
 
 #include "adc_reg.h"
-#include "lsmcu.h"
 #include "rcc_reg.h"
+#include "scu.h"
 
 /*** ADC local structures ***/
 
@@ -30,7 +30,7 @@ typedef enum {
 
 /*** ADC external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** ADC functions ***/
 
@@ -40,7 +40,7 @@ void ADC1_init(void) {
 	uint8_t idx = 0;
 	// Reset data.
 	for (idx=0 ; idx<ADC_DATA_INDEX_LAST ; idx++) {
-		lsmcu_ctx.adc_data[idx] = 0;
+		scu_ctx.adc_data[idx] = 0;
 	}
 	// Enable peripheral clock.
 	RCC -> APB2ENR |= (0b1 << 8);

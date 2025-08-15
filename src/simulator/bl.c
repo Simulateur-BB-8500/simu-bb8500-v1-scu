@@ -8,9 +8,9 @@
 #include "bl.h"
 
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw2.h"
 #include "stdint.h"
 
@@ -34,7 +34,7 @@ typedef struct {
 
 /*** BL external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** BL local global variables ***/
 
@@ -58,51 +58,51 @@ void BL_init(void) {
 	SW2_init(&bl_ctx.zpr, &GPIO_BL_ZPR, 0, 100); // ZFD active low.
 	bl_ctx.zpr_on = 0;
 	// Init global context.
-	lsmcu_ctx.bl_unlocked = 0;
-	lsmcu_ctx.dj_closed = 0;
-	lsmcu_ctx.dj_locked = 0;
+	scu_ctx.bl_unlocked = 0;
+	scu_ctx.dj_closed = 0;
+	scu_ctx.dj_locked = 0;
 }
 
 /*******************************************************************/
 void BL_process(void) {
 	// ZDV.
 	SW2_update_state(&bl_ctx.zdv);
-	if ((bl_ctx.zdv.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
+	if ((bl_ctx.zdv.state == SW2_ON) && (scu_ctx.zba_closed != 0)) {
 		// Send command on change.
-		if (lsmcu_ctx.bl_unlocked == 0) {
-			LSAGIU_write(LSMCU_OUT_ZDV_ON);
+		if (scu_ctx.bl_unlocked == 0) {
+			SGDU_write(SCU_OUT_ZDV_ON);
 		}
-		lsmcu_ctx.bl_unlocked = 1;
+		scu_ctx.bl_unlocked = 1;
 	}
 	else {
 		// Send command on change.
-		if (lsmcu_ctx.bl_unlocked != 0) {
-			LSAGIU_write(LSMCU_OUT_ZDV_OFF);
+		if (scu_ctx.bl_unlocked != 0) {
+			SGDU_write(SCU_OUT_ZDV_OFF);
 		}
-		lsmcu_ctx.bl_unlocked = 0;
+		scu_ctx.bl_unlocked = 0;
 	}
 	// ZDJ.
 	SW2_update_state(&bl_ctx.zdj);
-	if ((lsmcu_ctx.zpt_raised != 0) && (bl_ctx.zdj.state == SW2_ON) && (lsmcu_ctx.emergency == 0) && (lsmcu_ctx.overcurrent == 0)) {
+	if ((scu_ctx.zpt_raised != 0) && (bl_ctx.zdj.state == SW2_ON) && (scu_ctx.emergency == 0) && (scu_ctx.overcurrent == 0)) {
 		// DJ closed.
-		lsmcu_ctx.dj_closed = 1;
+		scu_ctx.dj_closed = 1;
 	}
 	else {
 		// Send command only if DJ is locked.
-		if ((lsmcu_ctx.dj_closed != 0) && (lsmcu_ctx.dj_locked != 0)) {
-			LSAGIU_write(LSMCU_OUT_ZDJ_OFF);
+		if ((scu_ctx.dj_closed != 0) && (scu_ctx.dj_locked != 0)) {
+			SGDU_write(SCU_OUT_ZDJ_OFF);
 		}
-		lsmcu_ctx.dj_closed = 0;
-		lsmcu_ctx.dj_locked = 0;
+		scu_ctx.dj_closed = 0;
+		scu_ctx.dj_locked = 0;
 	}
 	// ZEN.
 	SW2_update_state(&bl_ctx.zen);
-	if ((lsmcu_ctx.zpt_raised != 0) && (lsmcu_ctx.dj_closed != 0)) {
+	if ((scu_ctx.zpt_raised != 0) && (scu_ctx.dj_closed != 0)) {
 		if (bl_ctx.zen.state == SW2_ON) {
 			// Send command on change.
-			if ((bl_ctx.zen_on == 0) && (lsmcu_ctx.dj_locked == 0)) {
-				LSAGIU_write(LSMCU_OUT_ZEN_ON);
-				lsmcu_ctx.dj_locked = 1;
+			if ((bl_ctx.zen_on == 0) && (scu_ctx.dj_locked == 0)) {
+				SGDU_write(SCU_OUT_ZEN_ON);
+				scu_ctx.dj_locked = 1;
 			}
 			bl_ctx.zen_on = 1;
 		}
@@ -112,65 +112,65 @@ void BL_process(void) {
 	}
 	// ZVM.
 	SW2_update_state(&bl_ctx.zvm);
-	if ((lsmcu_ctx.dj_locked != 0) && (bl_ctx.zvm.state == SW2_ON)) {
+	if ((scu_ctx.dj_locked != 0) && (bl_ctx.zvm.state == SW2_ON)) {
 		// Send command on change.
 		if (bl_ctx.zvm_on == 0) {
-			LSAGIU_write(LSMCU_OUT_ZVM_ON);
+			SGDU_write(SCU_OUT_ZVM_ON);
 		}
 		bl_ctx.zvm_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.zvm_on != 0) {
-			LSAGIU_write(LSMCU_OUT_ZVM_OFF);
+			SGDU_write(SCU_OUT_ZVM_OFF);
 		}
 		bl_ctx.zvm_on = 0;
 	}
 	// ZFG.
 	SW2_update_state(&bl_ctx.zfg);
-	if ((bl_ctx.zfg.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
+	if ((bl_ctx.zfg.state == SW2_ON) && (scu_ctx.zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.zfg_on == 0) {
-			LSAGIU_write(LSMCU_OUT_ZFG_ON);
+			SGDU_write(SCU_OUT_ZFG_ON);
 		}
 		bl_ctx.zfg_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.zfg_on != 0) {
-			LSAGIU_write(LSMCU_OUT_ZFG_OFF);
+			SGDU_write(SCU_OUT_ZFG_OFF);
 		}
 		bl_ctx.zfg_on = 0;
 	}
 	// ZFD.
 	SW2_update_state(&bl_ctx.zfd);
-	if ((bl_ctx.zfd.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
+	if ((bl_ctx.zfd.state == SW2_ON) && (scu_ctx.zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.zfd_on == 0) {
-			LSAGIU_write(LSMCU_OUT_ZFD_ON);
+			SGDU_write(SCU_OUT_ZFD_ON);
 		}
 		bl_ctx.zfd_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.zfd_on != 0) {
-			LSAGIU_write(LSMCU_OUT_ZFD_OFF);
+			SGDU_write(SCU_OUT_ZFD_OFF);
 		}
 		bl_ctx.zfd_on = 0;
 	}
 	// ZPR.
 	SW2_update_state(&bl_ctx.zpr);
-	if ((bl_ctx.zpr.state == SW2_ON) && (lsmcu_ctx.zba_closed != 0)) {
+	if ((bl_ctx.zpr.state == SW2_ON) && (scu_ctx.zba_closed != 0)) {
 		// Send command on change.
 		if (bl_ctx.zpr_on == 0) {
-			LSAGIU_write(LSMCU_OUT_ZPR_ON);
+			SGDU_write(SCU_OUT_ZPR_ON);
 		}
 		bl_ctx.zpr_on = 1;
 	}
 	else {
 		// Send command on change.
 		if (bl_ctx.zpr_on != 0) {
-			LSAGIU_write(LSMCU_OUT_ZPR_OFF);
+			SGDU_write(SCU_OUT_ZPR_OFF);
 		}
 		bl_ctx.zpr_on = 0;
 	}

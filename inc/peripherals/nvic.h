@@ -125,7 +125,7 @@ typedef enum {
 	// Timers.
 	NVIC_PRIORITY_TIM7 = 0,
 	NVIC_PRIORITY_TIM6,
-	// LSAGIU interface.
+	// SGDU interface.
 	NVIC_PRIORITY_USART1
 } NVIC_priority_list_t;
 

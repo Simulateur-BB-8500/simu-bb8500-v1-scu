@@ -9,10 +9,10 @@
 
 #include "dac.h"
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "mapping.h"
 #include "mp.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "stdint.h"
 
 /*** AM local macros ***/
@@ -24,8 +24,8 @@
 #define AM_VARIATOR_MOHM_MAX			1000
 #define AM_VARIATOR_MOHM_MIN			300
 
-#define AM_VARIATOR_DRIVE_TABLE_SIZE	(LSAGIU_MP_VARIATOR_STEP_MAX + 1)
-#define AM_VARIATOR_BRAKE_TABLE_SIZE	(((-1) * LSAGIU_MP_VARIATOR_STEP_MIN) + 1)
+#define AM_VARIATOR_DRIVE_TABLE_SIZE	(SGDU_MP_VARIATOR_STEP_MAX + 1)
+#define AM_VARIATOR_BRAKE_TABLE_SIZE	(((-1) * SGDU_MP_VARIATOR_STEP_MIN) + 1)
 
 #define AM_METER_FULL_SCALE_A			2000
 #define AM_METER_DAC_FULL_SCALE			3750
@@ -43,7 +43,7 @@ typedef struct {
 
 /*** AM external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** AM local global variables ***/
 
@@ -68,14 +68,14 @@ void AM_init(void) {
 		}
 		else {
 			// Parallel zone.
-			am_ctx.variator_drive_mohm[idx] = AM_VARIATOR_MOHM_MAX - (((AM_VARIATOR_MOHM_MAX - AM_VARIATOR_MOHM_MIN) * (idx - MP_VARIATOR_STEP_MAX_SERIES_COUPLING - 1)) / (LSAGIU_MP_VARIATOR_STEP_MAX - MP_VARIATOR_STEP_MAX_SERIES_COUPLING - 1));
+			am_ctx.variator_drive_mohm[idx] = AM_VARIATOR_MOHM_MAX - (((AM_VARIATOR_MOHM_MAX - AM_VARIATOR_MOHM_MIN) * (idx - MP_VARIATOR_STEP_MAX_SERIES_COUPLING - 1)) / (SGDU_MP_VARIATOR_STEP_MAX - MP_VARIATOR_STEP_MAX_SERIES_COUPLING - 1));
 		}
 	}
 	for (idx=0 ; idx<AM_VARIATOR_BRAKE_TABLE_SIZE ; idx++) {
 		am_ctx.variator_brake_mohm[idx] = AM_VARIATOR_MOHM_MAX - (((AM_VARIATOR_MOHM_MAX - AM_VARIATOR_MOHM_MIN) * idx) / (AM_VARIATOR_BRAKE_TABLE_SIZE - 1));
 	}
 	// Init global context.
-	lsmcu_ctx.overcurrent = 0;
+	scu_ctx.overcurrent = 0;
 }
 
 /*******************************************************************/
@@ -86,18 +86,18 @@ void AM_process(void) {
 	uint32_t motors_fem_mv = 0;
 	uint32_t dac_output = 0;
 	// Check variator.
-	if (lsmcu_ctx.variator_step != 0) {
+	if (scu_ctx.variator_step != 0) {
 		// Compute current variator resistor.
-		if (lsmcu_ctx.variator_step > 0) {
-			variator_mohm = am_ctx.variator_drive_mohm[(uint8_t) lsmcu_ctx.variator_step];
+		if (scu_ctx.variator_step > 0) {
+			variator_mohm = am_ctx.variator_drive_mohm[(uint8_t) scu_ctx.variator_step];
 		}
 		else {
-			variator_mohm = am_ctx.variator_brake_mohm[(uint8_t) ((-1) * (lsmcu_ctx.variator_step))];
+			variator_mohm = am_ctx.variator_brake_mohm[(uint8_t) ((-1) * (scu_ctx.variator_step))];
 		}
 		// Compute motor FEM.
-		motors_fem_mv = (AM_MOTORS_FEM_COEFFICIENT * lsmcu_ctx.speed_kmh);
+		motors_fem_mv = (AM_MOTORS_FEM_COEFFICIENT * scu_ctx.speed_kmh);
 		// Check coupling.
-		if (lsmcu_ctx.motors_coupling == MP_MOTORS_COUPLING_SERIES) {
+		if (scu_ctx.motors_coupling == MP_MOTORS_COUPLING_SERIES) {
 			motors_fem_mv <<= 1;
 			variator_mohm <<= 1;
 		}
@@ -114,7 +114,7 @@ void AM_process(void) {
 	// Display current.
 	DAC_set_output(dac_output);
 	// Read effective current.
-	am_current_a = ((AM_CURRENT_SENSE_FACTOR * ADC1_convert_to_mv(lsmcu_ctx.adc_data[ADC_DATA_INDEX_AMCS])) / (1000));
+	am_current_a = ((AM_CURRENT_SENSE_FACTOR * ADC1_convert_to_mv(scu_ctx.adc_data[ADC_DATA_INDEX_AMCS])) / (1000));
 	// Update overcurrent flag.
-	lsmcu_ctx.overcurrent = (am_current_a > AM_OVERCURRENT_THRESHOLD_A) ? 1 : 0;
+	scu_ctx.overcurrent = (am_current_a > AM_OVERCURRENT_THRESHOLD_A) ? 1 : 0;
 }

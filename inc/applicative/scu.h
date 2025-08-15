@@ -1,22 +1,22 @@
 /*
- * common.h
+ * scu.h
  *
  *  Created on: 21 mar. 2020
  *      Author: Ludo
  */
 
-#ifndef LSMCU_H
-#define LSMCU_H
+#ifndef __SCU_H__
+#define __SCU_H__
 
 #include "adc.h"
 #include "manometer.h"
 #include "mp.h"
 #include "stdint.h"
 
-/*** LSMCU structure ***/
+/*** SCU structure ***/
 
 /*!******************************************************************
- * \struct LSMCU_context_t
+ * \struct SCU_context_t
  * \brief Global simulator context.
  *******************************************************************/
 typedef struct {
@@ -39,6 +39,6 @@ typedef struct {
 	MANOMETER_context_t* manometer_cg;
 	MANOMETER_context_t* manometer_cf1;
 	MANOMETER_context_t* manometer_cf2;
-} LSMCU_context_t;
+} SCU_context_t;
 
-#endif /* LSMCU_H */
+#endif /* __SCU_H__ */

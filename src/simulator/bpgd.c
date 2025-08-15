@@ -8,10 +8,10 @@
 #include "bpgd.h"
 
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "manometer.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw2.h"
 #include "tim.h"
 #include "stdint.h"
@@ -36,7 +36,7 @@ typedef struct {
 
 /*** BPGD external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** BPGD local global variables ***/
 
@@ -59,14 +59,14 @@ void BPGD_process(void) {
 	SW2_update_state(&bpgd_ctx.sw2);
 	if (bpgd_ctx.sw2.state == SW2_ON) {
 		// Send commands on change.
-		if ((bpgd_ctx.enable != 0) && (lsmcu_ctx.pbl2_on != 0)) {
+		if ((bpgd_ctx.enable != 0) && (scu_ctx.pbl2_on != 0)) {
 			// Update manometers.
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cg, BPGD_CG_RE_PRESSURE_MBAR, BPGD_CG_RE_SPEED_MBAR_PER_SECOND);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_re, BPGD_CG_RE_PRESSURE_MBAR, BPGD_CG_RE_SPEED_MBAR_PER_SECOND);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 0, BPGD_CF_SPEED_MBAR_PER_SECOND);
-			MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 0, BPGD_CF_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_cg, BPGD_CG_RE_PRESSURE_MBAR, BPGD_CG_RE_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_re, BPGD_CG_RE_PRESSURE_MBAR, BPGD_CG_RE_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_cf1, 0, BPGD_CF_SPEED_MBAR_PER_SECOND);
+			MANOMETER_set_pressure(scu_ctx.manometer_cf2, 0, BPGD_CF_SPEED_MBAR_PER_SECOND);
 			// Send sound command.
-			LSAGIU_write(LSMCU_OUT_BPGD);
+			SGDU_write(SCU_OUT_BPGD);
 			// Disable module and start delay.
 			bpgd_ctx.enable = 0;
 			bpgd_ctx.inhibit_start_ms = TIM2_get_milliseconds();

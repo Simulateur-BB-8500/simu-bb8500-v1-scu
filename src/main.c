@@ -40,13 +40,13 @@
 // Utils.
 #include "stdint.h"
 // Applicative.
-#include "lsmcu.h"
-#include "lsagiu.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "string.h"
 
 /*** MAIN global variables ***/
 
-LSMCU_context_t lsmcu_ctx;
+SCU_context_t scu_ctx;
 
 /*** MAIN functions ***/
 
@@ -63,7 +63,7 @@ int main(void) {
 	DMA2_STR0_init();
 	ADC1_init();
 	// Communication interface.
-	LSAGIU_init();
+	SGDU_init();
 	// Simulator modules.
 	AM_init();
 	BELL_init();
@@ -93,16 +93,16 @@ int main(void) {
 	TIM2_delay_milliseconds(1000);
 	if (GPIO_read(&GPIO_BPEV) == 0) {
 		// Set CP and CF pressures.
-		MANOMETER_set_pressure(lsmcu_ctx.manometer_cp, 9000, 2000);
-		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf1, 2900, 1500);
-		MANOMETER_set_pressure(lsmcu_ctx.manometer_cf2, 3100, 1500);
+		MANOMETER_set_pressure(scu_ctx.manometer_cp, 9000, 2000);
+		MANOMETER_set_pressure(scu_ctx.manometer_cf1, 2900, 1500);
+		MANOMETER_set_pressure(scu_ctx.manometer_cf2, 3100, 1500);
 		// Wait for needles to be ready.
-		while ((((lsmcu_ctx.manometer_cp) -> flag_is_moving) != 0) || (((lsmcu_ctx.manometer_cf1) -> flag_is_moving) != 0) || (((lsmcu_ctx.manometer_cf2) -> flag_is_moving) != 0));
+		while ((((scu_ctx.manometer_cp) -> flag_is_moving) != 0) || (((scu_ctx.manometer_cf1) -> flag_is_moving) != 0) || (((scu_ctx.manometer_cf2) -> flag_is_moving) != 0));
 	}
 	// Main loop.
 	while (1) {
 		// Communication tasks.
-		LSAGIU_process();
+		SGDU_process();
 		// Simulator tasks.
 		AM_process();
 		BELL_process();

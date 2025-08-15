@@ -8,9 +8,9 @@
 #include "mp.h"
 
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw2.h"
 #include "tim.h"
 #include "stdint.h"
@@ -52,7 +52,7 @@ typedef struct {
 
 /*** MP external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** MP local global variables ***/
 
@@ -65,53 +65,53 @@ static MP_context_t mp_ctx;
 /*******************************************************************/
 static void _MP_synchronize(void) {
 	// Local variables.
-	LSMCU_output_command_t mp_command = LSMCU_OUT_NOP;
+	SCU_output_command_t mp_command = SCU_OUT_NOP;
 	// Check target.
-	if ((lsmcu_ctx.variator_step != mp_ctx.variator_step_target) && (TIM2_get_milliseconds() > mp_ctx.variator_switch_next_time)) {
+	if ((scu_ctx.variator_step != mp_ctx.variator_step_target) && (TIM2_get_milliseconds() > mp_ctx.variator_switch_next_time)) {
 		// More direction.
-		if (lsmcu_ctx.variator_step < mp_ctx.variator_step_target) {
+		if (scu_ctx.variator_step < mp_ctx.variator_step_target) {
 			// Check current direction.
-			if (lsmcu_ctx.variator_step < (LSAGIU_MP_VARIATOR_STEP_P - 1)) {
-				mp_command = LSMCU_OUT_MP_F_LESS;
+			if (scu_ctx.variator_step < (SGDU_MP_VARIATOR_STEP_P - 1)) {
+				mp_command = SCU_OUT_MP_F_LESS;
 			}
-			else if (lsmcu_ctx.variator_step == (LSAGIU_MP_VARIATOR_STEP_P - 1)) {
-				mp_command = LSMCU_OUT_MP_P;
+			else if (scu_ctx.variator_step == (SGDU_MP_VARIATOR_STEP_P - 1)) {
+				mp_command = SCU_OUT_MP_P;
 			}
-			else if (lsmcu_ctx.variator_step == LSAGIU_MP_VARIATOR_STEP_P) {
-				mp_command = LSMCU_OUT_MP_0;
+			else if (scu_ctx.variator_step == SGDU_MP_VARIATOR_STEP_P) {
+				mp_command = SCU_OUT_MP_0;
 			}
 			else {
-				mp_command = LSMCU_OUT_MP_T_MORE;
+				mp_command = SCU_OUT_MP_T_MORE;
 			}
-			lsmcu_ctx.variator_step++;
+			scu_ctx.variator_step++;
 		}
 		// Less direction.
 		else {
 			// Check current direction.
-			if (lsmcu_ctx.variator_step > (LSAGIU_MP_VARIATOR_STEP_0 + 1)) {
-				mp_command = LSMCU_OUT_MP_T_LESS;
+			if (scu_ctx.variator_step > (SGDU_MP_VARIATOR_STEP_0 + 1)) {
+				mp_command = SCU_OUT_MP_T_LESS;
 			}
-			else if (lsmcu_ctx.variator_step == (LSAGIU_MP_VARIATOR_STEP_0 + 1)) {
-				mp_command = LSMCU_OUT_MP_0;
+			else if (scu_ctx.variator_step == (SGDU_MP_VARIATOR_STEP_0 + 1)) {
+				mp_command = SCU_OUT_MP_0;
 			}
-			else if (lsmcu_ctx.variator_step == LSAGIU_MP_VARIATOR_STEP_0) {
-				mp_command = LSMCU_OUT_MP_P;
+			else if (scu_ctx.variator_step == SGDU_MP_VARIATOR_STEP_0) {
+				mp_command = SCU_OUT_MP_P;
 			}
 			else {
-				mp_command = LSMCU_OUT_MP_F_MORE;
+				mp_command = SCU_OUT_MP_F_MORE;
 			}
-			lsmcu_ctx.variator_step--;
+			scu_ctx.variator_step--;
 		}
 		// Send command.
-		LSAGIU_write(mp_command);
+		SGDU_write(mp_command);
 		// Blink RH light.
-		lsmcu_ctx.lsrh_blink_request = 1;
+		scu_ctx.lsrh_blink_request = 1;
 		// Update time.
 		mp_ctx.variator_switch_next_time = (TIM2_get_milliseconds() + MP_VARIATOR_SWITCH_PERIOD_MS[mp_ctx.variator_switch_period_idx]);
 		mp_ctx.variator_switch_period_idx = (mp_ctx.variator_switch_period_idx + 1) % MP_VARIATOR_SWITCH_PERIOD_TABLE_SIZE;
 	}
 	// Motors coupling.
-	lsmcu_ctx.motors_coupling = (lsmcu_ctx.variator_step > MP_VARIATOR_STEP_MAX_SERIES_COUPLING) ? MP_MOTORS_COUPLING_PARALLEL : MP_MOTORS_COUPLING_SERIES;
+	scu_ctx.motors_coupling = (scu_ctx.variator_step > MP_VARIATOR_STEP_MAX_SERIES_COUPLING) ? MP_MOTORS_COUPLING_PARALLEL : MP_MOTORS_COUPLING_SERIES;
 }
 
 /*** MP functions ***/
@@ -141,14 +141,14 @@ void MP_init(void) {
 	mp_ctx.variator_switch_next_time = 0;
 	mp_ctx.variator_switch_period_idx = 0;
 	// Init global context.
-	lsmcu_ctx.variator_step = 0;
-	lsmcu_ctx.motors_coupling = MP_MOTORS_COUPLING_SERIES;
+	scu_ctx.variator_step = 0;
+	scu_ctx.motors_coupling = MP_MOTORS_COUPLING_SERIES;
 }
 
 /*******************************************************************/
 void MP_process(void) {
 	// Local variables.
-	int8_t variator_max = ((lsmcu_ctx.motors_coupling) == MP_MOTORS_COUPLING_SERIES) ? MP_VARIATOR_STEP_MAX_SERIES_COUPLING : LSAGIU_MP_VARIATOR_STEP_MAX;
+	int8_t variator_max = ((scu_ctx.motors_coupling) == MP_MOTORS_COUPLING_SERIES) ? MP_VARIATOR_STEP_MAX_SERIES_COUPLING : SGDU_MP_VARIATOR_STEP_MAX;
 	// Update all switches.
 	SW2_update_state(&mp_ctx.zero);
 	SW2_update_state(&mp_ctx.t_more);
@@ -160,17 +160,17 @@ void MP_process(void) {
 	SW2_update_state(&mp_ctx.f_fast);
 	SW2_update_state(&mp_ctx.transition);
 	// Check DJ.
-	if (lsmcu_ctx.dj_locked != 0) {
+	if (scu_ctx.dj_locked != 0) {
 		// MP.0
 		if (mp_ctx.zero.state == SW2_ON) {
 			if (mp_ctx.zero_on == 0) {
-				mp_ctx.variator_step_target = LSAGIU_MP_VARIATOR_STEP_0;
+				mp_ctx.variator_step_target = SGDU_MP_VARIATOR_STEP_0;
 			}
 			mp_ctx.zero_on = 1;
 		}
 		else {
 			if (mp_ctx.zero_on != 0) {
-				mp_ctx.variator_step_target = lsmcu_ctx.variator_step;
+				mp_ctx.variator_step_target = scu_ctx.variator_step;
 			}
 			mp_ctx.zero_on = 0;
 		}
@@ -187,7 +187,7 @@ void MP_process(void) {
 		}
 		// MP.TL
 		if (mp_ctx.t_less.state == SW2_ON) {
-			if ((mp_ctx.t_less_lock == 0) && (mp_ctx.variator_step_target > (LSAGIU_MP_VARIATOR_STEP_0 + 1))) {
+			if ((mp_ctx.t_less_lock == 0) && (mp_ctx.variator_step_target > (SGDU_MP_VARIATOR_STEP_0 + 1))) {
 				// Decrease step count.
 				mp_ctx.variator_step_target--;
 			}
@@ -207,26 +207,26 @@ void MP_process(void) {
 		else {
 			if (mp_ctx.t_fast_on != 0) {
 				// Set target to current.
-				mp_ctx.variator_step_target = lsmcu_ctx.variator_step;
+				mp_ctx.variator_step_target = scu_ctx.variator_step;
 			}
 			mp_ctx.t_fast_on = 0;
 		}
 		// MP.P
 		if (mp_ctx.preparation.state == SW2_ON) {
 			if (mp_ctx.preparation_on == 0) {
-				mp_ctx.variator_step_target = LSAGIU_MP_VARIATOR_STEP_P;
+				mp_ctx.variator_step_target = SGDU_MP_VARIATOR_STEP_P;
 			}
 			mp_ctx.preparation_on = 1;
 		}
 		else {
 			if (mp_ctx.preparation_on != 0) {
-				mp_ctx.variator_step_target = lsmcu_ctx.variator_step;
+				mp_ctx.variator_step_target = scu_ctx.variator_step;
 			}
 			mp_ctx.preparation_on = 0;
 		}
 		// MP.FM
 		if (mp_ctx.f_more.state == SW2_ON) {
-			if ((mp_ctx.f_more_lock == 0) && (mp_ctx.variator_step_target > LSAGIU_MP_VARIATOR_STEP_MIN)) {
+			if ((mp_ctx.f_more_lock == 0) && (mp_ctx.variator_step_target > SGDU_MP_VARIATOR_STEP_MIN)) {
 				// Decrease step count.
 				mp_ctx.variator_step_target--;
 			}
@@ -237,7 +237,7 @@ void MP_process(void) {
 		}
 		// MP.FL
 		if (mp_ctx.f_less.state == SW2_ON) {
-			if ((mp_ctx.f_less_lock == 0) && (mp_ctx.variator_step_target < (LSAGIU_MP_VARIATOR_STEP_P - 1))) {
+			if ((mp_ctx.f_less_lock == 0) && (mp_ctx.variator_step_target < (SGDU_MP_VARIATOR_STEP_P - 1))) {
 				// Increase step count.
 				mp_ctx.variator_step_target++;
 			}
@@ -250,20 +250,20 @@ void MP_process(void) {
 		if (mp_ctx.f_fast.state == SW2_ON) {
 			if (mp_ctx.f_fast_on == 0) {
 				// Set target to maximum.
-				mp_ctx.variator_step_target = LSAGIU_MP_VARIATOR_STEP_MIN;
+				mp_ctx.variator_step_target = SGDU_MP_VARIATOR_STEP_MIN;
 			}
 			mp_ctx.f_fast_on = 1;
 		}
 		else {
 			if (mp_ctx.f_fast_on != 0) {
 				// Set target to current.
-				mp_ctx.variator_step_target = lsmcu_ctx.variator_step;
+				mp_ctx.variator_step_target = scu_ctx.variator_step;
 			}
 			mp_ctx.f_fast_on = 0;
 		}
 		// MP.TR
 		if (mp_ctx.transition.state == SW2_ON) {
-			if ((mp_ctx.transition_lock == 0) && (lsmcu_ctx.motors_coupling == MP_MOTORS_COUPLING_SERIES) && (lsmcu_ctx.variator_step == MP_VARIATOR_STEP_MAX_SERIES_COUPLING)) {
+			if ((mp_ctx.transition_lock == 0) && (scu_ctx.motors_coupling == MP_MOTORS_COUPLING_SERIES) && (scu_ctx.variator_step == MP_VARIATOR_STEP_MAX_SERIES_COUPLING)) {
 				// Increase step count.
 				mp_ctx.variator_step_target++;
 			}
@@ -274,10 +274,10 @@ void MP_process(void) {
 		}
 	}
 	else {
-		mp_ctx.variator_step_target = LSAGIU_MP_VARIATOR_STEP_0;
+		mp_ctx.variator_step_target = SGDU_MP_VARIATOR_STEP_0;
 	}
 	// Shunt management.
-	if ((lsmcu_ctx.variator_step == MP_VARIATOR_STEP_MAX_SERIES_COUPLING) || (lsmcu_ctx.variator_step == LSAGIU_MP_VARIATOR_STEP_MAX)) {
+	if ((scu_ctx.variator_step == MP_VARIATOR_STEP_MAX_SERIES_COUPLING) || (scu_ctx.variator_step == SGDU_MP_VARIATOR_STEP_MAX)) {
 		GPIO_write(&GPIO_MP_SH_ENABLE, 1);
 	}
 	else {

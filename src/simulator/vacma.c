@@ -9,8 +9,8 @@
 
 #include "emergency.h"
 #include "gpio.h"
-#include "lsmcu.h"
 #include "mapping.h"
+#include "scu.h"
 #include "sw2.h"
 #include "tim.h"
 #include "stdint.h"
@@ -45,7 +45,7 @@ typedef struct {
 
 /*** VACMA external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** VACMA local global variables ***/
 
@@ -76,7 +76,7 @@ void VACMA_process(void) {
 	switch (vacma_ctx.state) {
 	case VACMA_STATE_OFF:
 		// Check inputs.
-		if ((lsmcu_ctx.speed_kmh > 0) || (vacma_ctx.bl_zva.state == SW2_ON)) {
+		if ((scu_ctx.speed_kmh > 0) || (vacma_ctx.bl_zva.state == SW2_ON)) {
 			// Enable VACMA.
 			if (vacma_ctx.mp_va.state == SW2_ON) {
 				vacma_ctx.state = VACMA_STATE_HOLD;
@@ -88,7 +88,7 @@ void VACMA_process(void) {
 		}
 		break;
 	case VACMA_STATE_HOLD:
-		if ((lsmcu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
+		if ((scu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
 			// Disable VACMA.
 			GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
 			GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
@@ -110,7 +110,7 @@ void VACMA_process(void) {
 		}
 		break;
 	case VACMA_STATE_HOLD_ALARM:
-		if ((lsmcu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
+		if ((scu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
 			// Disable VACMA.
 			GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
 			GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
@@ -135,7 +135,7 @@ void VACMA_process(void) {
 		}
 		break;
 	case VACMA_STATE_RELEASED:
-		if ((lsmcu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
+		if ((scu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
 			// Disable VACMA.
 			GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
 			GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
@@ -157,7 +157,7 @@ void VACMA_process(void) {
 		}
 		break;
 	case VACMA_STATE_RELEASED_ALARM:
-		if ((lsmcu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
+		if ((scu_ctx.speed_kmh == 0) && (vacma_ctx.bl_zva.state == SW2_OFF)) {
 			// Disable VACMA.
 			GPIO_write(&GPIO_VACMA_HOLD_ALARM, 0);
 			GPIO_write(&GPIO_VACMA_RELEASED_ALARM, 0);
@@ -183,7 +183,7 @@ void VACMA_process(void) {
 		break;
 	case VACMA_STATE_EMERGENCY:
 		// Stay in this state while emergency flag is set.
-		if (lsmcu_ctx.emergency == 0) {
+		if (scu_ctx.emergency == 0) {
 			vacma_ctx.state = VACMA_STATE_OFF;
 		}
 		break;

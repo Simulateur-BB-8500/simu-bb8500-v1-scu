@@ -8,8 +8,8 @@
 #include "bpsa.h"
 
 #include "gpio.h"
-#include "lsagiu.h"
 #include "mapping.h"
+#include "sgdu.h"
 #include "sw2.h"
 #include "stdint.h"
 
@@ -52,12 +52,12 @@ void BPSA_process(void) {
 	// Check buttons.
 	if ((bpsa_ctx.button_on.state == SW2_ON) && (bpsa_ctx.button_off.state == SW2_OFF) && (bpsa_ctx.state != BPSA_STATE_ON)) {
 		// Send command and update state.
-		LSAGIU_write(LSMCU_OUT_BPSA_ON);
+		SGDU_write(SCU_OUT_BPSA_ON);
 		bpsa_ctx.state = BPSA_STATE_ON;
 	}
 	if ((bpsa_ctx.button_off.state == SW2_ON) && (bpsa_ctx.button_on.state == SW2_OFF) && (bpsa_ctx.state != BPSA_STATE_OFF)) {
 		// Send command and update state.
-		LSAGIU_write(LSMCU_OUT_BPSA_OFF);
+		SGDU_write(SCU_OUT_BPSA_OFF);
 		bpsa_ctx.state = BPSA_STATE_OFF;
 	}
 }

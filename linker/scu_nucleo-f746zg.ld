@@ -1,5 +1,5 @@
 /*
- * ls-mcu_hw1-0.ld
+ * scu_nucleo-f746zg.ld
  *
  *  Created on: 5 sep. 2017
  *      Author: ARM

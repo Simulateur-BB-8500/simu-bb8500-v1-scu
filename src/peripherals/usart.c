@@ -8,12 +8,12 @@
 #include "usart.h"
 
 #include "gpio.h"
-#include "lsagiu.h"
 #include "mapping.h"
 #include "nvic.h"
 #include "rcc.h"
 #include "rcc_reg.h"
 #include "usart_reg.h"
+#include "sgdu.h"
 #include "stddef.h"
 #include "stdint.h"
 
@@ -87,7 +87,7 @@ void USART1_init(USART_rx_irq_cb_t irq_callback) {
 	GPIO_configure(&GPIO_USART1_TX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
 	GPIO_configure(&GPIO_USART1_RX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
 	// Init context.
-	for (idx=0 ; idx<USART_TX_BUFFER_SIZE_BYTES ; idx++) usart1_ctx.tx_buffer[idx] = LSMCU_OUT_NOP;
+	for (idx=0 ; idx<USART_TX_BUFFER_SIZE_BYTES ; idx++) usart1_ctx.tx_buffer[idx] = SCU_OUT_NOP;
 	usart1_ctx.tx_buffer_write_idx = 0;
 	usart1_ctx.tx_buffer_read_idx = 0;
 	// Register callback.

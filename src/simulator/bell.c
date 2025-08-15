@@ -8,8 +8,8 @@
 #include "bell.h"
 
 #include "gpio.h"
-#include "lsmcu.h"
 #include "mapping.h"
+#include "scu.h"
 #include "sw2.h"
 #include "tim.h"
 #include "stdint.h"
@@ -40,7 +40,7 @@ typedef struct {
 
 /*** BELL external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** BELL local global variables ***/
 
@@ -63,7 +63,7 @@ void BELL_process(void) {
 	switch (bell_ctx.state) {
 	case BELL_STATE_ENABLED:
 		// Check speed and switch.
-		if ((lsmcu_ctx.speed_kmh == 0) && (bell_ctx.zlct.state == SW2_ON)) {
+		if ((scu_ctx.speed_kmh == 0) && (bell_ctx.zlct.state == SW2_ON)) {
 			// First ring.
 			GPIO_write(&GPIO_BELL, 1);
 			bell_ctx.switch_state_time = TIM2_get_milliseconds();
@@ -96,7 +96,7 @@ void BELL_process(void) {
 		break;
 	case BELL_STATE_DISABLED:
 		// Enable bell on next stop.
-		if (lsmcu_ctx.speed_kmh > 0) {
+		if (scu_ctx.speed_kmh > 0) {
 			bell_ctx.state = BELL_STATE_ENABLED;
 		}
 		break;

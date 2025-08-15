@@ -9,9 +9,9 @@
 
 #include "adc.h"
 #include "gpio.h"
-#include "lsmcu.h"
-#include "lsagiu.h"
 #include "mapping.h"
+#include "scu.h"
+#include "sgdu.h"
 #include "sw3.h"
 #include "stdint.h"
 
@@ -25,7 +25,7 @@ typedef struct {
 
 /*** MPINV external global variables ***/
 
-extern LSMCU_context_t lsmcu_ctx;
+extern SCU_context_t scu_ctx;
 
 /*** MPINV local global variables ***/
 
@@ -36,7 +36,7 @@ static MPINV_context_t mpinv_ctx;
 /*******************************************************************/
 void MPINV_init(void) {
 	// Init GPIO.
-	SW3_init(&mpinv_ctx.sw3, &GPIO_MPINV, 100, (uint32_t*) &(lsmcu_ctx.adc_data[ADC_DATA_INDEX_MPINV]));
+	SW3_init(&mpinv_ctx.sw3, &GPIO_MPINV, 100, (uint32_t*) &(scu_ctx.adc_data[ADC_DATA_INDEX_MPINV]));
 	mpinv_ctx.previous_state = SW3_NEUTRAL;
 }
 
@@ -49,19 +49,19 @@ void MPINV_process(void) {
 	case SW3_BACK:
 		if (mpinv_ctx.previous_state != SW3_BACK) {
 			// Backward.
-			LSAGIU_write(LSMCU_OUT_MPINV_BACKWARD);
+			SGDU_write(SCU_OUT_MPINV_BACKWARD);
 		}
 		break;
 	case SW3_NEUTRAL:
 		if (mpinv_ctx.previous_state != SW3_NEUTRAL) {
 			// Forward.
-			LSAGIU_write(LSMCU_OUT_MPINV_NEUTRAL);
+			SGDU_write(SCU_OUT_MPINV_NEUTRAL);
 		}
 		break;
 	case SW3_FRONT:
 		if (mpinv_ctx.previous_state != SW3_FRONT) {
 			// Forward.
-			LSAGIU_write(LSMCU_OUT_MPINV_FORWARD);
+			SGDU_write(SCU_OUT_MPINV_FORWARD);
 		}
 		break;
 	default:
