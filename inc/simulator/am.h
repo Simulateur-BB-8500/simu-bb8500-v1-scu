@@ -13,18 +13,18 @@
 /*!******************************************************************
  * \fn void AM_init(void)
  * \brief Init AM driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void AM_init(void);
 
 /*!******************************************************************
  * \fn void AM_process(void)
  * \brief Main task of AM driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void AM_process(void);
 

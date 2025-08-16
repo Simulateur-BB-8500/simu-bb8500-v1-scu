@@ -1,7 +1,7 @@
 /*
  * zba.h
  *
- *  Created on: 6 feb. 2020
+ *  Created on: 06 feb. 2020
  *      Author: Ludo
  */
 
@@ -13,18 +13,18 @@
 /*!******************************************************************
  * \fn void ZBA_init(void)
  * \brief Init ZBA driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void ZBA_init(void);
 
 /*!******************************************************************
  * \fn void ZBA_process(void)
  * \brief Main task of ZBA driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void ZBA_process(void);
 

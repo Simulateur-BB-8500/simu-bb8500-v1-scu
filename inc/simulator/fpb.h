@@ -13,18 +13,18 @@
 /*!******************************************************************
  * \fn void FPB_init(void)
  * \brief Init FPB driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void FPB_init(void);
 
 /*!******************************************************************
  * \fn void FPB_process(void)
  * \brief Main task of FPB driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void FPB_process(void);
 

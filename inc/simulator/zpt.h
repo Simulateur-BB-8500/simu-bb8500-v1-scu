@@ -15,18 +15,18 @@
 /*!******************************************************************
  * \fn void ZPT_init(void)
  * \brief Init ZPT driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void ZPT_init(void);
 
 /*!******************************************************************
  * \fn void ZPT_process(void)
  * \brief Main task of ZPT driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void ZPT_process(void);
 

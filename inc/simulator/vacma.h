@@ -13,18 +13,18 @@
 /*!******************************************************************
  * \fn void VACMA_init(void)
  * \brief Init VACMA driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void VACMA_init(void);
 
 /*!******************************************************************
  * \fn void VACMA_process(void)
  * \brief Main task of VACMA driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void VACMA_process(void);
 

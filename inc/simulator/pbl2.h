@@ -13,18 +13,18 @@
 /*!******************************************************************
  * \fn void BL_init(void)
  * \brief Init BL driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void PBL2_init(void);
 
 /*!******************************************************************
  * \fn void BL_process(void)
  * \brief Main task of BL driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void PBL2_process(void);
 

@@ -13,9 +13,9 @@
 /*!******************************************************************
  * \fn void ZLFR_init(void)
  * \brief Init ZLFR driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void ZLFR_init(void);
 

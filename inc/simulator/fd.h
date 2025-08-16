@@ -13,18 +13,18 @@
 /*!******************************************************************
  * \fn void FD_init(void)
  * \brief Init FD driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void FD_init(void);
 
 /*!******************************************************************
  * \fn void FD_process(void)
  * \brief Main task of FD driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void FD_process(void);
 

@@ -1,7 +1,7 @@
 /*
  * dma.h
  *
- *  Created on: 6 apr. 2023
+ *  Created on: 06 apr. 2023
  *      Author: Ludo
  */
 
@@ -15,9 +15,9 @@
 /*!******************************************************************
  * \fn void DMA2_STR0_init(void)
  * \brief Init DMA2 stream 0 peripheral for ADC samples transfer.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void DMA2_STR0_init(void);
 

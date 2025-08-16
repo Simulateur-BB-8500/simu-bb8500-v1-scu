@@ -1,7 +1,7 @@
 /*
  * compressor.h
  *
- *  Created on: 7 may 2020
+ *  Created on: 07 may 2020
  *      Author: Ludo
  */
 
@@ -13,18 +13,18 @@
 /*!******************************************************************
  * \fn void COMPRESSOR_init(void)
  * \brief Init COMPRESSOR driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void COMPRESSOR_init(void);
 
 /*!******************************************************************
  * \fn void COMPRESSOR_process(void)
  * \brief Main task of compressor driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void COMPRESSOR_process(void);
 

@@ -10,7 +10,7 @@
 
 /*** MP macros ***/
 
-#define MP_VARIATOR_STEP_MAX_SERIES_COUPLING	20
+#define MP_VARIATOR_STEP_MAX_SERIES_COUPLING    20
 
 /*** MP structures ***/
 
@@ -19,9 +19,9 @@
  * \brief Motors coupling modes list.
  *******************************************************************/
 typedef enum {
-	MP_MOTORS_COUPLING_SERIES = 0,
-	MP_MOTORS_COUPLING_PARALLEL,
-	MP_MOTORS_COUPLING_LAST
+    MP_MOTORS_COUPLING_SERIES = 0,
+    MP_MOTORS_COUPLING_PARALLEL,
+    MP_MOTORS_COUPLING_LAST
 } MP_motors_coupling_t;
 
 /*** MP functions ***/
@@ -29,18 +29,18 @@ typedef enum {
 /*!******************************************************************
  * \fn void MP_init(void)
  * \brief Init MP driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void MP_init(void);
 
 /*!******************************************************************
  * \fn void MP_process(void)
  * \brief Main task of MP driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void MP_process(void);
 

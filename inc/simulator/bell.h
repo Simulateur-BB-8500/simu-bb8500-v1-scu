@@ -13,18 +13,18 @@
 /*!******************************************************************
  * \fn void BELL_init(void)
  * \brief Init BELL driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void BELL_init(void);
 
 /*!******************************************************************
  * \fn void BELL_process(void)
  * \brief Main task of BELL driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void BELL_process(void);
 

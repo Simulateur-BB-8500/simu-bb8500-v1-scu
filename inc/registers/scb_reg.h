@@ -13,7 +13,7 @@
 /*** SCB REG macros ***/
 
 // Peripheral base address.
-#define SCB		((SCB_registers_t*) ((uint32_t) 0xE000ED00))
+#define SCB     ((SCB_registers_t*) ((uint32_t) 0xE000ED00))
 
 /*** SCB REG structures ***/
 
@@ -22,20 +22,20 @@
  * \brief SCB registers map.
  *******************************************************************/
 typedef struct {
-	volatile uint32_t CPUID;	// SCB CPU ID base register.
-	volatile uint32_t ICSR;		// SCB interrupt control and state register.
-	volatile uint32_t VTOR;		// SCB vector table offset register.
-	volatile uint32_t AIRCR;	// SCB application interrupt and reset control register.
-	volatile uint32_t SCR;		// SCB system control register.
-	volatile uint32_t CCR;		// SCB configuration and control register.
-	volatile uint32_t SHPR1;	// SCB system handler priority register 1.
-	volatile uint32_t SHPR2;	// SCB system handler priority register 2.
-	volatile uint32_t SHPR3;	// SCB system handler priority register 3.
-	volatile uint32_t SHCRS;	// SCB system handler control and state register.
-	volatile uint32_t CFSR;		// SCB configurable fault status register.
-	volatile uint32_t HFSR;		// SCB hard fault status register.
-	volatile uint32_t MMAR;		// SCB memory manage fault address register.
-	volatile uint32_t BFAR;		// SCB bus fault address register.
+    volatile uint32_t CPUID;
+    volatile uint32_t ICSR;
+    volatile uint32_t VTOR;
+    volatile uint32_t AIRCR;
+    volatile uint32_t SCR;
+    volatile uint32_t CCR;
+    volatile uint32_t SHPR1;
+    volatile uint32_t SHPR2;
+    volatile uint32_t SHPR3;
+    volatile uint32_t SHCRS;
+    volatile uint32_t CFSR;
+    volatile uint32_t HFSR;
+    volatile uint32_t MMAR;
+    volatile uint32_t BFAR;
 } SCB_registers_t;
 
 #endif /* __SCB_REG_H__ */

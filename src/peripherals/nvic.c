@@ -19,29 +19,29 @@ extern uint32_t __Vectors;
 
 /*******************************************************************/
 static void _NVIC_set_priority(NVIC_interrupt_t irq_index, uint8_t priority) {
-	// Reset bits.
-	NVIC -> IPR[(irq_index >> 2)] &= ~(0xFF << (8 * (irq_index % 4)));
-	// Set priority.
-	NVIC -> IPR[(irq_index >> 2)] |= (priority << (8 * (irq_index % 4)));
+    // Reset bits.
+    NVIC->IPR[(irq_index >> 2)] &= ~(0xFF << (8 * (irq_index % 4)));
+    // Set priority.
+    NVIC->IPR[(irq_index >> 2)] |= (priority << (8 * (irq_index % 4)));
 }
 
 /*** NVIC functions ***/
 
 /*******************************************************************/
 void NVIC_init(void) {
-	SCB -> VTOR = (uint32_t) &__Vectors;
+    SCB->VTOR = (uint32_t) &__Vectors;
 }
 
 /*******************************************************************/
 void NVIC_enable_interrupt(NVIC_interrupt_t irq_index, uint8_t priority) {
-	// Set priority.
-	_NVIC_set_priority(irq_index, priority);
-	// Enable interrupt.
-	NVIC -> ISER[irq_index >> 5] = (0b1 << (irq_index % 32));
+    // Set priority.
+    _NVIC_set_priority(irq_index, priority);
+    // Enable interrupt.
+    NVIC->ISER[irq_index >> 5] = (0b1 << (irq_index % 32));
 }
 
 /*******************************************************************/
 void NVIC_disable_interrupt(NVIC_interrupt_t irq_index) {
-	// Disable interrupt.
-	NVIC -> ICER[irq_index >> 5] = (0b1 << (irq_index % 32));
+    // Disable interrupt.
+    NVIC->ICER[irq_index >> 5] = (0b1 << (irq_index % 32));
 }

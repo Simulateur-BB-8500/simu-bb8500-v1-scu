@@ -11,18 +11,18 @@
 /*!******************************************************************
  * \fn void WHISTLE_init(void)
  * \brief Init whistle driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void WHISTLE_init(void);
 
 /*!******************************************************************
  * \fn void WHISTLE_process(void)
  * \brief Main task of whistle driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void WHISTLE_process(void);
 
