@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __FLASH_REG_H__
-#define __FLASH_REG_H__
+#ifndef __FLASH_REGISTERS_H__
+#define __FLASH_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -31,4 +31,4 @@ typedef struct {
     volatile uint32_t OPTCR1;
 } FLASH_registers_t;
 
-#endif /* __FLASH_REG_H__ */
+#endif /* __FLASH_REGISTERS_H__ */

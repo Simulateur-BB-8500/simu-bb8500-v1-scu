@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __DMA_REG_H__
-#define __DMA_REG_H__
+#ifndef __DMA_REGISTERS_H__
+#define __DMA_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -77,4 +77,4 @@ typedef struct {
     volatile uint32_t S7FCR;
 } DMA_registers_t;
 
-#endif /* __DMA_REG_H__ */
+#endif /* __DMA_REGISTERS_H__ */

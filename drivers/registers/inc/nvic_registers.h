@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __NVIC_REG_H__
-#define __NVIC_REG_H__
+#ifndef __NVIC_REGISTERS_H__
+#define __NVIC_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -37,4 +37,4 @@ typedef struct {
     volatile uint32_t STIR;
 } NVIC_registers_t;
 
-#endif /* __NVIC_REG_H__ */
+#endif /* __NVIC_REGISTERS_H__ */

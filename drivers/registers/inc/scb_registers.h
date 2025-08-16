@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __SCB_REG_H__
-#define __SCB_REG_H__
+#ifndef __SCB_REGISTERS_H__
+#define __SCB_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -38,4 +38,4 @@ typedef struct {
     volatile uint32_t BFAR;
 } SCB_registers_t;
 
-#endif /* __SCB_REG_H__ */
+#endif /* __SCB_REGISTERS_H__ */

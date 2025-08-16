@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __RCC_REG_H__
-#define __RCC_REG_H__
+#ifndef __RCC_REGISTERS_H__
+#define __RCC_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -61,4 +61,4 @@ typedef struct {
     volatile uint32_t DKCFGR2;
 } RCC_registers_t;
 
-#endif /* __RCC_REG_H__ */
+#endif /* __RCC_REGISTERS_H__ */

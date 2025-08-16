@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __GPIO_REG_H__
-#define __GPIO_REG_H__
+#ifndef __GPIO_REGISTERS_H__
+#define __GPIO_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -44,4 +44,4 @@ typedef struct {
     volatile uint32_t AFRH;
 } GPIO_registers_t;
 
-#endif /* __GPIO_REG_H__ */
+#endif /* __GPIO_REGISTERS_H__ */

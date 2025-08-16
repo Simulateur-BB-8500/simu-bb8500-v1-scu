@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __TIM_REG_H__
-#define __TIM_REG_H__
+#ifndef __TIM_REGISTERS_H__
+#define __TIM_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -61,4 +61,4 @@ typedef struct {
     volatile uint32_t CCR6;
 } TIM_registers_t;
 
-#endif /* __TIM_REG_H__ */
+#endif /* __TIM_REGISTERS_H__ */

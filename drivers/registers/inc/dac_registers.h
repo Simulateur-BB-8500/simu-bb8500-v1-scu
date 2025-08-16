@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __DAC_REG_H__
-#define __DAC_REG_H__
+#ifndef __DAC_REGISTERS_H__
+#define __DAC_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -38,4 +38,4 @@ typedef struct {
     volatile uint32_t SR;
 } DAC_registers_t;
 
-#endif /* __DAC_REG_H__ */
+#endif /* __DAC_REGISTERS_H__ */

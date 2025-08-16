@@ -5,8 +5,8 @@
  *      Author: Ludo
  */
 
-#ifndef __ADC_REG_H__
-#define __ADC_REG_H__
+#ifndef __ADC_REGISTERS_H__
+#define __ADC_REGISTERS_H__
 
 #include "stdint.h"
 
@@ -57,4 +57,4 @@ typedef struct {
     volatile uint32_t CDR;
 } ADC_common_registers_t;
 
-#endif /* __ADC_REG_H__ */
+#endif /* __ADC_REGISTERS_H__ */
