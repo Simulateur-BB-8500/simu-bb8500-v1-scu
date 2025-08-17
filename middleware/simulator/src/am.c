@@ -24,8 +24,8 @@
 #define AM_VARIATOR_MOHM_MAX            1000
 #define AM_VARIATOR_MOHM_MIN            300
 
-#define AM_VARIATOR_DRIVE_TABLE_SIZE    (SGDU_MP_VARIATOR_STEP_MAX + 1)
-#define AM_VARIATOR_BRAKE_TABLE_SIZE    (((-1) * SGDU_MP_VARIATOR_STEP_MIN) + 1)
+#define AM_VARIATOR_DRIVE_TABLE_SIZE    (MP_VARIATOR_STEP_MAX + 1)
+#define AM_VARIATOR_BRAKE_TABLE_SIZE    (((-1) * MP_VARIATOR_STEP_MIN) + 1)
 
 #define AM_METER_FULL_SCALE_A           2000
 #define AM_METER_DAC_FULL_SCALE         3750
@@ -68,7 +68,7 @@ void AM_init(void) {
         }
         else {
             // Parallel zone.
-            am_ctx.variator_drive_mohm[idx] = AM_VARIATOR_MOHM_MAX - (((AM_VARIATOR_MOHM_MAX - AM_VARIATOR_MOHM_MIN) * (idx - MP_VARIATOR_STEP_MAX_SERIES_COUPLING - 1)) / (SGDU_MP_VARIATOR_STEP_MAX - MP_VARIATOR_STEP_MAX_SERIES_COUPLING - 1));
+            am_ctx.variator_drive_mohm[idx] = AM_VARIATOR_MOHM_MAX - (((AM_VARIATOR_MOHM_MAX - AM_VARIATOR_MOHM_MIN) * (idx - MP_VARIATOR_STEP_MAX_SERIES_COUPLING - 1)) / (MP_VARIATOR_STEP_MAX - MP_VARIATOR_STEP_MAX_SERIES_COUPLING - 1));
         }
     }
     for (idx = 0; idx < AM_VARIATOR_BRAKE_TABLE_SIZE; idx++) {

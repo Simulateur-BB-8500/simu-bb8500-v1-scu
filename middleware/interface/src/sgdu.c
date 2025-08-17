@@ -12,6 +12,7 @@
 #include "mapping.h"
 #include "nvic.h"
 #include "scu.h"
+#include "scu_commands.h"
 #include "usart.h"
 #include "stdint.h"
 
@@ -57,7 +58,7 @@ static void _SGDU_decode(void) {
     }
     else if (ls_cmd <= SCU_SPEED_LIMIT_LAST) {
         // Store speed limit in global context.
-        scu_ctx.speed_limit_kmh = SGDU_SPEED_LIMIT_FACTOR * (ls_cmd - SCU_SPEED_LIMIT_OFFSET);
+        scu_ctx.speed_limit_kmh = SCU_SPEED_LIMIT_FACTOR * (ls_cmd - SCU_SPEED_LIMIT_OFFSET);
     }
     // Increment read index.
     lsagiu_ctx.rx_read_idx = (lsagiu_ctx.rx_read_idx + 1) % SGDU_RX_BUFFER_SIZE;
@@ -69,8 +70,9 @@ static void _SGDU_decode(void) {
 void SGDU_init(void) {
     // Init context.
     uint32_t idx = 0;
-    for (idx = 0; idx < SGDU_RX_BUFFER_SIZE; idx++)
+    for (idx = 0; idx < SGDU_RX_BUFFER_SIZE; idx++) {
         lsagiu_ctx.rx_buf[idx] = SCU_IN_NOP;
+    }
     lsagiu_ctx.rx_write_idx = 0;
     lsagiu_ctx.rx_read_idx = 0;
     // Init USART.

@@ -9,6 +9,7 @@
 
 #include "mapping.h"
 #include "scu.h"
+#include "scu_commands.h"
 #include "tim.h"
 #include "stdint.h"
 
@@ -37,7 +38,7 @@ extern SCU_context_t scu_ctx;
 /*** TCH local global variables ***/
 
 // step_delay_us[v] = delay between each step in us required to display v km/h.
-static const uint32_t tch_step_delay_us[TCH_SPEED_MAX_KMH + 1] = {
+static const uint32_t tch_step_delay_us[SCU_TCH_SPEED_MAX_KMH + 1] = {
     500000, 500000, 500000, 500000, 500000, 314278, 269123, 235314, 209051, 188062, 170904,
     156614, 144530, 134177, 125208, 117363, 110443, 104293, 98793, 93843, 89366,
     85296, 81581, 78177, 75044, 72154, 69477, 66993, 64679, 62520, 60501,

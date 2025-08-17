@@ -12,10 +12,10 @@
 #include "nvic.h"
 #include "rcc.h"
 #include "rcc_registers.h"
-#include "usart_registers.h"
-#include "sgdu.h"
+#include "scu_commands.h"
 #include "stddef.h"
 #include "stdint.h"
+#include "usart_registers.h"
 
 /*** USART local macros ***/
 
@@ -87,8 +87,9 @@ void USART1_init(USART_rx_irq_cb_t irq_callback) {
     GPIO_configure(&GPIO_USART1_TX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
     GPIO_configure(&GPIO_USART1_RX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_UP);
     // Init context.
-    for (idx = 0; idx < USART_TX_BUFFER_SIZE_BYTES; idx++)
+    for (idx = 0; idx < USART_TX_BUFFER_SIZE_BYTES; idx++) {
         usart1_ctx.tx_buffer[idx] = SCU_OUT_NOP;
+    }
     usart1_ctx.tx_buffer_write_idx = 0;
     usart1_ctx.tx_buffer_read_idx = 0;
     // Register callback.

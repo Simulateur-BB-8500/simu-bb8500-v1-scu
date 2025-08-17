@@ -12,6 +12,7 @@
 #include "manometer.h"
 #include "mapping.h"
 #include "scu.h"
+#include "scu_commands.h"
 #include "sgdu.h"
 #include "sw3.h"
 #include "stdint.h"

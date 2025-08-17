@@ -8,10 +8,6 @@
 #ifndef __TCH_H__
 #define __TCH_H__
 
-/*** TACHRO macros ***/
-
-#define TCH_SPEED_MAX_KMH   160
-
 /*** TACHRO functions ***/
 
 /*!******************************************************************

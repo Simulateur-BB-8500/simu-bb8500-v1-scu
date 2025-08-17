@@ -228,10 +228,12 @@ void KVB_init(void) {
     // Init global context.
     scu_ctx.speed_limit_kmh = 0;
     // Init 7-segments displays.
-    for (idx = 0; idx < KVB_NUMBER_OF_SEGMENTS; idx++)
+    for (idx = 0; idx < KVB_NUMBER_OF_SEGMENTS; idx++) {
         GPIO_configure(segment_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-    for (idx = 0; idx < KVB_NUMBER_OF_DISPLAYS; idx++)
+    }
+    for (idx = 0; idx < KVB_NUMBER_OF_DISPLAYS; idx++) {
         GPIO_configure(display_gpio_buf[idx], GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+    }
     // Init lights (except LVAL configured in TIM8 driver).
     GPIO_configure(&GPIO_KVB_LMV, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
     GPIO_configure(&GPIO_KVB_LFC, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);

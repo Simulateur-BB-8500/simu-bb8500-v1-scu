@@ -10,6 +10,7 @@
 #include "gpio.h"
 #include "mapping.h"
 #include "scu.h"
+#include "scu_commands.h"
 #include "sgdu.h"
 #include "sw2.h"
 #include "tim.h"
@@ -70,13 +71,13 @@ static void _MP_synchronize(void) {
         // More direction.
         if (scu_ctx.variator_step < mp_ctx.variator_step_target) {
             // Check current direction.
-            if (scu_ctx.variator_step < (SGDU_MP_VARIATOR_STEP_P - 1)) {
+            if (scu_ctx.variator_step < (MP_VARIATOR_STEP_P - 1)) {
                 mp_command = SCU_OUT_MP_F_LESS;
             }
-            else if (scu_ctx.variator_step == (SGDU_MP_VARIATOR_STEP_P - 1)) {
+            else if (scu_ctx.variator_step == (MP_VARIATOR_STEP_P - 1)) {
                 mp_command = SCU_OUT_MP_P;
             }
-            else if (scu_ctx.variator_step == SGDU_MP_VARIATOR_STEP_P) {
+            else if (scu_ctx.variator_step == MP_VARIATOR_STEP_P) {
                 mp_command = SCU_OUT_MP_0;
             }
             else {
@@ -87,13 +88,13 @@ static void _MP_synchronize(void) {
         // Less direction.
         else {
             // Check current direction.
-            if (scu_ctx.variator_step > (SGDU_MP_VARIATOR_STEP_0 + 1)) {
+            if (scu_ctx.variator_step > (MP_VARIATOR_STEP_0 + 1)) {
                 mp_command = SCU_OUT_MP_T_LESS;
             }
-            else if (scu_ctx.variator_step == (SGDU_MP_VARIATOR_STEP_0 + 1)) {
+            else if (scu_ctx.variator_step == (MP_VARIATOR_STEP_0 + 1)) {
                 mp_command = SCU_OUT_MP_0;
             }
-            else if (scu_ctx.variator_step == SGDU_MP_VARIATOR_STEP_0) {
+            else if (scu_ctx.variator_step == MP_VARIATOR_STEP_0) {
                 mp_command = SCU_OUT_MP_P;
             }
             else {
@@ -147,7 +148,7 @@ void MP_init(void) {
 /*******************************************************************/
 void MP_process(void) {
     // Local variables.
-    int8_t variator_max = ((scu_ctx.motors_coupling) == MP_MOTORS_COUPLING_SERIES) ? MP_VARIATOR_STEP_MAX_SERIES_COUPLING : SGDU_MP_VARIATOR_STEP_MAX;
+    int8_t variator_max = ((scu_ctx.motors_coupling) == MP_MOTORS_COUPLING_SERIES) ? MP_VARIATOR_STEP_MAX_SERIES_COUPLING : MP_VARIATOR_STEP_MAX;
     // Update all switches.
     SW2_update_state(&mp_ctx.zero);
     SW2_update_state(&mp_ctx.t_more);
@@ -163,7 +164,7 @@ void MP_process(void) {
         // MP.0
         if (mp_ctx.zero.state == SW2_ON) {
             if (mp_ctx.zero_on == 0) {
-                mp_ctx.variator_step_target = SGDU_MP_VARIATOR_STEP_0;
+                mp_ctx.variator_step_target = MP_VARIATOR_STEP_0;
             }
             mp_ctx.zero_on = 1;
         }
@@ -186,7 +187,7 @@ void MP_process(void) {
         }
         // MP.TL
         if (mp_ctx.t_less.state == SW2_ON) {
-            if ((mp_ctx.t_less_lock == 0) && (mp_ctx.variator_step_target > (SGDU_MP_VARIATOR_STEP_0 + 1))) {
+            if ((mp_ctx.t_less_lock == 0) && (mp_ctx.variator_step_target > (MP_VARIATOR_STEP_0 + 1))) {
                 // Decrease step count.
                 mp_ctx.variator_step_target--;
             }
@@ -213,7 +214,7 @@ void MP_process(void) {
         // MP.P
         if (mp_ctx.preparation.state == SW2_ON) {
             if (mp_ctx.preparation_on == 0) {
-                mp_ctx.variator_step_target = SGDU_MP_VARIATOR_STEP_P;
+                mp_ctx.variator_step_target = MP_VARIATOR_STEP_P;
             }
             mp_ctx.preparation_on = 1;
         }
@@ -225,7 +226,7 @@ void MP_process(void) {
         }
         // MP.FM
         if (mp_ctx.f_more.state == SW2_ON) {
-            if ((mp_ctx.f_more_lock == 0) && (mp_ctx.variator_step_target > SGDU_MP_VARIATOR_STEP_MIN)) {
+            if ((mp_ctx.f_more_lock == 0) && (mp_ctx.variator_step_target > MP_VARIATOR_STEP_MIN)) {
                 // Decrease step count.
                 mp_ctx.variator_step_target--;
             }
@@ -236,7 +237,7 @@ void MP_process(void) {
         }
         // MP.FL
         if (mp_ctx.f_less.state == SW2_ON) {
-            if ((mp_ctx.f_less_lock == 0) && (mp_ctx.variator_step_target < (SGDU_MP_VARIATOR_STEP_P - 1))) {
+            if ((mp_ctx.f_less_lock == 0) && (mp_ctx.variator_step_target < (MP_VARIATOR_STEP_P - 1))) {
                 // Increase step count.
                 mp_ctx.variator_step_target++;
             }
@@ -249,7 +250,7 @@ void MP_process(void) {
         if (mp_ctx.f_fast.state == SW2_ON) {
             if (mp_ctx.f_fast_on == 0) {
                 // Set target to maximum.
-                mp_ctx.variator_step_target = SGDU_MP_VARIATOR_STEP_MIN;
+                mp_ctx.variator_step_target = MP_VARIATOR_STEP_MIN;
             }
             mp_ctx.f_fast_on = 1;
         }
@@ -273,10 +274,10 @@ void MP_process(void) {
         }
     }
     else {
-        mp_ctx.variator_step_target = SGDU_MP_VARIATOR_STEP_0;
+        mp_ctx.variator_step_target = MP_VARIATOR_STEP_0;
     }
     // Shunt management.
-    if ((scu_ctx.variator_step == MP_VARIATOR_STEP_MAX_SERIES_COUPLING) || (scu_ctx.variator_step == SGDU_MP_VARIATOR_STEP_MAX)) {
+    if ((scu_ctx.variator_step == MP_VARIATOR_STEP_MAX_SERIES_COUPLING) || (scu_ctx.variator_step == MP_VARIATOR_STEP_MAX)) {
         GPIO_write(&GPIO_MP_SH_ENABLE, 1);
     }
     else {

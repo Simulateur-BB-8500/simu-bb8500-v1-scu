@@ -10,6 +10,10 @@
 
 /*** MP macros ***/
 
+#define MP_VARIATOR_STEP_0                      0
+#define MP_VARIATOR_STEP_P                      (-1)
+#define MP_VARIATOR_STEP_MAX                    32
+#define MP_VARIATOR_STEP_MIN                    (-11)
 #define MP_VARIATOR_STEP_MAX_SERIES_COUPLING    20
 
 /*** MP structures ***/
