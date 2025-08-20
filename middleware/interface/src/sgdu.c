@@ -82,7 +82,7 @@ void SGDU_init(void) {
 }
 
 /*******************************************************************/
-void SGDU_write(SCU_output_command_t command) {
+void SGDU_write(uint8_t command) {
     // Local variables.
     uint8_t data = command;
     // Send byte.

@@ -8,7 +8,6 @@
 #ifndef SGDU_H
 #define SGDU_H
 
-#include "scu_commands.h"
 #include "stdint.h"
 
 /*** SGDU functions ***/
@@ -29,7 +28,7 @@ void SGDU_init(void);
  * \param[out]  none
  * \retval      none
  *******************************************************************/
-void SGDU_write(SCU_output_command_t command);
+void SGDU_write(uint8_t command);
 
 /*!******************************************************************
  * \fn void SGDU_process(void)
