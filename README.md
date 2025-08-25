@@ -1,6 +1,6 @@
 # Description
 
-The **Simulator Control Unit** (SCU) is the central processor of the system. This the master unit of the simulator which handles the following functions:
+The **Simulator Control Unit** (SCU) is the central processor of the system. This is the master unit of the simulator which handles the following functions:
 
 * **Read the dashboard inputs** (switchs and levers activated by the train driver).
 * **Control the dashboard outputs** (displays, gauges, light indicators, etc.).
