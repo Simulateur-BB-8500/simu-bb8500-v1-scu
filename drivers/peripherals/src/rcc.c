@@ -58,8 +58,8 @@ void RCC_init(void) {
     while (((RCC->CFGR) & (0b11 << 0)) != 0b10); // // Wait for clock switch (SWS='00').
 #ifdef RCC_OUTPUT_CLOCK
     // Output HSI on MCO1 (PA8 as AF0) and SYSCLK on MCO2 (PC9 as AF0) with both prescalers = 4.
-    RCC -> CFGR &= 0x369FFFFF;
-    RCC -> CFGR |= 0x36000000;
+    RCC->CFGR &= 0x369FFFFF;
+    RCC->CFGR |= 0x36000000;
 #endif
     // Update frequencies.
     rcc_ctx.clock_frequency[RCC_CLOCK_SYSTEM] = 200000000;
