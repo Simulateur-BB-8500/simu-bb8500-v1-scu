@@ -25,7 +25,7 @@
 
 /*******************************************************************/
 typedef enum {
-    VACMA_STATE_OFF,
+    VACMA_STATE_OFF = 0,
     VACMA_STATE_HOLD,
     VACMA_STATE_HOLD_ALARM,
     VACMA_STATE_RELEASED,

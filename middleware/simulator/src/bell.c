@@ -22,7 +22,7 @@
 
 /*******************************************************************/
 typedef enum {
-    BELL_STATE_ENABLED,
+    BELL_STATE_ENABLED = 0,
     BELL_STATE_RING1,
     BELL_STATE_RELEASE1,
     BELL_STATE_RING2,

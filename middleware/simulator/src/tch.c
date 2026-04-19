@@ -22,7 +22,7 @@
 
 /*******************************************************************/
 typedef enum {
-    TCH_STATE_OFF,
+    TCH_STATE_OFF = 0,
     TCH_STATE_STEP1,
     TCH_STATE_STEP2,
     TCH_STATE_STEP3,

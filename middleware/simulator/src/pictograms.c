@@ -41,7 +41,7 @@ typedef enum {
 
 /*******************************************************************/
 typedef enum {
-    PICTOGRAMS_STATE_OFF,
+    PICTOGRAMS_STATE_OFF = 0,
     PICTOGRAMS_STATE_ZBA_CLOSED_TRANSITION1,
     PICTOGRAMS_STATE_ZBA_CLOSED_TRANSITION2,
     PICTOGRAMS_STATE_ZBA_CLOSED,

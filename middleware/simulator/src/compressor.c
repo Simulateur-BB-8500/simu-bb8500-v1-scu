@@ -28,7 +28,7 @@
 
 /*******************************************************************/
 typedef enum {
-    COMPRESSOR_STATE_OFF,
+    COMPRESSOR_STATE_OFF = 0,
     COMPRESSOR_STATE_AUTO_ON,
     COMPRESSOR_STATE_AUTO_OFF,
     COMPRESSOR_STATE_DIRECT

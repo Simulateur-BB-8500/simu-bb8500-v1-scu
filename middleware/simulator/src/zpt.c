@@ -20,7 +20,7 @@
 
 /*******************************************************************/
 typedef enum {
-    ZPT_STATE_0,
+    ZPT_STATE_0 = 0,
     ZPT_STATE_AR,
     ZPT_STATE_ARAV,
     ZPT_STATE_AV

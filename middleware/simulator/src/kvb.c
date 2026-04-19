@@ -59,7 +59,7 @@
 
 /*******************************************************************/
 typedef enum {
-    KVB_STATE_OFF,
+    KVB_STATE_OFF = 0,
     KVB_STATE_PA400,
     KVB_STATE_PA400_OFF,
     KVB_STATE_UC512,
